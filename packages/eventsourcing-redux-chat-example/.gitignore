@@ -1,0 +1,12 @@
+.idea
+node_modules/
+yarn-error.log
+**/*.d.ts
+**/*.map
+src/**/*.js
+index.js
+build/
+dist/
+.stryker-tmp/
+coverage/
+reports/
