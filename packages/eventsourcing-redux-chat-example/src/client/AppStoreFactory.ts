@@ -10,6 +10,8 @@ import { accountMiddleware } from './Account/accountMiddleware';
 import { commandMiddleware } from 'eventsourcing-redux-bridge/CommandHandling/Middleware/commandMiddleware';
 import { commandHandlerResponseMiddleware } from 'eventsourcing-redux-bridge/CommandHandling/Middleware/commandHandlerResponseMiddleware';
 import { gatewayMiddleway } from 'eventsourcing-redux-bridge/Gateway/Middleware/gatewayMiddleware';
+import { queryHandlerResponseMiddleware } from 'eventsourcing-redux-bridge/QueryHandling/Middleware/queryHandlerResponseMiddleware';
+import { queryMiddleware } from 'eventsourcing-redux-bridge/QueryHandling/Middleware/queryMiddleware';
 
 export class AppStoreFactory {
   private factory = new SimpleStoreFactory(combineReducers({
@@ -20,10 +22,13 @@ export class AppStoreFactory {
     const composeEnhancers = composeWithDevTools({
       // Specify name here, actionsBlacklist, actionsCreators and other options if needed
     });
+    const gateway = gatewayFactory('/chat');
     return this.factory.create(composeEnhancers(applyMiddleware<ChannelState>(
       gatewayMiddleway(gatewayFactory),
       commandHandlerResponseMiddleware(),
-      commandMiddleware(gatewayFactory('/chat')),
+      queryHandlerResponseMiddleware(),
+      queryMiddleware(gateway),
+      commandMiddleware(gateway),
       accountMiddleware(),
     ))) as any;
   }

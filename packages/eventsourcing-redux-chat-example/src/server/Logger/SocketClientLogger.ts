@@ -13,6 +13,6 @@ export class ClientLogger extends AbstractLogger {
   }
 
   public log(type: LogLevel, ...message: any[]): void {
-    this.logger.log(type, [['Client', this.client.id, this.client.handshake.address, ':'].join(' '), ...message])
+    this.logger.log(type, ...[['Client', this.client.id, this.client.handshake.address, ':'].join(' '), ...message])
   }
 }

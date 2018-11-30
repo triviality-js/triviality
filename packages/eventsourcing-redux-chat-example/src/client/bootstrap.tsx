@@ -6,9 +6,9 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { ClientSocketIOGateway } from 'eventsourcing-redux-bridge/Gateway/socket.io/ClientSocketIOGateway';
 import { SerializerInterface } from 'eventsourcing-redux-bridge/Serializer/SerializerInterface';
-import { Layout } from './App/Component/Layout';
 import { AppStoreFactory } from './AppStoreFactory';
 import { gatewayOpen } from 'eventsourcing-redux-bridge/Gateway/actions';
+import { App } from "./App/Component/App";
 
 // Utils.
 const serializer: SerializerInterface = createSerializer();
@@ -26,7 +26,7 @@ const store = storeFactory.createForClient((path: string) => {
 });
 
 ReactDOM.hydrate(
-  <Layout store={store}/>,
+  <App store={store}/>,
   document.getElementById('app'),
 );
 

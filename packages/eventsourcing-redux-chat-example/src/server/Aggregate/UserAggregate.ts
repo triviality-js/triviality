@@ -5,10 +5,10 @@ import { EventSourcedAggregateRoot } from 'ts-eventsourcing/EventSourcing/EventS
 
 export class UserAggregate extends EventSourcedAggregateRoot<UserId> {
 
-  public static registerUser(id: UserId, name: string) {
+  public static registerUser(id: UserId, name: string, passwordHash: string) {
     const instance = new this(id);
     Assert.assertUserName(name);
-    instance.apply(new UserHasRegistered(name));
+    instance.apply(new UserHasRegistered(name, passwordHash));
     return instance;
   }
 

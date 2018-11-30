@@ -7,10 +7,13 @@ import { TransitJSSerializer } from 'eventsourcing-redux-bridge/Serializer/trans
 import { createClassHandlers } from 'eventsourcing-redux-bridge/Serializer/transit-js/createClassHandlers';
 import { UserHasRegistered } from '../server/DomainEvent/UserHasRegistered';
 import { ChatState } from './State/ChatState';
+import { QueryAccountState } from "../server/Query/QueryAccountState";
+import { AccountState } from "../client/Account/AcountState";
 
 export function createSerializer(): SerializerInterface {
   return new TransitJSSerializer(
     [
+      AccountState,
       ChannelState,
       ChatState,
     ],
@@ -21,6 +24,9 @@ export function createSerializer(): SerializerInterface {
 
       // Commands
       UserRegisterCommand,
+
+      // Queries
+      QueryAccountState,
 
       // Domain events
       UserHasRegistered,

@@ -1,5 +1,5 @@
 import { UserId } from '../../shared/ValueObject/UserId';
-import { Nullable, RecordWithPlayhead } from '../../PlayheadRecord';
+import { Nullable, RecordWithPlayhead } from "eventsourcing-redux-bridge/ReadModel/PlayheadRecord";
 
 export interface AccountStateInterface {
   id: UserId;

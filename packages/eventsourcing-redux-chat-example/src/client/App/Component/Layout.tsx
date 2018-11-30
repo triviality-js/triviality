@@ -1,15 +1,21 @@
 import * as React from 'react';
-import { Component } from 'react';
-import { Provider } from 'react-redux';
-import { ConnectedRegisterForm } from '../../Account/Component/ConnectedRegisterForm';
-import { AppStore } from '../../AppStore';
+import { PureComponent } from 'react';
+import { connect, Provider } from 'react-redux';
+import { RegisterForm } from "../../Account/Component/RegisterForm";
+import { AppState } from "../AppState";
 
-export class Layout extends Component<{ store: AppStore }> {
-  public render() {
-    return (
-      <Provider store={this.props.store}>
-        <ConnectedRegisterForm/>
-      </Provider>
-    );
+export const Layout = connect((appState: AppState) => {
+  return {
+    loggedIn: appState.loggedIn,
   };
-}
+})(
+  class Layout extends PureComponent {
+    public render() {
+      return (
+        <Provider store={this.props.store}>
+          <RegisterForm/>
+        </Provider>
+      );
+    };
+  }
+);
