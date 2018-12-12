@@ -31,5 +31,10 @@
     ],
     "no-reference": false
   },
-  "rulesDirectory": []
+  "rulesDirectory": [],
+  "linterOptions": {
+    "exclude": [
+      "docs/*"
+    ]
+  }
 }

@@ -5,7 +5,7 @@ export class HalloService {
   }
 
   public hallo(name: string) {
-    this.logger.info(name);
+    this.logger.info(`Hallo ${name}`);
   }
 
 }

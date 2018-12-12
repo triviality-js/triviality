@@ -12,41 +12,9 @@ Dependency Injection is all about code reusability.
 It’s a design pattern aiming to make high-level code reusable, 
 by separating the object creation / configuration from usage. **Triviality** highly aims to keep away from your application code. 
 **No magic** injection with tokens, annotations whatsoever. It will use your application code 
-as *strictly typed interface* to assure everything is connect properly. 
+as *strictly typed interface* to assure everything is connected properly. 
 
-
-```typescript
-import { Container, ContainerFactory, Module } from 'triviality';
-import { LoggerInterface } from './docs/Example/LoggerInterface';
-import { HalloService } from './docs/Example/HalloService';
-
-class LogModule implements Module {
-  public logger(): LoggerInterface {
-    return console;
-  }
-}
-
-class HalloWorldModule implements Module {
-
-  constructor(private container: Container<LogModule>) {
-  }
-
-  public halloService() {
-    return new HalloService(this.container.logger());
-  }
-
-}
-
-ContainerFactory
-  .add(LogModule)
-  .add(HalloWorldModule)
-  .build()
-  .then((container) => {
-    container.halloService().hallo('World');
-  });
-
-```
-        
+#typescript "docs/intro.ts"
 
 # Installation
 

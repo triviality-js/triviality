@@ -8,8 +8,9 @@
   "scripts": {
     "prepublish": "yarn test && yarn markdown-include markdown.json && yarn tsc",
     "watch": "tsc --watch",
-    "test": "npm-run-all --parallel jest-coverage tslint jscpd tsc",
+    "test": "npm-run-all --parallel jest-coverage tslint jscpd tsc stryker",
     "jest": "jest",
+    "tsc": "tsc",
     "stryker": "stryker run",
     "jest-coverage": "jest --coverage",
     "tslint-fix": "tslint --fix --project tsconfig.json",

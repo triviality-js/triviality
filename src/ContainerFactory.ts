@@ -1,6 +1,7 @@
 import { ModuleConstructor as MC, Module as M, ModuleWithoutContainer as W } from './Module';
 import { getAllPropertyNames } from './util/getAllPropertyNames';
 import memorize from 'lodash.memoize';
+import { ContainerError } from './ContainerError';
 
 export class ContainerFactory<T> {
 
@@ -43,10 +44,10 @@ export class ContainerFactory<T> {
           continue;
         }
         if (typeof value === 'function') {
-          this.setProperty(name, memorize(value));
+          this.defineContainerProperty(name, memorize(value, (...args) => JSON.stringify(args)));
           module[name] = (this.container as any)[name].bind(this.container);
         } else {
-          this.setProperty(name, value);
+          this.defineContainerProperty(name, value);
         }
       }
     }
@@ -60,15 +61,15 @@ export class ContainerFactory<T> {
     return this.container;
   }
 
-  private setProperty(name: string, value: any) {
+  private defineContainerProperty(name: string, value: any) {
     if ((this.container as any)[name]) {
       // Ignore if it's a reference to the container
       if (value === this.container) {
         return;
       }
-      throw new Error(`Containers service or property already defined "${name}"`);
+      throw ContainerError.propertyOrServiceAlreadyDefined(name);
     }
-    Object.defineProperty(this.container, name, { get: () => value, set: () => { throw new Error('Cannot is locked.'); } });
+    Object.defineProperty(this.container, name, { get: () => value, set: () => { throw ContainerError.containerIsLocked(); } });
   }
 
 }
