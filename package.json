@@ -1,12 +1,12 @@
 {
   "name": "triviality",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Purely typed service container",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "prepublish": "yarn test && yarn markdown-include markdown.json && yarn tsc",
+    "prepublish": "yarn test && node docs/build.js && yarn tsc",
     "watch": "tsc --watch",
     "test": "npm-run-all --parallel jest-coverage tslint jscpd tsc stryker",
     "jest": "jest",
