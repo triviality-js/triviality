@@ -29,7 +29,8 @@
       true,
       12
     ],
-    "no-reference": false
+    "no-reference": false,
+    "max-classes-per-file": false
   },
   "rulesDirectory": [],
   "linterOptions": {

@@ -4,7 +4,8 @@ module.exports = {
     coverageDirectory: "reports/coverage",
     collectCoverageFrom: [
         "src/**/*.{ts}",
-        "docs/**/*.{ts}",
+        "!example/**/*",
+        "!**/__test__/**/*",
         "!**/*test.{ts}",
         "!**/*.d.{ts}",
         "!**/build",
@@ -24,7 +25,7 @@ module.exports = {
             "branches": 100,
             "functions": 100,
             "lines": 100,
-            "statements": 0
+            "statements": 100
         }
     },
     moduleFileExtensions: [

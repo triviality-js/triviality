@@ -8,11 +8,11 @@ export class MyOtherModule implements Module {
 
   }
 
-  public myOtherModule() {
+  public myOtherModule(): string {
     return 'MyOtherModule';
   }
 
-  public referenceToMyModule() {
+  public referenceToMyModule(): string {
     return this.container.myModule();
   }
 

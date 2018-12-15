@@ -8,7 +8,8 @@ markdownInclude.registerPlugin({
         const data = fs.readFileSync(file).toString();
         const result = data
             .replace( /'.*src.*'/gm, `'triviality'`)
-            .replace(/\.\/Example/gm, './docs/Example');
+            .replace(/\.\/Example/gm, './docs/Example')
+            .trim();
         return `
 \`\`\`typescript
 ${result}
