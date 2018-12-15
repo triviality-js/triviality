@@ -1,12 +1,10 @@
 import 'jest';
 import { ContainerFactory, Container, Module } from '../index';
+import { ContainerError } from '../ContainerError';
 import { MyModule } from './Modules/MyModule';
 import { MyOtherModule } from './Modules/MyOtherModule';
-import { ContainerError } from '../ContainerError';
 
-/* tslint:disable:max-classes-per-file */
-
-class TestModule {
+class TestModule implements Module {
 
   public testService1() {
     return ['Test service'];
@@ -27,13 +25,15 @@ describe('ContainerFactory', () => {
   describe('Caches services', () => {
     it('No arguments', async () => {
       const container = await ContainerFactory
+        .create()
         .add(TestModule)
         .build();
-      expect(container.testService1()).toBe(container.testService1());
+      expect(container.halloService()).toEqual(container.halloService());
       expect(container.testService1()).toEqual(['Test service']);
     });
     it('Takes a single argument into account', async () => {
       const container = await ContainerFactory
+        .create()
         .add(TestModule)
         .build();
       expect(container.testService2(1)).toBe(container.testService2(1));
@@ -42,6 +42,7 @@ describe('ContainerFactory', () => {
     });
     it('Takes multiple arguments into account', async () => {
       const container = await ContainerFactory
+        .create()
         .add(TestModule)
         .build();
       expect(container.halloService('john')).toBe(container.halloService('john'));
@@ -54,6 +55,7 @@ describe('ContainerFactory', () => {
   describe('Build', () => {
     it('Container is locked and cannot be changed', async () => {
       const container = await ContainerFactory
+        .create()
         .add(TestModule)
         .build();
       expect(() => {
@@ -62,28 +64,33 @@ describe('ContainerFactory', () => {
     });
 
     it('Cannot have name coalitions', () => {
-      const containerFactory = ContainerFactory.add(TestModule);
+      const containerFactory = ContainerFactory
+        .create()
+        .add(TestModule);
       expect(() => {
         containerFactory.add(class {
           public halloService() {
             return 'hallo world';
           }
-        });
+        } as any);
       }).toThrow(ContainerError.propertyOrServiceAlreadyDefined('halloService').message);
     });
 
     it('Execute setup step', async () => {
       const spyConstructor = jest.fn();
       const spySetup = jest.fn();
-      const container = await ContainerFactory.add(class implements Module {
-        constructor(private constructor: {}) {
-          spyConstructor(constructor);
-        }
-        public setup() {
-          spySetup(this.constructor);
-          return Promise.resolve();
-        }
-      }).build();
+      const container = await ContainerFactory
+        .create()
+        .add(class implements Module {
+          constructor(private constructor: {}) {
+            spyConstructor(constructor);
+          }
+
+          public setup() {
+            spySetup(this.constructor);
+            return Promise.resolve();
+          }
+        }).build();
 
       expect(spyConstructor).toBeCalledWith(container);
       expect(spySetup).toBeCalledWith(container);
@@ -92,7 +99,7 @@ describe('ContainerFactory', () => {
 
   describe('Support multiple modules', () => {
     it('Can merge modules', async () => {
-      class TestModule2 {
+      class TestModule2 implements Module {
 
         constructor(private container: Container<TestModule>) {
         }
@@ -108,6 +115,7 @@ describe('ContainerFactory', () => {
       }
 
       const dependencyContainer = await ContainerFactory
+        .create()
         .add(TestModule)
         .add(TestModule2)
         .build();
@@ -118,6 +126,7 @@ describe('ContainerFactory', () => {
 
     it('Can handle circular references to other modules', async () => {
       const container = await ContainerFactory
+        .create()
         .add(MyModule, MyOtherModule)
         .build();
       expect(container.myModule()).toEqual('MyModule');
@@ -125,6 +134,149 @@ describe('ContainerFactory', () => {
       expect(container.referenceToMyModule()).toEqual('MyModule');
       expect(container.referenceToMyOtherModule()).toEqual('MyOtherModule');
     });
+
+    it('Modules can have different dependencies', async () => {
+      class TestModule1 implements Module {
+
+        constructor(private container: Container<MyModule>) {
+        }
+
+        public testService1(): string {
+          return this.container.myModule();
+        }
+      }
+      class TestModule2 implements Module {
+
+        constructor(private container: Container<MyOtherModule>) {
+        }
+
+        public testService2(): string {
+          return this.container.myOtherModule();
+        }
+
+      }
+
+      const dependencyContainer = await ContainerFactory
+        .create()
+        .add(MyModule, MyOtherModule)
+        .add(TestModule1)
+        .add(TestModule2)
+        .build();
+      expect(dependencyContainer.testService1()).toEqual('MyModule');
+      expect(dependencyContainer.testService2()).toEqual('MyOtherModule');
+    });
   });
 
+  describe('Support for service registers', () => {
+    it('A module can define a register', async () => {
+
+      class Module1 implements Module {
+        public registries() {
+          return {
+            personListeners: () => [1],
+          };
+        }
+      }
+
+      const container = await ContainerFactory
+        .create()
+        .add(Module1)
+        .build();
+      expect(container.personListeners()).toEqual([1]);
+    });
+
+    it('A module can fetch it\s own registers services', async () => {
+
+      class Module1 implements Module {
+        public registries() {
+          return {
+            moduleVersions: (): number[] => {
+              return [1, 2, 4];
+            },
+          };
+        }
+
+        public sum(): number {
+          const numbers = this.registries().moduleVersions();
+          return numbers.reduce((i: number, n: number) => i + n, 0);
+        }
+
+        public multiply(): number {
+          const numbers = this.registries().moduleVersions();
+          return numbers.reduce((i: number, n: number) => i * n, 1);
+        }
+      }
+
+      const serviceContainer = await ContainerFactory
+        .create()
+        .add(Module1)
+        .build();
+      expect(serviceContainer.sum()).toEqual(7);
+      expect(serviceContainer.multiply()).toEqual(8);
+    });
+
+    it('Multiple modules can register to the same register', async () => {
+
+      interface PersonEventListener {
+        courtesy(event: string): string;
+      }
+
+      class ShoppingMall implements Module {
+        public registries() {
+          return {
+            // Template every listener should match to.
+            personListeners: (): PersonEventListener[] => {
+              return [];
+            },
+          };
+        }
+
+        public curtesies(person: string): string[] {
+          return this.registries().personListeners().map((listener) => listener.courtesy(person));
+        }
+      }
+
+      class Module1 implements Module {
+        public registries() {
+          return {
+            personListeners: (): PersonEventListener[] => {
+              return [this.halloEventListener()];
+            },
+          };
+        }
+
+        private halloEventListener(): PersonEventListener {
+          return {
+            courtesy: (event: string) => `Hallo ${event}`,
+          };
+        }
+      }
+
+      class Module2 implements Module {
+        public registries() {
+          return {
+            personListeners: (): PersonEventListener[] => {
+              return [this.byeEventListener()];
+            },
+          };
+        }
+
+        private byeEventListener(): PersonEventListener {
+          return {
+            courtesy: (event: string) => `Bye ${event}`,
+          };
+        }
+      }
+
+      const container = await ContainerFactory
+        .create()
+        .add(ShoppingMall)
+        .add(Module1)
+        .add(Module2)
+        .build();
+
+      expect(container.curtesies('John')).toEqual(['Hallo John', 'Bye John']);
+      expect(container.curtesies('Jane')).toEqual(['Hallo Jane', 'Bye Jane']);
+    });
+  });
 });

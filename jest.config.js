@@ -4,7 +4,7 @@ module.exports = {
     coverageDirectory: "reports/coverage",
     collectCoverageFrom: [
         "src/**/*.{ts}",
-        "docs/**/*.{ts}",
+        "example/**/*.{ts}",
         "!**/*test.{ts}",
         "!**/*.d.{ts}",
         "!**/build",

@@ -1,11 +1,21 @@
-import { Omit } from './util/Omit';
+import { Registries } from './Registry';
+import { NoDuplicates, Omit, Optional } from './util/Types';
 
-export interface Module {
-  [key: string]: any;
+export interface Module<R extends Registries = {}> {
 
-  setup?: () => void | Promise<void>;
+  toString(): string;
+
+  setup?(): void;
+
+  registries?(): R;
 }
 
-export type ModuleConstructor<Instance extends Module, C> = new (container: C) => Instance;
+export type ModuleOptionalRegistries<R> = Module<Optional<R>>;
 
-export type ModuleWithoutContainer<T extends Module> = Omit<T, 'container'>;
+export type ModuleConstructor<Instance, C> = new (container: C) => Instance & NoDuplicates<C>;
+
+export type StrippedModule<T extends Module> = T extends { container: any } ? Omit<T, 'container' | 'registries' | 'setup'> : Omit<T, 'registries' | 'setup'>;
+
+export type ModuleRegistries<T extends Module<R>, R = {}> = T extends { registries(): R; } ? ReturnType<NonNullable<T['registries']>> : {};
+
+export type ModuleDependency<T extends Module<R>, R = {}> = ModuleRegistries<T, R> & StrippedModule<T>;
