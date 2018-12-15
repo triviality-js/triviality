@@ -6,4 +6,10 @@ by separating the object creation / configuration from usage. **Triviality** hig
 **No magic** injection with tokens, annotations whatsoever. It will use your application code 
 as **strictly typed interface** to assure everything is connected properly. 
 
+Triviality by core is split into Modules. A module is defined a class.
+
+#typescript "docs/LogModule.ts"
+
+Each class has functions on them. The function name is the service key. 
+
 #typescript "docs/intro.ts"

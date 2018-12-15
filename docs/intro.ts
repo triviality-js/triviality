@@ -1,12 +1,6 @@
 import { Container, ContainerFactory, Module } from '../src';
-import { LoggerInterface } from './Example/LoggerInterface';
 import { HalloService } from './Example/HalloService';
-
-class LogModule implements Module {
-  public logger(): LoggerInterface {
-    return console;
-  }
-}
+import { LogModule } from './LogModule';
 
 class HalloWorldModule implements Module {
 
@@ -20,6 +14,7 @@ class HalloWorldModule implements Module {
 }
 
 ContainerFactory
+  .create()
   .add(LogModule)
   .add(HalloWorldModule)
   .build()
