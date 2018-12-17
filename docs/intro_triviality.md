@@ -20,21 +20,21 @@ Now we can fetch the 'logger' service from the container and start using it. Thi
 
 #typescript "example/singleton/LogModule.ts"
 
-The logger service function and the 'prefixedLoggerService' functions will always return the same instance for the same arguments. 
+The logger service function and the 'prefixedLogger' functions will always return the same instance for the same arguments. 
 
 #typescript "example/singleton/LogModuleContainer.ts"
 ___
 
 The container service function types are directly copied from the Modules.
 This gives typescript the option to **strictly type check** if everything is connected properly. 
-And you the benefits of **code completion** and the option to quickly traverse to the service chain.
+And you the benefits of **code completion** and the option to quickly traverse the service chain.
 ___
 
 Let's put the type checking to the test, we create a nice module that use the 'LogModule'.
 
 #typescript "example/moduleDependency/HalloModule.ts"
 
-The container missing 'LogModule' dependency:
+Build the container with missing 'LogModule' dependency:
 
 #typescript "example/moduleDependency/HalloModuleErrorContainer.ts.example"
 
@@ -51,6 +51,7 @@ Let's fix the container by adding the LogModule:
 #typescript "example/moduleDependency/HalloModuleContainer.ts"
 
 ```
+# ./node_modules/.bin/ts-node example/moduleDependency/HalloModuleContainer.ts
 Hallo John
 ```
 
@@ -78,8 +79,8 @@ Now we can combine all the different modules and build the final container.
 #typescript "example/registries/console.ts"
 
 ```bash
- ✗ ./node_modules/.bin/ts-node example/registries/console.ts hallo John
+# ./node_modules/.bin/ts-node example/registries/console.ts hallo John
 Hallo John
-✗ ./node_modules/.bin/ts-node example/registries/console.ts bye John
+# ./node_modules/.bin/ts-node example/registries/console.ts bye John
 Bye John !!!
 ```

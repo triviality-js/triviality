@@ -56,6 +56,7 @@ Now we can fetch the 'logger' service from the container and start using it. Thi
 ```typescript
 import { Module } from 'triviality';
 import { LoggerInterface } from '../module/LoggerInterface';
+import { PrefixedLogger } from './PrefixedLogger';
 
 export class LogModule implements Module {
 
@@ -63,17 +64,15 @@ export class LogModule implements Module {
     return console;
   }
 
-  public prefixedLoggerService(prefix: string): LoggerInterface {
-    return {
-      info: (...message: string[]) => this.logger().info(...[prefix, ...message]),
-    };
+  public prefixedLogger(prefix: string): LoggerInterface {
+    return new PrefixedLogger(this.logger(), prefix);
   }
 
 }
 ```
         
 
-The logger service function and the 'prefixedLoggerService' functions will always return the same instance for the same arguments. 
+The logger service function and the 'prefixedLogger' functions will always return the same instance for the same arguments. 
 
 
 ```typescript
@@ -85,9 +84,9 @@ ContainerFactory
   .add(LogModule)
   .build()
   .then((container) => {
-    const johnLogger = container.prefixedLoggerService('John:');
+    const johnLogger = container.prefixedLogger('John:');
     johnLogger.info('Hallo Jane!');
-    const janeLogger = container.prefixedLoggerService('Jane:');
+    const janeLogger = container.prefixedLogger('Jane:');
     janeLogger.info('Hi John!');
 
   });
@@ -97,7 +96,7 @@ ___
 
 The container service function types are directly copied from the Modules.
 This gives typescript the option to **strictly type check** if everything is connected properly. 
-And you the benefits of **code completion** and the option to quickly traverse to the service chain.
+And you the benefits of **code completion** and the option to quickly traverse the service chain.
 ___
 
 Let's put the type checking to the test, we create a nice module that use the 'LogModule'.
@@ -120,7 +119,7 @@ export class HalloModule implements Module {
 ```
         
 
-The container missing 'LogModule' dependency:
+Build the container with missing 'LogModule' dependency:
 
 
 ```typescript
@@ -133,7 +132,7 @@ ContainerFactory
   .build()
   .then((container) => {
     const service = container.halloService('John');
-    service.speak(); // console.info("Hallo John");.
+    service.speak();
   });
 ```
         
@@ -167,6 +166,7 @@ ContainerFactory
         
 
 ```
+# ./node_modules/.bin/ts-node example/moduleDependency/HalloModuleContainer.ts
 Hallo John
 ```
 
@@ -310,9 +310,9 @@ ContainerFactory
         
 
 ```bash
- ✗ ./node_modules/.bin/ts-node example/registries/console.ts hallo John
+# ./node_modules/.bin/ts-node example/registries/console.ts hallo John
 Hallo John
-✗ ./node_modules/.bin/ts-node example/registries/console.ts bye John
+# ./node_modules/.bin/ts-node example/registries/console.ts bye John
 Bye John !!!
 ```
 

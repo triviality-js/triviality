@@ -29,5 +29,5 @@
     "noFallthroughCasesInSwitch": true,       /* Report errors for fallthrough cases in switch statement. */
     "forceConsistentCasingInFileNames": true /* Force consistent casing in file names  */
   },
-  "exclude": ["example/moduleDependency/HalloModuleErrorContainer.ts", "build", "node_modules"]
+  "exclude": ["build", "node_modules"]
 }

@@ -1,5 +1,6 @@
 import { Module } from '../../src';
 import { LoggerInterface } from '../module/LoggerInterface';
+import { PrefixedLogger } from './PrefixedLogger';
 
 export class LogModule implements Module {
 
@@ -7,10 +8,8 @@ export class LogModule implements Module {
     return console;
   }
 
-  public prefixedLoggerService(prefix: string): LoggerInterface {
-    return {
-      info: (...message: string[]) => this.logger().info(...[prefix, ...message]),
-    };
+  public prefixedLogger(prefix: string): LoggerInterface {
+    return new PrefixedLogger(this.logger(), prefix);
   }
 
 }

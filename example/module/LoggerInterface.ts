@@ -1,4 +1,4 @@
 
 export interface LoggerInterface {
-  info: (...message: string[]) => void;
+  info(...message: string[]): void;
 }

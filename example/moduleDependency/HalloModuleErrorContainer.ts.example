@@ -7,5 +7,5 @@ ContainerFactory
   .build()
   .then((container) => {
     const service = container.halloService('John');
-    service.speak(); // console.info("Hallo John");.
+    service.speak();
   });

@@ -6,9 +6,9 @@ ContainerFactory
   .add(LogModule)
   .build()
   .then((container) => {
-    const johnLogger = container.prefixedLoggerService('John:');
+    const johnLogger = container.prefixedLogger('John:');
     johnLogger.info('Hallo Jane!');
-    const janeLogger = container.prefixedLoggerService('Jane:');
+    const janeLogger = container.prefixedLogger('Jane:');
     janeLogger.info('Hi John!');
 
   });
