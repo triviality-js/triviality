@@ -1,14 +1,14 @@
 {
   "name": "triviality",
   "private": false,
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Purely typed service container",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "prepublish": "yarn test && node docs/build.js && yarn tsc",
+    "prepublish": "yarn test && yarn create-docs && yarn tsc",
     "watch": "tsc --watch",
-    "test": "npm-run-all --parallel jest-coverage tslint jscpd tsc stryker",
+    "test": "npm-run-all --parallel jest-coverage tslint jscpd tsc",
     "jest": "jest",
     "tsc": "tsc",
     "stryker": "stryker run",
@@ -16,7 +16,9 @@
     "tslint-fix": "tslint --fix --project tsconfig.json",
     "tslint": "tslint --project tsconfig.json",
     "jscpd": "jscpd --limit=-1",
-    "jest-badges": "yarn jest-coverage && jest-coverage-badges"
+    "jest-badges": "yarn jest-coverage && jest-coverage-badges",
+    "create-container-types": "ts-node src/cli/createContainerTypes.ts",
+    "create-docs": "node docs/build.js"
   },
   "repository": {
     "type": "git",

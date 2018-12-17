@@ -4,3 +4,5 @@ yarn-error.log
 .stryker-tmp/
 reports/
 build/*
+src/**/*.d.ts
+src/**/*.js

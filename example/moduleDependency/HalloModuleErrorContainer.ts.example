@@ -1,0 +1,11 @@
+import { ContainerFactory } from '../../src';
+import { HalloModule } from './HalloModule';
+
+ContainerFactory
+  .create()
+  .add(HalloModule)
+  .build()
+  .then((container) => {
+    const service = container.halloService('John');
+    service.speak(); // console.info("Hallo John");.
+  });

@@ -9,10 +9,14 @@ export class ContainerError extends Error {
   }
 
   public static containerAlreadyBuild() {
-    return new this('Container is been build');
+    return new this('Container already been build');
   }
 
-  public static wrongRegisterReturnType(name: string) {
-    return new this(`Register "${name}" should return array or nothing at all`);
+  public static registerShouldAllReturnSameType() {
+    return new this('Register should return same type');
+  }
+
+  public static wrongRegisterReturnType() {
+    return new this('Register should return array, object or nothing (void)');
   }
 }

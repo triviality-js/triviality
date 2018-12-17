@@ -9,7 +9,6 @@ module.exports = function (config) {
         tsconfigFile: 'tsconfig.json',
         mutate: [
             'src/**/*.ts',
-            'docs/**/*.ts',
             '!**/__test__/*.test.ts',
             '!src/**/cli/*'
         ],
