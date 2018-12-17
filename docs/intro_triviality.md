@@ -74,7 +74,7 @@ During the container build phase the registries will be combined.
 
 #typescript "example/registries/ConsoleModule.ts"
 
-Now we can combine all the different modules and build the final container.
+Now we can combine the different command modules and build the container.
 
 #typescript "example/registries/console.ts"
 

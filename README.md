@@ -1,11 +1,29 @@
 # Table of Contents
 
+[![Build Status](https://travis-ci.org/epinxteren/triviality.svg?branch=master)](https://travis-ci.org/epinxteren/triviality)
+
+* [Installation](#installation)
 * [Triviality](#triviality)
   * [Registers](#registers)
-* [Installation](#installation)
 * [Thanks](#thanks)
 * [Reads](#reads)
 
+
+# Installation
+
+To install the stable version:
+
+```
+yarn add triviality
+```
+
+This assumes you are using [yarn](https://yarnpkg.com) as your package manager.
+
+or 
+
+```
+npm install triviality
+```
 
 # Triviality
 
@@ -288,7 +306,7 @@ export class ConsoleModule implements Module {
 ```
         
 
-Now we can combine all the different modules and build the final container.
+Now we can combine the different command modules and build the container.
 
 
 ```typescript
@@ -314,22 +332,6 @@ ContainerFactory
 Hallo John
 # ./node_modules/.bin/ts-node example/registries/console.ts bye John
 Bye John !!!
-```
-
-# Installation
-
-To install the stable version:
-
-```
-yarn add triviality
-```
-
-This assumes you are using [yarn](https://yarnpkg.com) as your package manager.
-
-or 
-
-```
-npm install triviality
 ```
 
 # Thanks
