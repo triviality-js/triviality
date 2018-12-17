@@ -46,7 +46,7 @@ If you forget a module you see a nice error of typescript in your IDE.
       Types of parameters 'container' and 'container' are incompatible.
         Property 'logger' is missing in type '{}' but required in type 'Readonly<Pick<LogModule, "logger">>'.
 
-Let's fix the container and add the LogModule:
+Let's fix the container by adding the LogModule:
 
 #typescript "example/moduleDependency/HalloModuleContainer.ts"
 
