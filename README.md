@@ -115,7 +115,8 @@ This gives typescript the option to **strictly type check** if everything is con
 And you the benefits of **code completion** and the option to quickly traverse the service chain.
 ___
 
-Let's put the type checking to the test, we create a nice module that use the 'LogModule'. We inject the container with multiple Module dependencies```Container<...Modules>```.
+We can inject the Module with a Container that has multiple Module dependencies ```Container<...Modules>```. Let's put 
+the type checking to the test, we create a nice module that dependence on the 'LogModule'. 
 
 
 ```typescript

@@ -1,7 +1,7 @@
 {
   "name": "triviality",
   "private": false,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Purely typed service container",
   "main": "build/index.js",
   "types": "build/index.d.ts",
