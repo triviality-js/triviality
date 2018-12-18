@@ -1,6 +1,6 @@
 import { ContainerError } from './ContainerError';
 
-export type RegistryValues = any[] | { [key: string]: any } | void;
+export type RegistryValues = any[] | { [key: string]: any };
 export type Registry = () => RegistryValues;
 
 export interface Registries {
@@ -21,7 +21,6 @@ export function mergeRegistries(combined: { [name: string]: Registry[] }, regist
   return combined;
 }
 
-/* tslint:disable:cyclomatic-complexity */
 export function mergeRegistryValues(registers: RegistryValues[]): RegistryValues {
   let combined: RegistryValues | null = null;
   for (const registry of registers) {
@@ -30,8 +29,6 @@ export function mergeRegistryValues(registers: RegistryValues[]): RegistryValues
         combined = [].concat(...registry as any);
       } else if (registry instanceof Object) {
         combined = Object.assign({}, registry);
-      } else if (!(registry as any)) {
-        combined = undefined;
       } else {
         throw ContainerError.wrongRegisterReturnType();
       }
@@ -41,13 +38,11 @@ export function mergeRegistryValues(registers: RegistryValues[]): RegistryValues
           throw ContainerError.registerShouldAllReturnSameType();
         }
         combined = combined.concat(...registry as any);
-      } else if (combined instanceof Object) {
+      } else {
         if (registry instanceof Array || !registry) {
           throw ContainerError.registerShouldAllReturnSameType();
         }
         combined = Object.assign(combined, registry);
-      } else if (registry) {
-        throw ContainerError.registerShouldAllReturnSameType();
       }
     }
   }

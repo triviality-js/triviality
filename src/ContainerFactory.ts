@@ -50,7 +50,7 @@ export class ContainerFactory<C /* Container */, R /* Registry */> {
     return this;
   }
 
-  public async build(): Promise<C & R & { registries: () => R }> {
+  public async build(): Promise<C & { registries: () => R }> {
     if (this.isBuild) {
       return Promise.reject(ContainerError.containerAlreadyBuild());
     }
@@ -67,13 +67,12 @@ export class ContainerFactory<C /* Container */, R /* Registry */> {
         combined = mergeRegistries(combined, module.registries());
       }
     }
-    const registries: { [name: string]: RegistryValues } = {};
+    const registries: { [name: string]: () => RegistryValues } = {};
     this.defineContainerProperty('registries', () => registries);
 
     // Set memorized on the registers and the container.
     Object.getOwnPropertyNames(combined).forEach((register) => {
       const registerCached = memorize(() => mergeRegistryValues(combined[register].map((reg) => reg.call(this.container))));
-      this.defineContainerProperty(register, registerCached);
       Object.defineProperty(registries, register, { get: () => registerCached, set: () => { throw ContainerError.containerIsLocked(register); } });
     });
 
@@ -86,7 +85,7 @@ export class ContainerFactory<C /* Container */, R /* Registry */> {
 
     // We want to fail in the compilation step, se we call all registers.
     for (const register of Object.getOwnPropertyNames(combined)) {
-      (this.container as any)[register]();
+      registries[register]();
     }
   }
 

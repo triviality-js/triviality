@@ -63,24 +63,6 @@ describe('ContainerFactory', () => {
       }).toThrow('Container is locked and cannot be altered.');
     });
 
-    it('Registry is locked and cannot be changed', async () => {
-      const container = await ContainerFactory
-        .create()
-        .add(class Test implements Module {
-          public registries() {
-            return {
-              testReg: (): number[] => {
-                return [];
-              },
-            };
-          }
-        })
-        .build();
-      expect(() => {
-        (container.testReg as any) = 1;
-      }).toThrow('Container is locked and cannot be altered.');
-    });
-
     it('registries is locked and cannot be changed', async () => {
       const container = await ContainerFactory
         .create()
@@ -230,7 +212,7 @@ describe('ContainerFactory', () => {
         .create()
         .add(Module1)
         .build();
-      expect(container.personListeners()).toEqual([1]);
+      expect(container.registries().personListeners()).toEqual([1]);
     });
 
     it('A module can fetch it\s own registers services', async () => {
@@ -324,7 +306,7 @@ describe('ContainerFactory', () => {
         .build();
       expect(container.courtesies('John')).toEqual(['Hallo John', 'Bye John']);
       expect(container.courtesies('Jane')).toEqual(['Hallo Jane', 'Bye Jane']);
-      expect(container.personListeners().length).toEqual(2);
+      expect(container.registries().personListeners().length).toEqual(2);
     });
   });
 });

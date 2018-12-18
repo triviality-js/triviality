@@ -50,7 +50,7 @@ describe('TypeValidation', async () => {
           .build();
       `))
         .rejects
-        .toMatch('Property \'userService\' is missing in type \'{}\' but required in type \'Readonly<Pick<Module1, "userService">>\'.');
+        .toMatch('Property \'userService\' is missing in type \'{}\' but required in type \'Readonly<Pick<Module1, "userService">>\'');
     });
 
     it('The build container should have the correct service declarations', async () => {

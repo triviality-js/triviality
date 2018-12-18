@@ -13,10 +13,10 @@ export class ContainerError extends Error {
   }
 
   public static registerShouldAllReturnSameType() {
-    return new this('Register should return same type');
+    return new this('Register with same name should return the same type');
   }
 
   public static wrongRegisterReturnType() {
-    return new this('Register should return array, object or nothing (void)');
+    return new this('Register return type should be an array or object');
   }
 }

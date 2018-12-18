@@ -4,17 +4,14 @@ describe('mergeRegistries', () => {
   it('Can create new index', () => {
     const registry1 = () => [1, 2];
     const registry2 = () => ({ John: 23, Jane: 21 });
-    const registry3 = () => undefined;
 
     const merged = mergeRegistries({}, {
       registry1,
       registry2,
-      registry3,
     });
     expect(merged).toEqual({
       registry1: [registry1],
       registry2: [registry2],
-      registry3: [registry3],
     });
   });
 
@@ -22,24 +19,20 @@ describe('mergeRegistries', () => {
 
     const registry1 = () => [1, 2];
     const registry2 = () => ({ John: 23, Jane: 21 });
-    const registry3 = () => undefined;
 
     const merged = mergeRegistries(
       {
         registry1: [registry1],
         registry2: [registry2],
-        registry3: [registry3],
       },
       {
         registry1,
         registry2,
-        registry3,
       },
     );
     expect(merged).toEqual({
       registry1: [registry1, registry1],
       registry2: [registry2, registry2],
-      registry3: [registry3, registry3],
     });
   });
 
@@ -48,11 +41,15 @@ describe('mergeRegistries', () => {
 describe('mergeRegistryValues', () => {
 
   it('Cannot be empty', () => {
-    expect(() => mergeRegistryValues([])).toThrow('Register should return array, object or nothing (void)');
+    expect(() => mergeRegistryValues([])).toThrow('Register return type should be an array or object');
   });
 
-  it('Cannot be empty', () => {
-    expect(() => mergeRegistryValues([true as any])).toThrow('Register should return array, object or nothing (void)');
+  it('Cannot be boolean', () => {
+    expect(() => mergeRegistryValues([true as any])).toThrow('Register return type should be an array or object');
+  });
+
+  it('Cannot be undefined', () => {
+    expect(() => mergeRegistryValues([undefined as any])).toThrow('Register return type should be an array or object');
   });
 
   describe('array', () => {
@@ -61,11 +58,11 @@ describe('mergeRegistryValues', () => {
     });
 
     it('Cannot have objects', () => {
-      expect(() => mergeRegistryValues([[1, 2], {}])).toThrow('Register should return same type');
+      expect(() => mergeRegistryValues([[1, 2], {}])).toThrow('Register with same name should return the same type');
     });
 
-    it('Cannot have undefined', () => {
-      expect(() => mergeRegistryValues([[1, 2], undefined])).toThrow('Register should return same type');
+    it('Cannot be undefined', () => {
+      expect(() => mergeRegistryValues([[1, 2], undefined as any])).toThrow('Register with same name should return the same type');
     });
   });
 
@@ -79,25 +76,11 @@ describe('mergeRegistryValues', () => {
     });
 
     it('Cannot have array', () => {
-      expect(() => mergeRegistryValues([{ hallo: 'world' }, []])).toThrow('Register should return same type');
+      expect(() => mergeRegistryValues([{ hallo: 'world' }, []])).toThrow('Register with same name should return the same type');
     });
 
     it('Cannot have undefined', () => {
-      expect(() => mergeRegistryValues([{ hallo: 'world' }, undefined])).toThrow('Register should return same type');
-    });
-  });
-
-  describe('undefined', () => {
-    it('Combines objects', () => {
-      expect(mergeRegistryValues([undefined, undefined])).toEqual(undefined);
-    });
-
-    it('Cannot have array', () => {
-      expect(() => mergeRegistryValues([undefined, []])).toThrow('Register should return same type');
-    });
-
-    it('Cannot have object', () => {
-      expect(() => mergeRegistryValues([undefined, {}])).toThrow('Register should return same type');
+      expect(() => mergeRegistryValues([{ hallo: 'world' }, undefined as any])).toThrow('Register with same name should return the same type');
     });
   });
 });

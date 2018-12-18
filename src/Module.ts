@@ -15,21 +15,19 @@ export interface Module<R extends Registries = {}> {
    *
    * @example
    *
+   *
    *   public registries() {
    *     return {
+   *
+   *       // Register a for an array collection.
    *       consoleCommands: (): ConsoleCommand[] => {
    *         return [this.halloConsoleCommand()];
    *       },
-   *     };
-   *   }
    *
-   *   or
-   *
-   *   public registries() {
-   *     return {
-   *       consoleCommands: (): ConsoleCommand[] => {
+   *       // Register for key->value pairs.
+   *       eventListener: (): {[event: string]: EventListener} => {
    *         return {
-   *            hallo: this.halloConsoleCommand(),
+   *            loginEvent: this.myLoginEventHandler(),
    *         };
    *       },
    *     };
@@ -47,3 +45,5 @@ export type StrippedModule<T extends Module> = T extends { container: any } ? Om
 export type ModuleRegistries<T extends Module<R>, R = {}> = T extends { registries(): R; } ? ReturnType<NonNullable<T['registries']>> : {};
 
 export type ModuleDependency<T extends Module<R>, R = {}> = ModuleRegistries<T, R> & StrippedModule<T>;
+
+export type OptionalModuleDependency<T extends (null | Module<R>), R = {}> = T extends null ? {} : ModuleDependency<NonNullable<T>, R>;

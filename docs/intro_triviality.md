@@ -30,7 +30,7 @@ This gives typescript the option to **strictly type check** if everything is con
 And you the benefits of **code completion** and the option to quickly traverse the service chain.
 ___
 
-Let's put the type checking to the test, we create a nice module that use the 'LogModule'.
+Let's put the type checking to the test, we create a nice module that use the 'LogModule'. We inject the container with multiple Module dependencies```Container<...Modules>```.
 
 #typescript "example/moduleDependency/HalloModule.ts"
 
@@ -63,7 +63,9 @@ Let's create a register for 'console commands'
 
 #typescript "example/registries/ConsoleModule.registerOnly.ts"
 
-Like a module, the 'registries' function returns an object. The key are registry names. The implementation the services that needs to be added to the registry.
+Like a module, the 'registries' function returns an object. The key are registry names. 
+The implementation of the function is returns the services that needs to be added to the registry. We can define the
+registry to multiple modules. In the next examples both modules returns one command service inside the registry function.
  
 #typescript "example/registries/Command/HalloConsoleModule.ts"
 
@@ -84,3 +86,7 @@ Hallo John
 # ./node_modules/.bin/ts-node example/registries/console.ts bye John
 Bye John !!!
 ```
+
+You can also fetch all registries from the container
+
+!["containerRegistries"](./example/moduleDependency/containerRegistries.png)

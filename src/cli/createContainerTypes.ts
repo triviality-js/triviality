@@ -33,9 +33,9 @@ function addArgumentTypes(args: number) {
  */
 function partialContainer(args: number) {
   const indexes = createArrayOf(args);
-  const type = indexes.map((index) => `M${index} = {}`).join(', ');
+  const type = indexes.map((index) => `M${index} = null`).join(', ');
   const container = indexes.map((index) => `C<M${index}>`).join(' & ');
-  process.stdout.write(`export type Container<${type}> = ${container};${os.EOL}`);
+  process.stdout.write(`export type Container<${type}> = Readonly<${container}>;${os.EOL}`);
 }
 
 process.stdout.write(`Member: ${os.EOL}`);
