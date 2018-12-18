@@ -337,7 +337,7 @@ Bye John !!!
 
 You can also fetch all registries from the container
 
-!["containerRegistries"](./example/moduleDependency/containerRegistries.png)
+!["containerRegistries"](./example/registries/containerRegistries.png)
 
 # Thanks
 
