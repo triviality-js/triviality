@@ -1,12 +1,12 @@
 {
   "name": "triviality",
   "private": false,
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Purely typed service container",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "prepublish": "yarn create-docs && yarn test && yarn create-build",
+    "prepublish": "yarn test && jest-coverage-badges && yarn create-docs && yarn create-build",
     "watch": "tsc --watch",
     "test": "npm-run-all --parallel jest-coverage tslint jscpd tsc",
     "jest": "jest",
@@ -40,6 +40,7 @@
   "devDependencies": {
     "@types/jest": "^22.1.0",
     "@types/node": "^9.3.0",
+    "child-process-promise": "^2.2.1",
     "jest": "^23.5.0",
     "jest-coverage-badges": "^1.0.0",
     "jscpd": "^0.6.17",
@@ -56,8 +57,7 @@
     "tslint-config-airbnb": "^5.9.2",
     "tslint-loader": "^3.5.3",
     "tslint-microsoft-contrib": "^5.0.2",
-    "typescript": "^3.2",
-    "child-process-promise": "^2.2.1"
+    "typescript": "^3.2"
   },
   "dependencies": {
     "@types/lodash.memoize": "^4.1.4",

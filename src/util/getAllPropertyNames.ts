@@ -1,14 +1,20 @@
 /**
  * Return all functions/properties including base classes.
  */
-export function getAllPropertyNames(object: any) {
-  const methods = new Set();
+export function getAllPropertyNames(object: any): string[] {
+  const methods: string[] = [];
   let obj = object;
   const plain = {};
   while (obj) {
-    const keys = Reflect.ownKeys(obj);
-    keys.filter((k) => typeof (plain as any)[k] === 'undefined').forEach((k) => methods.add(k));
-    obj = Reflect.getPrototypeOf(obj);
+    const keys = Object.getOwnPropertyNames(obj);
+    keys
+      .forEach((k) => {
+        if (typeof (plain as any)[k] !== 'undefined') {
+          return;
+        }
+        methods.push(k);
+      });
+    obj = Object.getPrototypeOf(obj);
   }
   return methods;
 }

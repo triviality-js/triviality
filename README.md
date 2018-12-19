@@ -7,6 +7,9 @@
 * [Reads](#reads)
 
 
+![Licence](https://img.shields.io/npm/l/triviality.svg) [![Build Status](https://travis-ci.org/epinxteren/triviality.svg?branch=master)](https://travis-ci.org/epinxteren/triviality) [![npm version](https://badge.fury.io/js/triviality.svg)](https://badge.fury.io/js/triviality) ![branches](./coverage/badge-branches.svg)  
+
+
 # Installation
 
 To install the stable version:
