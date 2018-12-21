@@ -1,4 +1,3 @@
-
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 /**
@@ -9,7 +8,7 @@ export type Optional<T> = {
 };
 
 /**
- * Make all properties in T optional
+ * Should not define these properties for this type.
  */
 export type NoDuplicates<T> = {
   [P in keyof T]?: never;

@@ -6,7 +6,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "prepublish": "yarn test && jest-coverage-badges && yarn create-docs && yarn create-build",
+    "prepublish": "yarn test && yarn create-docs && yarn create-build",
     "watch": "tsc --watch",
     "test": "npm-run-all --parallel jest-coverage tslint jscpd tsc",
     "jest": "jest",
@@ -18,7 +18,7 @@
     "jscpd": "jscpd --limit=-1",
     "jest-badges": "yarn jest-coverage && jest-coverage-badges",
     "create-container-types": "ts-node src/cli/createContainerTypes.ts",
-    "create-docs": "node docs/build.js",
+    "create-docs": "ts-node docs/build.ts",
     "create-build": "rm -fr build && yarn tsc --project tsconfig.build.json"
   },
   "repository": {
@@ -58,9 +58,5 @@
     "tslint-loader": "^3.5.3",
     "tslint-microsoft-contrib": "^5.0.2",
     "typescript": "^3.2"
-  },
-  "dependencies": {
-    "@types/lodash.memoize": "^4.1.4",
-    "lodash.memoize": "^4.1.2"
   }
 }

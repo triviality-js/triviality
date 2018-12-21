@@ -1,12 +1,12 @@
-import { Registries } from './Registry';
-import { NoDuplicates, Omit, Optional } from './util/Types';
+import { Registries } from './value/Registry';
+import { Optional } from './util/Types';
 
-export interface Module<R extends Registries = {}> {
+export interface Module<R extends Registries = {}, C = {}> {
 
   toString(): string;
 
   /**
-   * After the hole container is build.
+   * Entry point after the hole container is build. You can start your general module 'application' here.
    */
   setup?(): void | Promise<void>;
 
@@ -34,16 +34,15 @@ export interface Module<R extends Registries = {}> {
    *   }
    */
   registries?(): R;
+
+  /**
+   * The entry hook to override or decorate a service.
+   *
+   *   public serviceOverrides(container: Container<GreetingsModule>): Optional<Container<HelloModule>> {
+   *    return {
+   *      halloService: () => new MyHalloService(container.halloService()),
+   *    };
+   *   }
+   */
+  serviceOverrides?(container: C): Optional<C> | Promise<Optional<C>>;
 }
-
-export type ModuleOptionalRegistries<R> = Module<Optional<R>>;
-
-export type ModuleConstructor<Instance, C> = new (container: C) => Instance & NoDuplicates<C>;
-
-export type StrippedModule<T extends Module> = T extends { container: any } ? Omit<T, 'container' | 'registries' | 'setup'> : Omit<T, 'registries' | 'setup'>;
-
-export type ModuleRegistries<T extends Module<R>, R = {}> = T extends { registries(): R; } ? ReturnType<NonNullable<T['registries']>> : {};
-
-export type ModuleDependency<T extends Module<R>, R = {}> = ModuleRegistries<T, R> & StrippedModule<T>;
-
-export type OptionalModuleDependency<T extends (null | Module<R>), R = {}> = T extends null ? {} : ModuleDependency<NonNullable<T>, R>;

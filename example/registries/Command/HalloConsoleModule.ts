@@ -1,4 +1,4 @@
-import { Module } from '../../../src/index';
+import { Module } from '../../../src';
 import { ConsoleCommand } from '../ConsoleCommand';
 import { HalloConsoleCommand } from './HalloConsoleCommand';
 
