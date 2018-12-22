@@ -2,12 +2,17 @@
 
 * [Installation](#installation)
 * [Triviality](#triviality)
+  * [Modules](#modules)
   * [Registers](#registers)
+  * [Setup](#setup)
+  * [Service overrides & decorators](#service-overrides-&-decorators)
+    * [Override service](#override-service)
+    * [Decorators](#decorators)
 * [Thanks](#thanks)
 * [Reads](#reads)
 
 
-![Licence](https://img.shields.io/npm/l/triviality.svg) [![Build Status](https://travis-ci.org/epinxteren/triviality.svg?branch=master)](https://travis-ci.org/epinxteren/triviality) [![npm version](https://badge.fury.io/js/triviality.svg)](https://badge.fury.io/js/triviality) ![branches](./coverage/badge-branches.svg)  
+![Licence](https://img.shields.io/npm/l/triviality.svg) [![Build Status](https://travis-ci.org/epinxteren/triviality.svg?branch=master)](https://travis-ci.org/epinxteren/triviality) [![npm version](https://badge.fury.io/js/triviality.svg)](https://badge.fury.io/js/triviality) ![coverage](./docs/coverage.svg)  
 
 
 # Installation
@@ -33,6 +38,8 @@ It’s a design pattern aiming to make high-level code reusable,
 by separating the object creation / configuration from usage. **Triviality** highly aims to keep away from your application code. 
 **No magic** injection with tokens, annotations whatsoever. It will use your application code 
 as **strictly typed interface** to assure everything is connected properly. 
+
+## Modules
 
 Triviality by core is split into Modules. A module is defined as a class. Each module has his own services definitions 
 so each module can serve it's unique and there separate logic.
@@ -69,7 +76,8 @@ ContainerFactory
 ```
         
 
-Now we can fetch the 'logger' service from the container and start using it. This service will be a singleton based on the service factory arguments.
+Now we can fetch the 'logger' service from the container and start using it. In the build step of the container function results will be memorized and can be threaded as a 
+singleton based on the service factory arguments.
 
 
 ```typescript
@@ -113,7 +121,7 @@ ContainerFactory
         
 ___
 
-The container service function types are directly copied from the Modules.
+The container service function types are inherited from the Modules.
 This gives typescript the option to **strictly type check** if everything is connected properly. 
 And you the benefits of **code completion** and the option to quickly traverse the service chain.
 ___
@@ -185,10 +193,11 @@ ContainerFactory
 ```
         
 
-```
-# ./node_modules/.bin/ts-node example/moduleDependency/HalloModuleContainer.ts
+```bash
+./node_modules/.bin/ts-node example/moduleDependency/HalloModuleContainer.ts 
 Hallo John
 ```
+        
 
 ## Registers
 
@@ -215,7 +224,7 @@ export class ConsoleModule implements Module {
 ```
         
 
-Like a module, the 'registries' function returns an object. The key are registry names. 
+Like a module, the 'registries' function returns an object. The object property name is the registry names. 
 The implementation of the function is returns the services that needs to be added to the registry. We can define the
 registry to multiple modules. In the next examples both modules returns one command service inside the registry function.
  
@@ -331,16 +340,227 @@ ContainerFactory
 ```
         
 
+
 ```bash
-# ./node_modules/.bin/ts-node example/registries/console.ts hallo John
-Hallo John
-# ./node_modules/.bin/ts-node example/registries/console.ts bye John
-Bye John !!!
+./node_modules/.bin/ts-node example/registries/console.ts hallo john
+Hallo john
 ```
+        
+
+```bash
+./node_modules/.bin/ts-node example/registries/console.ts bye john
+Bye john !!!
+```
+        
 
 You can also fetch all registries from the container
 
 !["containerRegistries"](./example/registries/containerRegistries.png)
+
+## Setup
+
+The build step returns a single promise, Each module can have it's own specific setup
+task. The module can check if everything is configured properly or connect to external service like a database.
+
+
+```typescript
+import { Module } from 'triviality';
+import { Database } from './Database';
+
+export class DatabaseModule implements Module {
+
+  public setup() {
+    if (!this.database().isConnected()) {
+      throw new Error('Database is not connected!');
+    }
+  }
+
+  public database(): Database {
+    return new Database();
+  }
+
+}
+```
+        
+
+Add a catch function to gracefully handle errors
+
+
+```typescript
+import { ContainerFactory } from 'triviality';
+import { DatabaseModule } from './DatabaseModule';
+
+ContainerFactory
+  .create()
+  .add(DatabaseModule)
+  .build()
+  .then((container) => {
+    container.database().someFancyQuery();
+  })
+  .catch((error) => {
+    process.stdout.write(`${error}
+`);
+  });
+```
+        
+
+
+```bash
+./node_modules/.bin/ts-node example/setup/bootstrap.ts 
+Error: Database is not connected!
+```
+        
+
+## Service overrides & decorators
+
+If you use a external module, maybe you want to override some services. For example we start with the following greetings module:
+
+
+```typescript
+import { Module } from 'triviality';
+import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
+import { CasualGreetingService } from './services/CasualGreetingService';
+
+export class GreetingsModule implements Module {
+
+  public greetingService(): GreetingsServiceInterface {
+    return new CasualGreetingService();
+  }
+
+}
+```
+        
+
+When we run 
+
+
+```typescript
+import { ContainerFactory } from 'triviality';
+import { GreetingsModule } from './GreetingsModule';
+import { LogModule } from '../module/LogModule';
+
+ContainerFactory
+  .create()
+  .add(LogModule)
+  .add(GreetingsModule)
+  .build()
+  .then((container) => {
+    const logger = container.logger();
+    const halloService = container.greetingService();
+    logger.info(halloService.greet('Triviality'));
+  });
+```
+        
+
+We get:
+
+
+```bash
+./node_modules/.bin/ts-node example/overrides/bootstrapGreetingsModule.ts 
+Hallo Triviality
+```
+        
+
+### Override service
+
+If we want to use a different we can override the 'greetingService'
+
+
+```typescript
+import { Container, Module, Optional } from 'triviality';
+import { GreetingsModule } from './GreetingsModule';
+import { FormalGreetingsService } from './services/FormalGreetingsService';
+import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
+
+export class FormalGreetingsModule implements Module {
+  public serviceOverrides(): Optional<Container<GreetingsModule>> {
+    return {
+      greetingService: () => this.formalGreetingsService(),
+    };
+  }
+
+  public formalGreetingsService(): GreetingsServiceInterface {
+    return new FormalGreetingsService();
+  }
+
+}
+```
+        
+
+```typescript
+import { ContainerFactory } from 'triviality';
+import { GreetingsModule } from './GreetingsModule';
+import { LogModule } from '../module/LogModule';
+
+ContainerFactory
+  .create()
+  .add(LogModule)
+  .add(GreetingsModule)
+  .build()
+  .then((container) => {
+    const logger = container.logger();
+    const halloService = container.greetingService();
+    logger.info(halloService.greet('Triviality'));
+  });
+```
+        
+
+Now the original 'greetingService' service is overridden and we get 
+
+
+```bash
+./node_modules/.bin/ts-node example/overrides/bootstrapFormalGreetingsModule.ts 
+Pleased to meet you Triviality
+```
+        
+
+### Decorators
+
+We can still use the original service from the container. Let's be less formal by screaming the sentence: 
+
+
+```typescript
+import { Container, Module, Optional } from 'triviality';
+import { ScreamGreetingsService } from './services/ScreamGreetingsService';
+import { GreetingsModule } from './GreetingsModule';
+
+export class ScreamGreetingsModule implements Module {
+  public serviceOverrides(container: Container<GreetingsModule>): Optional<Container<GreetingsModule>> {
+    return {
+      greetingService: () => new ScreamGreetingsService(container.greetingService()),
+    };
+  }
+
+}
+```
+        
+
+```typescript
+import { ContainerFactory } from 'triviality';
+import { GreetingsModule } from './GreetingsModule';
+import { LogModule } from '../module/LogModule';
+
+ContainerFactory
+  .create()
+  .add(LogModule)
+  .add(GreetingsModule)
+  .build()
+  .then((container) => {
+    const logger = container.logger();
+    const halloService = container.greetingService();
+    logger.info(halloService.greet('Triviality'));
+  });
+```
+        
+
+Now the original 'greetingService' service is overridden and we get:
+
+
+```bash
+./node_modules/.bin/ts-node example/overrides/bootstrapScreamGreetingsModule.ts 
+Hallo Triviality
+```
+        
 
 # Thanks
 

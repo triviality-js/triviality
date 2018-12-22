@@ -137,5 +137,65 @@ describe('TypeValidation', async () => {
         .toMatch(/Types of property 'someRegister' are incompatible./);
     });
 
+    it.skip('Cannot add extra services with serviceOverrides', async () => {
+      // language=TypeScript
+      return expect(compileTs(__dirname, `
+        import { ContainerFactory } from '../ContainerFactory';
+        import { Module } from '../Module';
+
+        class MyModule implements Module {
+          public serviceOverrides() {
+            return {
+              someExtraService: () => {
+                return {};
+              },
+            };
+          }
+
+        }
+
+        ContainerFactory
+          .create()
+          .add(MyModule)
+          .build();
+      `))
+        .rejects
+        .toMatch(/someExtraService./);
+    });
+
+    it('serviceOverrides should match service type', async () => {
+      // language=TypeScript
+      return expect(compileTs(__dirname, `
+        import { ContainerFactory } from '../ContainerFactory';
+        import { Module } from '../Module';
+
+        class MyHalloModule implements Module {
+          public halloService() {
+            return { hallo: () => 'hallo', };
+          }
+        }
+
+
+        class MyOverrideModule implements Module {
+          public serviceOverrides() {
+            return {
+              halloService: () => {
+                return {};
+              },
+            };
+          }
+
+        }
+
+        ContainerFactory
+          .create()
+          .add(MyHalloModule)
+          .add(MyOverrideModule)
+          .build();
+      `))
+        .rejects
+        .toMatch('Property \'hallo\' is missing in type \'{}\' but required in type \'{ hallo: () => string; }\'.');
+    });
+
   });
 });
