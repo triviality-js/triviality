@@ -63,8 +63,8 @@ Let's create a register for 'console commands'
 
 ######typescript "example/registries/ConsoleModule.registerOnly.ts"
 
-Like a module, the 'registries' function returns an object. The object property name is the registry names. 
-The implementation of the function is returns the services that needs to be added to the registry. We can define the
+Like a module, the 'registries' return value is an object with functions. The object property name represents the registry name. 
+The implementation returns the services that needs to be added to the registry. It's possible to add
 registry to multiple modules. In the next examples both modules returns one command service inside the registry function.
  
 ######typescript "example/registries/Command/HalloConsoleModule.ts"
