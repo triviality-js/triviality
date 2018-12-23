@@ -281,13 +281,12 @@ During the container build phase, the registries will be combined.
 import { Module } from 'triviality';
 import { ConsoleCommand } from './ConsoleCommand';
 import { ConsoleService } from './ConsoleService';
-import { ProcessInput } from './ProcessInput';
-import { ProcessOutput } from './ProcessOutput';
-import { ConsoleInput } from './ConsoleInput';
-import { ConsoleOutput } from './ConsoleOutput';
 
 export class ConsoleModule implements Module {
 
+  /**
+   * The strict interface, all other modules needs to follow.
+   */
   public registries() {
     return {
       consoleCommands: (): ConsoleCommand[] => {
@@ -296,20 +295,13 @@ export class ConsoleModule implements Module {
     };
   }
 
+  /**
+   * Triviality will combine the result consoleCommands and return it as single array.
+   */
   public consoleService() {
     return new ConsoleService(
       this.registries().consoleCommands(),
-      this.processInput(),
-      this.processOutput(),
     );
-  }
-
-  public processInput(): ConsoleInput {
-    return new ProcessInput();
-  }
-
-  public processOutput(): ConsoleOutput {
-    return new ProcessOutput();
   }
 
 }
