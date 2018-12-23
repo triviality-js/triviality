@@ -113,19 +113,22 @@ We get:
 
 ### Override service !heading
 
-If we want to use a different we can override the 'greetingService'
+If we want to use a different way to greet we need to override the 'greetingService'
 
 ######typescript "example/overrides/FormalGreetingsModule.ts"
 ######typescript "example/overrides/bootstrapGreetingsModule.ts"
 
-Now the original 'greetingService' service is overridden and we get 
+Now the original 'greetingService' service is overridden for the hole application. If we now run the example we get the following result: 
 
 ######ts-node "example/overrides/bootstrapFormalGreetingsModule.ts"
 
 ### Decorators !heading
 
-We can still use the original service from the container. Let's be less formal by screaming the sentence: 
+If we still we to use the original service from the container. We can fetch the original service from the 'serviceOverrides' container argument.
+ 
+Let's be less formal by screaming the sentence: 
 
+######typescript "example/overrides/services/ScreamGreetingsService.ts"
 ######typescript "example/overrides/ScreamGreetingsModule.ts"
 ######typescript "example/overrides/bootstrapScreamGreetingsModule.ts"
 

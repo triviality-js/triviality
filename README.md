@@ -452,7 +452,7 @@ Hallo Triviality
 
 ### Override service
 
-If we want to use a different we can override the 'greetingService'
+If we want to use a different way to greet we need to override the 'greetingService'
 
 
 ```typescript
@@ -494,7 +494,7 @@ ContainerFactory
 ```
         
 
-Now the original 'greetingService' service is overridden and we get 
+Now the original 'greetingService' service is overridden for the hole application. If we now run the example we get the following result: 
 
 
 ```bash
@@ -505,8 +505,27 @@ Pleased to meet you Triviality
 
 ### Decorators
 
-We can still use the original service from the container. Let's be less formal by screaming the sentence: 
+If we still we to use the original service from the container. We can fetch the original service from the 'serviceOverrides' container argument.
+ 
+Let's be less formal by screaming the sentence: 
 
+
+```typescript
+import { GreetingsServiceInterface } from './GreetingsServiceInterface';
+
+export class ScreamGreetingsService implements GreetingsServiceInterface {
+
+  constructor(private speakService: GreetingsServiceInterface) {
+
+  }
+
+  public greet(name: string): string {
+    return `${this.speakService.greet(name).toUpperCase()}!!!!!!`;
+  }
+
+}
+```
+        
 
 ```typescript
 import { Container, Module, Optional } from 'triviality';
@@ -528,11 +547,13 @@ export class ScreamGreetingsModule implements Module {
 import { ContainerFactory } from 'triviality';
 import { GreetingsModule } from './GreetingsModule';
 import { LogModule } from '../module/LogModule';
+import { ScreamGreetingsModule } from './ScreamGreetingsModule';
 
 ContainerFactory
   .create()
   .add(LogModule)
   .add(GreetingsModule)
+  .add(ScreamGreetingsModule)
   .build()
   .then((container) => {
     const logger = container.logger();
@@ -547,7 +568,7 @@ Now the original 'greetingService' service is overridden and we get:
 
 ```bash
 ./node_modules/.bin/ts-node example/overrides/bootstrapScreamGreetingsModule.ts 
-Hallo Triviality
+HALLO TRIVIALITY!!!!!!
 ```
         
 
