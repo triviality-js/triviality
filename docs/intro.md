@@ -5,6 +5,8 @@ It’s a design pattern aiming to make high-level code reusable,
 by separating the object creation/configuration from usage. **Triviality** highly aims to keep away from your application code. 
 **No magic** injection with tokens, annotations whatsoever. It will use your application code as**strictly typed interface** to assure everything is connected properly. 
 
+Supports on *Web* and *Node*.
+
 ## Modules !heading
 
 Triviality by its core is split into Modules. A module is defined as a class. Each module has his own services definitions 
@@ -111,18 +113,18 @@ We get:
 
 ######ts-node "example/overrides/bootstrapGreetingsModule.ts"
 
-### Override service !heading
+### Overriding a service !heading
 
 If we want to use a different way to greet we need to override the 'greetingService'
 
 ######typescript "example/overrides/FormalGreetingsModule.ts"
-######typescript "example/overrides/bootstrapGreetingsModule.ts"
+######typescript "example/overrides/bootstrapFormalGreetingsModule.ts"
 
 Now the original 'greetingService' service is overridden for the hole application. If we now run the example we get the following result: 
 
 ######ts-node "example/overrides/bootstrapFormalGreetingsModule.ts"
 
-### Decorators !heading
+### Decorating a service !heading
 
 If we still we to use the original service from the container. We can fetch the original service from the 'serviceOverrides' container argument.
  

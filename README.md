@@ -6,14 +6,14 @@
   * [Registers](#registers)
   * [Setup](#setup)
   * [Service overrides & decorators](#service-overrides-&-decorators)
-    * [Override service](#override-service)
-    * [Decorators](#decorators)
+    * [Overriding a service](#overriding-a-service)
+    * [Decorating a service](#decorating-a-service)
+* [Modules](#modules)
 * [Thanks](#thanks)
 * [Reads](#reads)
 
 
-![Licence](https://img.shields.io/npm/l/triviality.svg) [![Build Status](https://travis-ci.org/epinxteren/triviality.svg?branch=master)](https://travis-ci.org/epinxteren/triviality) [![npm version](https://badge.fury.io/js/triviality.svg)](https://badge.fury.io/js/triviality) ![coverage](./docs/coverage.svg)  
-
+![Licence](https://img.shields.io/npm/l/triviality.svg) [![Build Status](https://travis-ci.org/epinxteren/triviality.svg?branch=master)](https://travis-ci.org/epinxteren/triviality) [![npm version](https://badge.fury.io/js/triviality.svg)](https://badge.fury.io/js/triviality) ![coverage](https://github.com/epinxteren/triviality/raw/master/docs/coverage.svg?sanitize=true)  
 
 # Installation
 
@@ -37,6 +37,8 @@ Dependency Injection is all about code reusability.
 It’s a design pattern aiming to make high-level code reusable, 
 by separating the object creation/configuration from usage. **Triviality** highly aims to keep away from your application code. 
 **No magic** injection with tokens, annotations whatsoever. It will use your application code as**strictly typed interface** to assure everything is connected properly. 
+
+Supports on *Web* and *Node*.
 
 ## Modules
 
@@ -450,7 +452,7 @@ Hallo Triviality
 ```
         
 
-### Override service
+### Overriding a service
 
 If we want to use a different way to greet we need to override the 'greetingService'
 
@@ -480,11 +482,13 @@ export class FormalGreetingsModule implements Module {
 import { ContainerFactory } from 'triviality';
 import { GreetingsModule } from './GreetingsModule';
 import { LogModule } from '../module/LogModule';
+import { FormalGreetingsModule } from './FormalGreetingsModule';
 
 ContainerFactory
   .create()
   .add(LogModule)
   .add(GreetingsModule)
+  .add(FormalGreetingsModule)
   .build()
   .then((container) => {
     const logger = container.logger();
@@ -503,7 +507,7 @@ Pleased to meet you Triviality
 ```
         
 
-### Decorators
+### Decorating a service
 
 If we still we to use the original service from the container. We can fetch the original service from the 'serviceOverrides' container argument.
  
@@ -572,6 +576,13 @@ HALLO TRIVIALITY!!!!!!
 ```
         
 
+# Modules
+
+For nodejs there is commands:
+
+- npm: [Commander as a Triviality Module](https://www.npmjs.com/package/triviality-commander) github: [github](https://github.com/epinxteren/triviality-commander)    
+- npm: [Typescript loggers with an interface that support composition](https://www.npmjs.com/package/triviality-logger) github: [github](https://github.com/epinxteren/triviality-logger)
+ 
 # Thanks
 
 Special thanks to:

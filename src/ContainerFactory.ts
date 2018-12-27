@@ -45,9 +45,9 @@ export class ContainerFactory<C /* Container */, R /* Registry */> {
 
   public async build(): Promise<C & { registries: () => R }> {
     this.assertNotYetBuild();
+    this.isBuild = true;
     this.combineServices();
     this.combineRegistries();
-    this.isBuild = true;
     await this.overrideServices();
     this.container.freezeContainer();
     await this.setup();
