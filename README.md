@@ -9,6 +9,7 @@
     * [Overriding a service](#overriding-a-service)
     * [Decorating a service](#decorating-a-service)
 * [Modules](#modules)
+* [Facts](#facts)
 * [Thanks](#thanks)
 * [Reads](#reads)
 
@@ -583,6 +584,13 @@ For nodejs there is commands:
 - npm: [Commander as a Triviality Module](https://www.npmjs.com/package/triviality-commander) github: [github](https://github.com/epinxteren/triviality-commander)    
 - npm: [Typescript loggers with an interface that support composition](https://www.npmjs.com/package/triviality-logger) github: [github](https://github.com/epinxteren/triviality-logger)
  
+# Facts
+
+* Supported both for *Web* and *Node*.
+* Supported for [es5](https://caniuse.com/#search=es5)
+* All module functions (registers,overrides,setup) can be asynchronous (Promises based).
+ 
+
 # Thanks
 
 Special thanks to:
