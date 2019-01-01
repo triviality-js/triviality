@@ -34,8 +34,8 @@ export class ModuleDependencyCollection {
     return new ModuleDependencyCollection(this.modules.filter(filter));
   }
 
-  public getRegistries(): { [name: string]: Registry } {
-    const combined: { [name: string]: Registry[] } = this.getModuleRegistries();
+  public async getRegistries(): Promise<{ [name: string]: Registry }> {
+    const combined: { [name: string]: Registry[] } = await this.getModuleRegistries();
     const registries: { [name: string]: Registry } = {};
     getAllPropertyNames(combined).forEach((register) => {
       const registerCached = memorize(() => mergeRegistryValues(combined[register].map((reg) => reg())));
@@ -44,10 +44,10 @@ export class ModuleDependencyCollection {
     return registries;
   }
 
-  private getModuleRegistries(): { [name: string]: Registry[] } {
+  private async getModuleRegistries(): Promise<{ [name: string]: Registry[] }> {
     let combined: { [name: string]: Registry[] } = {};
     for (const module of this.withRegistries().toArray()) {
-      combined = mergeRegistries(combined, module.getRegistries());
+      combined = mergeRegistries(combined, await module.getRegistries());
     }
     return combined;
   }

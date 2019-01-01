@@ -13,3 +13,5 @@ export type Optional<T> = {
 export type NoDuplicates<T> = {
   [P in keyof T]?: never;
 };
+
+export type PromiseType<T> = T extends Promise<infer U> ? U : T extends (...args: any[]) => Promise<infer J> ? J : T;

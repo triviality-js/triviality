@@ -33,7 +33,7 @@ export interface Module<R extends Registries = {}, C = {}> {
    *     };
    *   }
    */
-  registries?(): R;
+  registries?(): R | Promise<R>;
 
   /**
    * The entry hook to override or decorate a service.

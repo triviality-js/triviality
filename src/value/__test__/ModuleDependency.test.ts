@@ -21,9 +21,9 @@ describe('getServices', () => {
   });
 });
 
-it('Can fetch empty register from module without registers', () => {
+it('Can fetch empty register from module without registers', async () => {
   const dependency = new ModuleDependency(new MyModule());
-  expect(dependency.getRegistries()).toEqual({});
+  expect(await dependency.getRegistries()).toEqual({});
 });
 
 describe('defineProperty', () => {

@@ -34,7 +34,7 @@ export class ModuleDependency {
     return !!this.module.registries;
   }
 
-  public getRegistries(): RegistriesMap {
+  public async getRegistries(): Promise<RegistriesMap> {
     if (!this.module.registries) {
       return {};
     }

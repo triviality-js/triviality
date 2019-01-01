@@ -3,5 +3,6 @@
 #include "docs/install.md"
 #include "docs/intro.md"
 #include "docs/modules.md"
+#include "docs/facts.md"
 #include "docs/thanks.md"
 #include "docs/reads.md"

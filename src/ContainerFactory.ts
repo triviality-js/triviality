@@ -47,7 +47,7 @@ export class ContainerFactory<C /* Container */, R /* Registry */> {
     this.assertNotYetBuild();
     this.isBuild = true;
     this.combineServices();
-    this.combineRegistries();
+    await this.combineRegistries();
     await this.overrideServices();
     this.container.freezeContainer();
     await this.setup();
@@ -64,8 +64,8 @@ export class ContainerFactory<C /* Container */, R /* Registry */> {
     }
   }
 
-  private combineRegistries() {
-    const registries = this.modules.getRegistries();
+  private async combineRegistries() {
+    const registries = await this.modules.getRegistries();
     this.container.defineLockedService('registries', () => registries);
     for (const module of this.modules.withRegistries().toArray()) {
       module.defineProperty(this.container, 'registries' as any);

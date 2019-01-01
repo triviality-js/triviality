@@ -113,7 +113,7 @@ describe('ContainerFactory', () => {
     expect(container.registries().personListeners().length).toEqual(2);
   });
 
-  it('registries is locked and cannot be changed', async () => {
+  it('registries are locked and cannot be changed', async () => {
     const container = await ContainerFactory
       .create()
       .add(class Test implements Module {
@@ -129,5 +129,74 @@ describe('ContainerFactory', () => {
     expect(() => {
       ((container.registries().testReg) as any) = 1;
     }).toThrow('Container is locked and cannot be altered.');
+  });
+
+  it('Modules can add registry to the existing ones', async () => {
+
+    class PersonModule implements Module {
+      public registries() {
+        return {
+          persons: (): string[] => {
+            return ['John', 'Jane'];
+          },
+        };
+      }
+    }
+
+    class ShopsModule implements Module {
+      public registries() {
+        return {
+          shops: (): string[] => {
+            return ['KFC'];
+          },
+        };
+      }
+    }
+
+    class MyModule implements Module {
+      public registries() {
+        return {
+          persons: (): string[] => {
+            return ['Superman'];
+          },
+          shops: (): string[] => {
+            return ['Mac'];
+          },
+        };
+      }
+    }
+
+    const container = await ContainerFactory
+      .create()
+      .add(PersonModule)
+      .add(ShopsModule)
+      .add(MyModule)
+      .build();
+
+    expect(container.registries().shops()).toEqual(['KFC', 'Mac']);
+    expect(container.registries().persons()).toEqual(['John', 'Jane', 'Superman']);
+  });
+
+  it('Modules can have async registries', async () => {
+    class MyModule implements Module {
+      public async registries() {
+        return {
+          persons: (): string[] => {
+            return ['Superman'];
+          },
+          shops: (): string[] => {
+            return ['Mac'];
+          },
+        };
+      }
+    }
+
+    const container = await ContainerFactory
+      .create()
+      .add(MyModule)
+      .build();
+
+    expect(container.registries().shops()).toEqual(['Mac']);
+    expect(container.registries().persons()).toEqual(['Superman']);
   });
 });
