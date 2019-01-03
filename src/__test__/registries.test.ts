@@ -77,6 +77,7 @@ describe('ContainerFactory', () => {
         return numbers.reduce((i: number, n: number) => i * n, 1);
       }
     }
+
     const serviceContainer = await ContainerFactory
       .create()
       .add(Module1)
@@ -239,5 +240,31 @@ describe('ContainerFactory', () => {
 
     expect(container.registries().shops()).toEqual(['Mac']);
     expect(container.registries().persons()).toEqual(['Superman']);
+  });
+
+  it('Async registries can fetch async services', async () => {
+    const asyncService = jest.fn().mockResolvedValue({ hallo: () => 'hallo' });
+
+    class MyModule implements Module {
+      public async registries() {
+        const halloService = await this.halloService();
+        return {
+          listeners: (): Array<{ hallo: () => string }> => {
+            return [halloService];
+          },
+        };
+      }
+
+      public halloService(): Promise<{ hallo: () => string }> {
+        return asyncService();
+      }
+    }
+
+    const container = await ContainerFactory
+      .create()
+      .add(MyModule)
+      .build();
+
+    expect(container.registries().listeners()[0].hallo()).toEqual('hallo');
   });
 });

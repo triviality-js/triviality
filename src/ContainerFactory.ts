@@ -48,8 +48,9 @@ export class ContainerFactory<C /* Container */, R /* Registry */> {
     this.assertNotYetBuild();
     this.isBuild = true;
     this.combineServices();
-    await this.combineRegistries();
     await this.overrideServices();
+    this.container.freezeContainer();
+    await this.combineRegistries();
     this.container.freezeContainer();
     await this.setup();
     return this.container.getReference() as any;
