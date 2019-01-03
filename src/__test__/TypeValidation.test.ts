@@ -17,7 +17,7 @@ describe('TypeValidation', async () => {
           });
       `))
         .rejects
-        .toMatch('someNonExistingService\' does not exist on type \'{ registries: () => {}; }\'');
+        .toMatch("error TS2339: Property 'someNonExistingService' does not exist on type 'HasRegistries<{}>");
     });
 
     it('Should force the requirements of a Module', async () => {
@@ -50,7 +50,7 @@ describe('TypeValidation', async () => {
           .build();
       `))
         .rejects
-        .toMatch('Property \'userService\' is missing in type \'{}\' but required in type \'Readonly<Pick<Module1, "userService">>\'');
+        .toMatch("Property 'userService' is missing in type");
     });
 
     it('The build container should have the correct service declarations', async () => {
@@ -61,7 +61,7 @@ describe('TypeValidation', async () => {
 
         class Module1 implements Module {
           public halloService() {
-            return { hallo: () => 'hallo', };
+            return { hallo: () => 'hallo' };
           }
         }
 

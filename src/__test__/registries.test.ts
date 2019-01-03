@@ -1,5 +1,6 @@
 import { Module } from '../Module';
 import { ContainerFactory } from '../ContainerFactory';
+import { Container } from '../Container';
 
 describe('ContainerFactory', () => {
   it('A module can define a register', async () => {
@@ -44,6 +45,42 @@ describe('ContainerFactory', () => {
     const serviceContainer = await ContainerFactory
       .create()
       .add(Module1)
+      .build();
+    expect(serviceContainer.sum()).toEqual(7);
+    expect(serviceContainer.multiply()).toEqual(8);
+  });
+
+  it('A module can fetch the registers from the container', async () => {
+    class Module1 implements Module {
+      public registries() {
+        return {
+          moduleVersions: (): number[] => {
+            return [1, 2, 4];
+          },
+        };
+      }
+    }
+
+    class Module2 implements Module {
+
+      constructor(private container: Container<Module1>) {
+
+      }
+
+      public sum(): number {
+        const numbers = this.container.registries().moduleVersions();
+        return numbers.reduce((i: number, n: number) => i + n, 0);
+      }
+
+      public multiply(): number {
+        const numbers = this.container.registries().moduleVersions();
+        return numbers.reduce((i: number, n: number) => i * n, 1);
+      }
+    }
+    const serviceContainer = await ContainerFactory
+      .create()
+      .add(Module1)
+      .add(Module2)
       .build();
     expect(serviceContainer.sum()).toEqual(7);
     expect(serviceContainer.multiply()).toEqual(8);
@@ -166,11 +203,15 @@ describe('ContainerFactory', () => {
       }
     }
 
+    class EmptyModule implements Module {
+    }
+
     const container = await ContainerFactory
       .create()
       .add(PersonModule)
       .add(ShopsModule)
       .add(MyModule)
+      .add(EmptyModule)
       .build();
 
     expect(container.registries().shops()).toEqual(['KFC', 'Mac']);

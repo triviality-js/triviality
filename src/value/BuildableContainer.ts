@@ -1,9 +1,9 @@
 import { ContainerError } from '../ContainerError';
 import { getAllPropertyValues } from '../util/getAllPropertyNames';
-import { ModuleDependency } from './ModuleTypes';
 import { OverrideableReferenceContainer } from './OverrideableReferenceContainer';
 import { Service, ServiceName } from './Service';
 import { memorize } from '../util/memorize';
+import { ModuleDependency } from './ModuleDependency';
 
 export class BuildableContainer<C> {
   /**
@@ -15,10 +15,10 @@ export class BuildableContainer<C> {
     this.defineLockedService('container', container as any);
   }
 
-  public defineLockedModuleService(dependency: ModuleDependency<any, any>, name: ServiceName, service: Service) {
+  public defineLockedModuleService(dependency: ModuleDependency, name: ServiceName, service: Service) {
     if (typeof service === 'function') {
       this.defineLockedService(name, memorize(service.bind(this.container)));
-      dependency.defineProperty(this, name);
+      dependency.defineProperty(this, name as any);
     } else {
       this.defineLockedService(name, service);
     }

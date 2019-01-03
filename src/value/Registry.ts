@@ -1,13 +1,20 @@
 import { ContainerError } from '../ContainerError';
 
-export type RegistryValues = any[] | { [key: string]: any };
-export type Registry = () => RegistryValues;
-
+/**
+ * Marker interface instead of RegistriesMap, without the registry index.
+ */
 export interface Registries {
 }
 
+export type RegistryValues = any[] | { [key: string]: any };
+export type Registry = () => RegistryValues;
+
 export interface RegistriesMap {
   [registry: string]: Registry;
+}
+
+export interface HasRegistries<R extends Registries> {
+  registries(): R;
 }
 
 export function mergeRegistries(combined: { [name: string]: Registry[] }, registries: RegistriesMap): { [name: string]: Registry[] } {

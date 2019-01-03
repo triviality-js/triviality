@@ -50,10 +50,11 @@ so each module can serve it's unique and there separate logic.
 ```typescript
 import { Module } from 'triviality';
 import { LoggerInterface } from './LoggerInterface';
+import { ConsoleLogger } from './ConsoleLogger';
 
 export class LogModule implements Module {
   public logger(): LoggerInterface {
-    return console;
+    return new ConsoleLogger();
   }
 }
 ```
@@ -588,8 +589,8 @@ For nodejs there is commands:
 
 * Supported both for *Web* and *Node*.
 * Supported for [es5](https://caniuse.com/#search=es5)
-* All module functions (registers,overrides,setup) can be asynchronous (Promises based).
- 
+* All module functions (registers, service overrides, modules setups) can be asynchronous (Promises based).
+* Support for Module circular dependencies.
 
 # Thanks
 

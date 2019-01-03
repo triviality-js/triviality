@@ -1,7 +1,7 @@
-import { Registries } from './value/Registry';
+import { HasRegistries, Registries } from './value/Registry';
 import { Optional } from './util/Types';
 
-export interface Module<R extends Registries = {}, C = {}> {
+export interface Module<C = {}, R extends Registries = {}> {
 
   toString(): string;
 
@@ -33,7 +33,7 @@ export interface Module<R extends Registries = {}, C = {}> {
    *     };
    *   }
    */
-  registries?(): R | Promise<R>;
+  registries?(): Optional<R> | Promise<Optional<R>>;
 
   /**
    * The entry hook to override or decorate a service.
@@ -44,5 +44,5 @@ export interface Module<R extends Registries = {}, C = {}> {
    *    };
    *   }
    */
-  serviceOverrides?(container: C): Optional<C> | Promise<Optional<C>>;
+  serviceOverrides?(container: Readonly<C & HasRegistries<Registries>>): Optional<C> | Promise<Optional<C>>;
 }
