@@ -1,7 +1,9 @@
 {
   "extends": [
     "tslint:recommended",
-    "tslint-config-airbnb"
+    "tslint-immutable",
+    "tslint-config-airbnb",
+    "tslint-react"
   ],
   "jsRules": {
     "object-literal-sort-keys": false
@@ -28,7 +30,8 @@
     "cyclomatic-complexity": [
       true,
       12
-    ]
+    ],
+    "jsx-boolean-value": false
   },
   "rulesDirectory": []
 }

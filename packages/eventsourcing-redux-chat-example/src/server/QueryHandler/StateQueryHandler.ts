@@ -5,7 +5,7 @@ import { Identity } from "ts-eventsourcing/ValueObject/Identity";
 import { ActionRepositoryInterface } from "eventsourcing-redux-bridge/ReadModel/ActionRepositoryInterface";
 import { QueryState } from "../Query/QueryState";
 import { QueryConstructor } from "ts-eventsourcing/QueryHandling/Query";
-import { Metadata } from "ts-eventsourcing/Metadata";
+import {HandleQuery} from "ts-eventsourcing/QueryHandling/HandleQuery";
 
 export function createStateQueryHandler<T extends QueryState<Id>, S, Id extends Identity = Identity>(
   queryClass: QueryConstructor<T>,
@@ -13,6 +13,7 @@ export function createStateQueryHandler<T extends QueryState<Id>, S, Id extends 
   playheadLimit = 1000
 ) {
   class Handler implements CommandHandler {
+    @HandleQuery(queryClass)
     public async execute(query: T) {
       const model = await repository.get(query.id);
       const playhead = Math.abs(query.playhead);
@@ -27,14 +28,5 @@ export function createStateQueryHandler<T extends QueryState<Id>, S, Id extends 
       return response;
     }
   }
-  // TODO: add option to add query classes to the handler functionality.
-  const QUERY_HANDLERS = Symbol.for('query_handlers');
-  let handlers = Metadata.getMetadata(QUERY_HANDLERS, Handler);
-  handlers = handlers ? handlers : [];
-  handlers.push({
-    functionName: 'execute',
-    Query: queryClass,
-  });
-  Metadata.defineMetadata(QUERY_HANDLERS, handlers, Handler);
   return new Handler();
 }

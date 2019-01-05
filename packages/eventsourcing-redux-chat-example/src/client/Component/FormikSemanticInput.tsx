@@ -17,7 +17,7 @@ const DisplayError = (error: string | undefined, touched: boolean | undefined) =
 
 export function FormikSemanticInput(props: InputProps & { name: string, formikProps: FormikProps<any> }) {
   const name = props.name;
-  const error: string | undefined = props.errors[name];
+  const error: string = props.formikProps.errors[name] as any;
   const formikProps = props.formikProps;
   return (
     <FormField>
@@ -31,7 +31,7 @@ export function FormikSemanticInput(props: InputProps & { name: string, formikPr
         error={!!error}
         {..._.omit(props, ['formikProps'])}
       />
-      {DisplayError(error, props.touched[name])}
+      {DisplayError(error, !!props.formikProps.touched[name])}
     </FormField>
   );
 };

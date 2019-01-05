@@ -1,18 +1,14 @@
-import { AbstractLogger } from 'ts-eventsourcing/Logger/AbstractLogger';
-import { LoggerInterface, LogLevel } from 'ts-eventsourcing/Logger/LoggerInterface';
 import { Socket } from 'socket.io';
+import { LoggerInterface } from 'triviality-logger/LoggerInterface';
+import { PrefixLogger } from 'triviality-logger/PrefixLogger';
 
-export class ClientLogger extends AbstractLogger {
+export class ClientLogger extends PrefixLogger {
 
-  public static create(logger: LoggerInterface, client: Socket) {
-    return new this(logger, client);
-  }
+    public static create(logger: LoggerInterface, client: Socket) {
+        return new this(logger, client);
+    }
 
-  constructor(private logger: LoggerInterface, private client: Socket) {
-    super();
-  }
-
-  public log(type: LogLevel, ...message: any[]): void {
-    this.logger.log(type, ...[['Client', this.client.id, this.client.handshake.address, ':'].join(' '), ...message])
-  }
+    constructor(logger: LoggerInterface, client: Socket) {
+        super(logger, ['Client', client.id, client.handshake.address, ':'].join(' '));
+    }
 }
