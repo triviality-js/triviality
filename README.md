@@ -65,11 +65,10 @@ we need to build it:
 
 
 ```typescript
-import { ContainerFactory } from 'triviality';
+import { triviality } from 'triviality';
 import { LogModule } from './LogModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(LogModule)
   .build()
   .then((container) => {
@@ -106,11 +105,10 @@ The logger service function and the 'prefixedLogger' functions will always retur
 
 
 ```typescript
-import { ContainerFactory } from 'triviality';
+import { triviality } from 'triviality';
 import { LogModule } from './LogModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(LogModule)
   .build()
   .then((container) => {
@@ -153,11 +151,10 @@ Build the container with missing 'LogModule' dependency:
 
 
 ```typescript
-import { ContainerFactory } from 'triviality';
+import { triviality } from 'triviality';
 import { HalloModule } from './HalloModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(HalloModule)
   .build()
   .then((container) => {
@@ -179,12 +176,11 @@ Let's fix the container by adding the LogModule:
 
 
 ```typescript
-import { ContainerFactory } from 'triviality';
+import { triviality } from 'triviality';
 import { LogModule } from '../singleton/LogModule';
 import { HalloModule } from './HalloModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(LogModule)
   .add(HalloModule)
   .build()
@@ -316,13 +312,12 @@ Now we can combine the different command modules and build the container.
 
 
 ```typescript
-import { ContainerFactory } from 'triviality';
+import { triviality } from 'triviality';
 import { ConsoleModule } from './ConsoleModule';
 import { HalloConsoleModule } from './Command/HalloConsoleModule';
 import { ByeConsoleModule } from './Command/ByeConsoleModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(ConsoleModule)
   .add(HalloConsoleModule)
   .add(ByeConsoleModule)
@@ -380,11 +375,10 @@ Add a catch function to gracefully handle errors
 
 
 ```typescript
-import { ContainerFactory } from 'triviality';
+import { triviality } from 'triviality';
 import { DatabaseModule } from './DatabaseModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(DatabaseModule)
   .build()
   .then((container) => {
@@ -428,12 +422,11 @@ When we run
 
 
 ```typescript
-import { ContainerFactory } from 'triviality';
+import { triviality } from 'triviality';
 import { GreetingsModule } from './GreetingsModule';
 import { LogModule } from '../module/LogModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(LogModule)
   .add(GreetingsModule)
   .build()
@@ -481,13 +474,12 @@ export class FormalGreetingsModule implements Module {
         
 
 ```typescript
-import { ContainerFactory } from 'triviality';
+import { triviality } from 'triviality';
 import { GreetingsModule } from './GreetingsModule';
 import { LogModule } from '../module/LogModule';
 import { FormalGreetingsModule } from './FormalGreetingsModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(LogModule)
   .add(GreetingsModule)
   .add(FormalGreetingsModule)
@@ -550,13 +542,12 @@ export class ScreamGreetingsModule implements Module {
         
 
 ```typescript
-import { ContainerFactory } from 'triviality';
+import { triviality } from 'triviality';
 import { GreetingsModule } from './GreetingsModule';
 import { LogModule } from '../module/LogModule';
 import { ScreamGreetingsModule } from './ScreamGreetingsModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(LogModule)
   .add(GreetingsModule)
   .add(ScreamGreetingsModule)

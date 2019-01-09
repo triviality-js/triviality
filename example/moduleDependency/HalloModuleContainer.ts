@@ -1,9 +1,8 @@
-import { ContainerFactory } from '../../src';
+import { triviality } from '../../src';
 import { LogModule } from '../singleton/LogModule';
 import { HalloModule } from './HalloModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(LogModule)
   .add(HalloModule)
   .build()

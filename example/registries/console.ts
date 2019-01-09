@@ -1,10 +1,9 @@
-import { ContainerFactory } from '../../src';
+import { triviality } from '../../src';
 import { ConsoleModule } from './ConsoleModule';
 import { HalloConsoleModule } from './Command/HalloConsoleModule';
 import { ByeConsoleModule } from './Command/ByeConsoleModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(ConsoleModule)
   .add(HalloConsoleModule)
   .add(ByeConsoleModule)

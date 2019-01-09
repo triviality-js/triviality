@@ -1,9 +1,8 @@
-import { ContainerFactory } from '../../src';
+import { triviality } from '../../src';
 import { GreetingsModule } from './GreetingsModule';
 import { LogModule } from '../module/LogModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(LogModule)
   .add(GreetingsModule)
   .build()

@@ -55,6 +55,9 @@ export class BuildableContainer<C> {
     return this.container;
   }
 
+  /**
+   * Freeze any registered service on the container. The services cannot be altered anymore.
+   */
   public freezeContainer() {
     for (const [name, service] of getAllPropertyValues(this.services)) {
       this.freezeService(name, service);

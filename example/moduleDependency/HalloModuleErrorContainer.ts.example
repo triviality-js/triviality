@@ -1,8 +1,7 @@
-import { ContainerFactory } from '../../src';
+import { triviality } from '../../src';
 import { HalloModule } from './HalloModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(HalloModule)
   .build()
   .then((container) => {

@@ -1,13 +1,12 @@
-import { ContainerFactory } from '../ContainerFactory';
+import { triviality } from '../index';
 import { Module } from '../Module';
 
-describe('ContainerFactory', () => {
+describe('triviality', () => {
 
   it('Execute setup step', async () => {
     const spyConstructor = jest.fn();
     const spySetup = jest.fn();
-    const container = await ContainerFactory
-      .create()
+    const container = await triviality()
       .add(class implements Module {
         constructor(private constructor: {}) {
           spyConstructor(constructor);
@@ -26,8 +25,7 @@ describe('ContainerFactory', () => {
   it('Execute non-async setup step', async () => {
     const spyConstructor = jest.fn();
     const spySetup = jest.fn();
-    const container = await ContainerFactory
-      .create()
+    const container = await triviality()
       .add(class implements Module {
         constructor(private constructor: {}) {
           spyConstructor(constructor);
@@ -45,8 +43,7 @@ describe('ContainerFactory', () => {
   it('Catches async setup step error', async () => {
     const spyConstructor = jest.fn();
     const spySetup = jest.fn();
-    const container = ContainerFactory
-      .create()
+    const container = triviality()
       .add(class implements Module {
         constructor(private constructor: {}) {
           spyConstructor(constructor);
@@ -68,8 +65,7 @@ describe('ContainerFactory', () => {
   it('Catches non-async setup step error', async () => {
     const spyConstructor = jest.fn();
     const spySetup = jest.fn();
-    const container = ContainerFactory
-      .create()
+    const container = triviality()
       .add(class implements Module {
         constructor(private constructor: {}) {
           spyConstructor(constructor);

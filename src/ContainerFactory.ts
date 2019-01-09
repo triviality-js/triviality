@@ -47,12 +47,16 @@ export class ContainerFactory<C /* Container */, R /* Registry */> {
   public async build(): Promise<C & HasRegistries<R>> {
     this.assertNotYetBuild();
     this.isBuild = true;
+
     this.combineServices();
     await this.overrideServices();
     this.container.freezeContainer();
+
     await this.combineRegistries();
     this.container.freezeContainer();
+
     await this.setup();
+
     return this.container.getReference() as any;
   }
 
@@ -60,8 +64,8 @@ export class ContainerFactory<C /* Container */, R /* Registry */> {
     for (const ModuleClass of this.moduleClasses) {
       const module = new ModuleDependency(new ModuleClass(this.container.getReference() as any));
       this.modules.add(module);
-      for (const [name, value] of module.getServices()) {
-        this.container.defineLockedModuleService(module, name, value);
+      for (const [name, service] of module.getServices()) {
+        this.container.defineLockedModuleService(module, name, service);
       }
     }
   }
@@ -92,8 +96,8 @@ export class ContainerFactory<C /* Container */, R /* Registry */> {
         container.freezeContainer();
         continue;
       }
-      for (const [name, value] of overrides) {
-        container.overrideService(name, value);
+      for (const [name, service] of overrides) {
+        container.overrideService(name, service);
       }
       container.freezeContainer();
     }

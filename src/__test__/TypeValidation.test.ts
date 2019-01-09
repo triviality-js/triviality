@@ -2,15 +2,14 @@ import { compileTs, declarationOfTs } from './util/compileTs';
 
 describe('TypeValidation', async () => {
 
-  describe('ContainerFactory', () => {
+  describe('triviality', () => {
 
     it('Container should not have dependencies by default', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
-        import { ContainerFactory } from '../ContainerFactory';
+        import { triviality } from '../index';
 
-        ContainerFactory
-          .create()
+        triviality()
           .build()
           .then((container) => {
             container.someNonExistingService();
@@ -23,7 +22,7 @@ describe('TypeValidation', async () => {
     it('Should force the requirements of a Module', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
-        import { ContainerFactory } from '../ContainerFactory';
+        import { triviality } from '../index';
         import { Module } from '../Module';
         import { Container } from '../Container';
 
@@ -44,8 +43,7 @@ describe('TypeValidation', async () => {
           }
         }
 
-        export const container = ContainerFactory
-          .create()
+        export const container = triviality()
           .add(Module2)
           .build();
       `))
@@ -56,7 +54,7 @@ describe('TypeValidation', async () => {
     it('The build container should have the correct service declarations', async () => {
       // language=TypeScript
       return expect(declarationOfTs(__dirname, `
-        import { ContainerFactory } from '../ContainerFactory';
+        import { triviality } from '../index';
         import { Module } from '../Module';
 
         class Module1 implements Module {
@@ -65,8 +63,7 @@ describe('TypeValidation', async () => {
           }
         }
 
-        export const container = ContainerFactory
-          .create()
+        export const container = triviality()
           .add(Module1);
       `))
         .resolves
@@ -76,7 +73,7 @@ describe('TypeValidation', async () => {
     it('A module cannot have the same service name', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
-        import { ContainerFactory } from '../ContainerFactory';
+        import { triviality } from '../index';
         import { Module } from '../Module';
 
         class Module1 implements Module {
@@ -89,8 +86,7 @@ describe('TypeValidation', async () => {
           }
         }
 
-        ContainerFactory
-          .create()
+        triviality()
           .add(Module1)
           .add(Module2);
       `))
@@ -102,7 +98,7 @@ describe('TypeValidation', async () => {
 
       // language=TypeScript
       return expect(compileTs(__dirname, `
-        import { ContainerFactory } from '../ContainerFactory';
+        import { triviality } from '../index';
         import { Module } from '../Module';
 
         class Module1 implements Module {
@@ -127,8 +123,7 @@ describe('TypeValidation', async () => {
           }
         }
 
-        ContainerFactory
-          .create()
+        triviality()
           .add(Module1)
           .add(Module2)
           .build();
@@ -140,7 +135,7 @@ describe('TypeValidation', async () => {
     it.skip('Cannot add extra services with serviceOverrides', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
-        import { ContainerFactory } from '../ContainerFactory';
+        import { triviality } from '../index';
         import { Module } from '../Module';
 
         class MyModule implements Module {
@@ -154,8 +149,7 @@ describe('TypeValidation', async () => {
 
         }
 
-        ContainerFactory
-          .create()
+        triviality()
           .add(MyModule)
           .build();
       `))
@@ -166,7 +160,7 @@ describe('TypeValidation', async () => {
     it('serviceOverrides should match service type', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
-        import { ContainerFactory } from '../ContainerFactory';
+        import { triviality } from '../index';
         import { Module } from '../Module';
 
         class MyHalloModule implements Module {
@@ -187,8 +181,7 @@ describe('TypeValidation', async () => {
 
         }
 
-        ContainerFactory
-          .create()
+        triviality()
           .add(MyHalloModule)
           .add(MyOverrideModule)
           .build();

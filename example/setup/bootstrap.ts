@@ -1,8 +1,7 @@
-import { ContainerFactory } from '../../src';
+import { triviality } from '../../src';
 import { DatabaseModule } from './DatabaseModule';
 
-ContainerFactory
-  .create()
+triviality()
   .add(DatabaseModule)
   .build()
   .then((container) => {
