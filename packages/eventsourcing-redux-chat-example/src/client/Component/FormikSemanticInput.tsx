@@ -1,15 +1,14 @@
 import { Input, InputProps, Label, FormField } from 'semantic-ui-react';
 import * as _ from 'lodash';
 import React from 'react';
-import { FormikProps } from "formik";
-
+import { FormikProps } from 'formik';
 
 const DisplayError = (error: string | undefined, touched: boolean | undefined) => {
   if (!error || !touched) {
     return null;
   }
   return (
-    <Label active={!!error} basic color='red' pointing="above">
+    <Label active={!!error} basic color="red" pointing="above">
       {error}
     </Label>
   );
@@ -23,7 +22,7 @@ export function FormikSemanticInput(props: InputProps & { name: string, formikPr
     <FormField>
       <Input
         fluid
-        iconPosition='left'
+        iconPosition="left"
         labelPosition="right"
         name={name}
         onChange={formikProps.handleChange}
@@ -34,4 +33,4 @@ export function FormikSemanticInput(props: InputProps & { name: string, formikPr
       {DisplayError(error, !!props.formikProps.touched[name])}
     </FormField>
   );
-};
+}

@@ -33,7 +33,7 @@ module.exports = {
     plugins: [
         new NodemonPlugin({
             /// Arguments to pass to the script being watched.
-            args: [],
+            args: ['server'],
 
             // Detailed log.
             verbose: true,
@@ -44,9 +44,6 @@ module.exports = {
             // If using more than one entry, you can specify
             // which output file will be restarted.
             script: "./dist/server.js",
-
-            // Files to ignore.
-            ignore: ['*.js'],
         })
     ]
 };

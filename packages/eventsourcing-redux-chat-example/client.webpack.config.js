@@ -29,6 +29,10 @@ module.exports = {
     resolve: {
         extensions: [ '.tsx', '.ts', '.js' ]
     },
+    node: {
+        fs: 'empty',
+        module: 'empty'
+    },
 
     output: {
         path: path.resolve(__dirname, 'dist', 'client'),

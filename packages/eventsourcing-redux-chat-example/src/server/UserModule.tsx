@@ -23,6 +23,10 @@ import { createStateQueryHandler } from './QueryHandler/StateQueryHandler';
 import { QueryAccountState } from './Query/QueryAccountState';
 import { AccountProjector } from './Projector/AccountProjector';
 import { AccountGatewayFactory } from './Projector/Gateway/AccountGatewayFactory';
+import { UserLogoutCommandHandler } from './CommandHandler/UserLogoutCommandHandler';
+import { UserLoginCommandHandler } from './CommandHandler/UserLoginCommandHandler';
+import { UserProjector } from './Projector/UserProjector';
+import { UserModelRepository } from './ReadModel/UserModelRepository';
 
 export class UserModule implements Module {
 
@@ -33,7 +37,9 @@ export class UserModule implements Module {
     return {
       commandHandlers: (): CommandHandler[] => {
         return [
-          new UserRegisterCommandHandler(this.userRepository()),
+          new UserRegisterCommandHandler(this.userRepository(), this.userModelRepository()),
+          new UserLogoutCommandHandler(this.userRepository()),
+          new UserLoginCommandHandler(this.userRepository(), this.userModelRepository()),
         ];
       },
       queryHandlers: (): QueryHandler[] => {
@@ -43,7 +49,8 @@ export class UserModule implements Module {
       },
       eventListeners: (): EventListener[] => {
         return [
-          this.userProjector(),
+          this.userModelProjector(),
+          this.userReduxProjector(),
         ];
       },
     };
@@ -51,8 +58,8 @@ export class UserModule implements Module {
 
   public userStateQueryHandler(): QueryHandler {
     return createStateQueryHandler<QueryAccountState, AccountState, UserId>(
-      QueryAccountState,
       this.userReduxReadModelRepository(),
+      QueryAccountState,
     );
   }
 
@@ -66,7 +73,7 @@ export class UserModule implements Module {
   public userReduxReadModelRepository() {
     const accountStoreFactory = new SimpleStoreFactory<AccountState, ReadModelAction<UserId>>(accountReducer);
     return new ActionWithSnapshotRepository<AccountState, UserId>(
-      new InMemoryActionRepository(accountStoreFactory),
+      new InMemoryActionRepository(accountStoreFactory) as any,
       new StoreRepository<AccountState, UserId>(
         new InMemoryRepository(),
         accountStoreFactory,
@@ -92,8 +99,15 @@ export class UserModule implements Module {
     );
   }
 
-  public userProjector() {
+  public userReduxProjector() {
     return new AccountProjector(new AccountGatewayFactory(this.userGateway()));
   }
 
+  public userModelRepository() {
+    return new UserModelRepository();
+  }
+
+  public userModelProjector() {
+    return new UserProjector(this.userModelRepository());
+  }
 }

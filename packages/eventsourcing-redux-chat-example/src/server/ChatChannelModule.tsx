@@ -45,7 +45,7 @@ export class ChatChannelModule implements Module {
 
   public chatChannelStoreReadModelRepository(): StoreRepositoryInterface<ChannelState, ChatChannelId> {
     const storeFactory = new SimpleStoreFactory<ChannelState, ReadModelAction<ChatChannelId>>(chatReducer);
-    return new StoreRepository(new InMemoryRepository(), storeFactory);
+    return new StoreRepository(new InMemoryRepository(), storeFactory) as any;
   }
 
   public chatGateway() {

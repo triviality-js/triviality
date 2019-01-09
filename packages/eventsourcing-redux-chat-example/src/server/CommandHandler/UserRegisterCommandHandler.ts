@@ -6,12 +6,14 @@ import { UserAggregate } from '../Aggregate/UserAggregate';
 import { HandleCommand } from 'ts-eventsourcing/CommandHandling/HandleCommand';
 import { CommandHandler } from 'ts-eventsourcing/CommandHandling/CommandHandler';
 import * as bcrypt from 'bcrypt';
-import {EventSourcingRepositoryInterface} from "ts-eventsourcing/EventSourcing/EventSourcingRepositoryInterface";
-import {UserId} from "../../shared/ValueObject/UserId";
+import { EventSourcingRepositoryInterface } from 'ts-eventsourcing/EventSourcing/EventSourcingRepositoryInterface';
+import { UserId } from '../../shared/ValueObject/UserId';
+import { UserModelRepository } from '../ReadModel/UserModelRepository';
 
 export class UserRegisterCommandHandler implements CommandHandler {
 
-  constructor(private readonly repository: EventSourcingRepositoryInterface<UserAggregate, UserId>) {
+  constructor(private readonly repository: EventSourcingRepositoryInterface<UserAggregate, UserId>,
+              private readonly userModelRepository: UserModelRepository) {
 
   }
 
@@ -22,6 +24,9 @@ export class UserRegisterCommandHandler implements CommandHandler {
     }
     if (await this.repository.has(command.userId)) {
       throw UserExistsError.withId(command.userId);
+    }
+    if (await this.userModelRepository.findWithName(command.name)) {
+      throw UserExistsError.withName(command.name);
     }
     const passwordHash = await bcrypt.hash(command.password, 10);
     const user = UserAggregate.registerUser(command.userId, command.name, passwordHash);

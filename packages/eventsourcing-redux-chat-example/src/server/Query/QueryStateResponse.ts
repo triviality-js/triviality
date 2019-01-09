@@ -1,9 +1,20 @@
-import { ReadModelAction } from "eventsourcing-redux-bridge/ReadModel/ReadModelAction";
+import { ReadModelAction } from 'eventsourcing-redux-bridge/ReadModel/ReadModelAction';
 
-export interface QueryStateResponse<T> {
+export class QueryStateResponse<T> {
 
-  actions?: ReadModelAction[];
+  public static actionsResponse<T>(actions: ReadModelAction[]) {
+    return new QueryStateResponse<T>(actions, null);
+  }
 
-  state?: T;
+  public static stateResponse<T>(state: T) {
+    return new QueryStateResponse<T>([], state);
+  }
+
+  constructor(
+    public readonly actions: ReadModelAction[] | null,
+    public readonly state: T | null,
+  ) {
+
+  }
 
 }

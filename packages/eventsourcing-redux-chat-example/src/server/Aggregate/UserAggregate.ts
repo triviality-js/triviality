@@ -2,6 +2,8 @@ import { UserId } from '../../shared/ValueObject/UserId';
 import { UserHasRegistered } from '../DomainEvent/UserHasRegistered';
 import { Assert } from '../../shared/Assert';
 import { EventSourcedAggregateRoot } from 'ts-eventsourcing/EventSourcing/EventSourcedAggregateRoot';
+import { UserHasLoggedOut } from '../DomainEvent/UserHasLoggedOut';
+import { UserHasLoggedIn } from '../DomainEvent/UserHasLoggedIn';
 
 export class UserAggregate extends EventSourcedAggregateRoot<UserId> {
 
@@ -12,4 +14,11 @@ export class UserAggregate extends EventSourcedAggregateRoot<UserId> {
     return instance;
   }
 
+  public loggedOut() {
+    this.apply(new UserHasLoggedOut());
+  }
+
+  public loggedIn() {
+    this.apply(new UserHasLoggedIn());
+  }
 }

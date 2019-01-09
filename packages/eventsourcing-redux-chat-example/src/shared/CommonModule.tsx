@@ -13,6 +13,11 @@ import { createClassHandlers } from 'eventsourcing-redux-bridge/Serializer/trans
 import { UserRegisterCommand } from '../server/Command/UserRegisterCommand';
 import { UserHasRegistered } from '../server/DomainEvent/UserHasRegistered';
 import { SerializerInterface } from 'ts-eventsourcing/Serializer/SerializerInterface';
+import { UserLoginCommand } from '../server/Command/UserLoginCommand';
+import { UserLogoutCommand } from '../server/Command/UserLogoutCommand';
+import { UserHasLoggedOut } from '../server/DomainEvent/UserHasLoggedOut';
+import { UserHasLoggedIn } from '../server/DomainEvent/UserHasLoggedIn';
+import { QueryStateResponse } from '../server/Query/QueryStateResponse';
 
 export class CommonModule implements Module {
 
@@ -34,12 +39,19 @@ export class CommonModule implements Module {
 
         // Commands
         UserRegisterCommand,
+        UserLoginCommand,
+        UserLogoutCommand,
 
         // Queries
         QueryAccountState,
 
+        // Query responses
+        QueryStateResponse,
+
         // Domain events
         UserHasRegistered,
+        UserHasLoggedIn,
+        UserHasLoggedOut,
       }),
     );
   }

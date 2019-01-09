@@ -1,5 +1,7 @@
 import { UserId } from '../../shared/ValueObject/UserId';
-import { Nullable, RecordWithPlayhead } from "eventsourcing-redux-bridge/ReadModel/PlayheadRecord";
+import { Nullable, RecordWithPlayhead } from 'eventsourcing-redux-bridge/ReadModel/PlayheadRecord';
+import { QueryStateResponse } from '../../server/Query/QueryStateResponse';
+import { SerializableAction } from 'eventsourcing-redux-bridge/Redux/SerializableAction';
 
 export interface AccountStateInterface {
   id: UserId;
@@ -16,4 +18,20 @@ export class AccountState extends RecordWithPlayhead<AccountStateInterface>(defa
   public registered(userId: UserId, name: string) {
     return this.set('id', userId).set('name', name);
   }
+
+  public handleQueryStateResponse(response: QueryStateResponse<this>, reducer: (state: this, action: SerializableAction) => this): this {
+    if (response.state) {
+      return response.state;
+    }
+    if (response.actions) {
+      return response.actions.reduce(
+        (prevState, a) => {
+          return reducer(prevState, a);
+        },
+        this,
+      );
+    }
+    return this;
+  }
+
 }
