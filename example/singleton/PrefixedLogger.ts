@@ -1,4 +1,4 @@
-import { LoggerInterface } from '../module/LoggerInterface';
+import { LoggerInterface } from '../features/LoggerInterface';
 
 export class PrefixedLogger implements LoggerInterface {
 

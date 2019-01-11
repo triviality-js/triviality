@@ -1,5 +1,5 @@
 import { triviality } from '../index';
-import { Module } from '../Module';
+import { Feature } from '../Feature';
 
 describe('triviality', () => {
 
@@ -7,7 +7,7 @@ describe('triviality', () => {
     const spyConstructor = jest.fn();
     const spySetup = jest.fn();
     const container = await triviality()
-      .add(class implements Module {
+      .add(class implements Feature {
         constructor(private constructor: {}) {
           spyConstructor(constructor);
         }
@@ -26,7 +26,7 @@ describe('triviality', () => {
     const spyConstructor = jest.fn();
     const spySetup = jest.fn();
     const container = await triviality()
-      .add(class implements Module {
+      .add(class implements Feature {
         constructor(private constructor: {}) {
           spyConstructor(constructor);
         }
@@ -44,7 +44,7 @@ describe('triviality', () => {
     const spyConstructor = jest.fn();
     const spySetup = jest.fn();
     const container = triviality()
-      .add(class implements Module {
+      .add(class implements Feature {
         constructor(private constructor: {}) {
           spyConstructor(constructor);
         }
@@ -66,7 +66,7 @@ describe('triviality', () => {
     const spyConstructor = jest.fn();
     const spySetup = jest.fn();
     const container = triviality()
-      .add(class implements Module {
+      .add(class implements Feature {
         constructor(private constructor: {}) {
           spyConstructor(constructor);
         }

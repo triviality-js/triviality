@@ -3,7 +3,7 @@ import { getAllPropertyValues } from '../util/getAllPropertyNames';
 import { OverrideableReferenceContainer } from './OverrideableReferenceContainer';
 import { Service, ServiceName } from './Service';
 import { memorize } from '../util/memorize';
-import { ModuleDependency } from './ModuleDependency';
+import { FeatureDependency } from './FeatureDependency';
 
 export class BuildableContainer<C> {
   /**
@@ -15,7 +15,7 @@ export class BuildableContainer<C> {
     this.defineLockedService('container', container as any);
   }
 
-  public defineLockedModuleService(dependency: ModuleDependency, name: ServiceName, service: Service) {
+  public defineLockedFeatureervice(dependency: FeatureDependency, name: ServiceName, service: Service) {
     if (typeof service === 'function') {
       this.defineLockedService(name, memorize(service.bind(this.container)));
       dependency.defineProperty(this, name as any);

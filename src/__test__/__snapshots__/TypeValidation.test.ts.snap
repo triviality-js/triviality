@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`TypeValidation triviality The build container should have the correct service declarations 1`] = `
-"import { Module } from '../Module';
-declare class Module1 implements Module {
+"import { Feature } from '../Feature';
+declare class Feature1 implements Feature {
     halloService(): {
         hallo: () => string;
     };
 }
-export declare const container: import(\\"..\\").ContainerFactory<Pick<Module1, \\"halloService\\">, {}>;
+export declare const container: import(\\"..\\").ContainerFactory<Pick<Feature1, \\"halloService\\">, {}>;
 export {};
 "
 `;

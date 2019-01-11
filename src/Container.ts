@@ -1,16 +1,16 @@
-import { OptionalModuleRegistries as MR, OptionalModuleServices as C } from './value/ModuleTypes';
+import { OptionalFeatureRegistries as FR, OptionalFeatureServices as C } from './value/FeatureTypes';
 import { HasRegistries } from './value/Registry';
 
 /**
- * Type to express a container by module dependencies.
+ * Type to express a container by feature dependencies.
  *
  * Example:
  *
- * class MyModule {
+ * class MyFeature {
  *
- *  constructor(private container: Container<ModuleOne, ModuleTwo, etc..>)
+ *  constructor(private container: Container<FeatureOne, FeatureTwo, etc..>)
  *
  */
-export type Container<M1 = null, M2 = null, M3 = null, M4 = null, M5 = null, M6 = null, M7 = null, M8 = null, M9 = null, M10 = null, M11 = null, M12 = null, M13 = null, M14 = null, M15 = null, M16 = null, M17 = null, M18 = null, M19 = null, M20 = null, R = (MR<M1> & MR<M2> & MR<M3> & MR<M4> & MR<M5> & MR<M6> & MR<M7> & MR<M8> & MR<M9> & MR<M10> & MR<M11> & MR<M12> & MR<M13> & MR<M14> & MR<M15> & MR<M16> & MR<M17> & MR<M18> & MR<M19> & MR<M20>)> =
-  Readonly<C<M1> & C<M2> & C<M3> & C<M4> & C<M5> & C<M6> & C<M7> & C<M8> & C<M9> & C<M10> & C<M11> & C<M12> & C<M13> & C<M14> & C<M15> & C<M16> & C<M17> & C<M18> & C<M19> & C<M20>>
+export type Container<F1 = null, F2 = null, F3 = null, F4 = null, F5 = null, F6 = null, F7 = null, F8 = null, F9 = null, F10 = null, F11 = null, F12 = null, F13 = null, F14 = null, F15 = null, F16 = null, F17 = null, F18 = null, F19 = null, F20 = null, R = (FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10> & FR<F11> & FR<F12> & FR<F13> & FR<F14> & FR<F15> & FR<F16> & FR<F17> & FR<F18> & FR<F19> & FR<F20>)> =
+  Readonly<C<F1> & C<F2> & C<F3> & C<F4> & C<F5> & C<F6> & C<F7> & C<F8> & C<F9> & C<F10> & C<F11> & C<F12> & C<F13> & C<F14> & C<F15> & C<F16> & C<F17> & C<F18> & C<F19> & C<F20>>
   & HasRegistries<R>;

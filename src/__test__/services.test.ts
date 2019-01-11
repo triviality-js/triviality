@@ -1,7 +1,7 @@
 import 'jest';
-import { triviality, Module } from '../index';
+import { triviality, Feature } from '../index';
 
-class TestModule implements Module {
+class TestFeature implements Feature {
 
   public testService1() {
     return ['Test service'];
@@ -20,14 +20,14 @@ class TestModule implements Module {
 describe('Caches services', () => {
   it('No arguments', async () => {
     const container = await triviality()
-      .add(TestModule)
+      .add(TestFeature)
       .build();
     expect(container.halloService()).toEqual(container.halloService());
     expect(container.testService1()).toEqual(['Test service']);
   });
   it('Takes a single argument into account', async () => {
     const container = await triviality()
-      .add(TestModule)
+      .add(TestFeature)
       .build();
     expect(container.testService2(1)).toBe(container.testService2(1));
     expect(container.testService2(10)).toBe(container.testService2(10));
@@ -35,7 +35,7 @@ describe('Caches services', () => {
   });
   it('Takes multiple arguments into account', async () => {
     const container = await triviality()
-      .add(TestModule)
+      .add(TestFeature)
       .build();
     expect(container.halloService('john')).toBe(container.halloService('john'));
     expect(container.halloService('john', 'jane')).toBe(container.halloService('john', 'jane'));

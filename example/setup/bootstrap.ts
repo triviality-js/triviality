@@ -1,8 +1,8 @@
 import { triviality } from '../../src';
-import { DatabaseModule } from './DatabaseModule';
+import { DatabaseFeature } from './DatabaseFeature';
 
 triviality()
-  .add(DatabaseModule)
+  .add(DatabaseFeature)
   .build()
   .then((container) => {
     container.database().someFancyQuery();

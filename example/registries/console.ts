@@ -1,12 +1,12 @@
 import { triviality } from '../../src';
-import { ConsoleModule } from './ConsoleModule';
-import { HalloConsoleModule } from './Command/HalloConsoleModule';
-import { ByeConsoleModule } from './Command/ByeConsoleModule';
+import { ConsoleFeature } from './ConsoleFeature';
+import { HalloConsoleFeature } from './Command/HalloConsoleFeature';
+import { ByeConsoleFeature } from './Command/ByeConsoleFeature';
 
 triviality()
-  .add(ConsoleModule)
-  .add(HalloConsoleModule)
-  .add(ByeConsoleModule)
+  .add(ConsoleFeature)
+  .add(HalloConsoleFeature)
+  .add(ByeConsoleFeature)
   .build()
   .then((container) => {
     return container.consoleService().handle();

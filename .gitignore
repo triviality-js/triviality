@@ -7,3 +7,4 @@ build/*
 src/**/*.d.ts
 src/**/*.js
 tmp.ts
+.jscpd

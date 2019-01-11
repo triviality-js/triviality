@@ -2,5 +2,5 @@
 
 * Supported both for *Web* and *Node*.
 * Supported for [es5](https://caniuse.com/#search=es5)
-* All module functions (registers, service overrides, modules setups) can be asynchronous (Promises based).
-* Support for Module circular dependencies.
+* All definition functions (registers, service overrides, feature setups) can be asynchronous (Promises based).
+* Support for Definition circular dependencies.

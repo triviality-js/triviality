@@ -1,7 +1,7 @@
-import { ModuleDependency } from '../ModuleDependency';
+import { FeatureDependency } from '../FeatureDependency';
 import { BuildableContainer } from '../BuildableContainer';
 
-class MyModule {
+class MyFeature {
   public someService() {
     // noop.
   }
@@ -12,29 +12,29 @@ class MyModule {
 }
 
 describe('getServices', () => {
-  it('Can fetch modules services', () => {
-    const dependency = new ModuleDependency(new MyModule());
+  it('Can fetch feature services', () => {
+    const dependency = new FeatureDependency(new MyFeature());
     expect(dependency.getServices()).toEqual([
-      ['someService', MyModule.prototype.someService],
-      ['otherService', MyModule.prototype.otherService],
+      ['someService', MyFeature.prototype.someService],
+      ['otherService', MyFeature.prototype.otherService],
     ]);
   });
 });
 
-it('Can fetch empty register from module without registers', async () => {
-  const dependency = new ModuleDependency(new MyModule());
+it('Can fetch empty register from feature without registers', async () => {
+  const dependency = new FeatureDependency(new MyFeature());
   expect(await dependency.getRegistries()).toEqual({});
 });
 
 describe('defineProperty', () => {
   it('Set defined values on container', () => {
-    const myModule = new MyModule();
-    const dependency = new ModuleDependency(myModule);
+    const myFeature = new MyFeature();
+    const dependency = new FeatureDependency(myFeature);
     const container = { someService: null };
     const buildableContainer = new BuildableContainer(container);
     dependency.defineProperty(buildableContainer, 'someService');
     expect(buildableContainer.getReference().someService).toEqual(null);
-    myModule.someService = 1 as any;
+    myFeature.someService = 1 as any;
     expect(container.someService).toEqual(1);
   });
 });

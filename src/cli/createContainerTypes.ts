@@ -9,20 +9,23 @@ function createArrayOf(length: number): number[] {
 }
 
 /**
- * public add<M1 extends MO<R, C>, M2 extends MO<R, C>, NC = (C & SM<M1> & SM<M2>), NR = (R & MR<M1> & MR<M2>)>(_m1: MC<M1, NC>, _m2: MC<M2, NC>): ContainerFactory<NC, NR>;
+ * Create complex extra arguments.
+ *
+ * public add<D1 extends DO<C, R>, NC = (C & SD<D1>), NR = (R & DR<D1>)>(d1: DC<D1, C, R>): ContainerFactory<NC, NR>;
+ * public add<D1 extends DO<C, R>, D2 extends DO<C, R>, NC = (C & SD<D1> & SD<D2>), NR = (R & DR<D1> & DR<D2>)>(d1: DC<D1, C & SD<D2>, R & DR<D2>>, d2: DC<D2, C & SD<D1>, R & DR<D1>>): ContainerFactory<NC, NR>;
  */
 function addArgumentTypes(args: number) {
   for (let i = 1; i <= args; i += 1) {
     const indexes = createArrayOf(i);
-    const type = indexes.map((index) => `M${index} extends MO<C, R>`).join(', ');
-    const registries = indexes.map((index) => `MR<M${index}>`).join(' & ');
+    const type = indexes.map((index) => `F${index} extends FO<C, R>`).join(', ');
+    const registries = indexes.map((index) => `FR<F${index}>`).join(' & ');
     const argument = indexes.map((index) => {
-      const otherModules = indexes.filter(j => j !== index);
-      const specificModuleContainer = ['C'].concat(otherModules.map((j) => `SM<M${j}>`)).join(' & ');
-      const specificModuleRegistries = ['R'].concat(otherModules.map((j) => `MR<M${j}>`)).join(' & ');
-      return `m${index}: MC<M${index}, ${specificModuleContainer}, ${specificModuleRegistries}>`;
+      const otherFeature = indexes.filter(j => j !== index);
+      const specificFeatureContainer = ['C'].concat(otherFeature.map((j) => `FS<F${j}>`)).join(' & ');
+      const specificFeatureRegistries = ['R'].concat(otherFeature.map((j) => `FR<F${j}>`)).join(' & ');
+      return `f${index}: FC<F${index}, ${specificFeatureContainer}, ${specificFeatureRegistries}>`;
     }).join(', ');
-    const container = indexes.map((index) => `SM<M${index}>`).join(' & ');
+    const container = indexes.map((index) => `FS<F${index}>`).join(' & ');
     process.stdout.write(
       `public add<${type}, NC = (C & ${container}), NR = (R & ${registries})>(${argument}): ContainerFactory<NC, NR>;${os.EOL}`);
   }
@@ -33,10 +36,10 @@ function addArgumentTypes(args: number) {
  */
 function partialContainer(args: number) {
   const indexes = createArrayOf(args);
-  const modules = indexes.map((index) => `M${index} = null`).join(', ');
-  const container = indexes.map((index) => `C<M${index}>`).join(' & ');
-  const registries = indexes.map((index) => `MR<M${index}>`).join(' & ');
-  process.stdout.write(`export type Container<${modules}, R = (${registries})> = Readonly<${container}> & HasRegistries<R>;${os.EOL}`);
+  const feature = indexes.map((index) => `F${index} = null`).join(', ');
+  const container = indexes.map((index) => `C<F${index}>`).join(' & ');
+  const registries = indexes.map((index) => `FR<F${index}>`).join(' & ');
+  process.stdout.write(`export type Container<${feature}, R = (${registries})> = Readonly<${container}> & HasRegistries<R>;${os.EOL}`);
 }
 
 process.stdout.write(`Member: ${os.EOL}`);

@@ -1,4 +1,4 @@
-import { executeFile } from '../example/__test__/executeFile';
+import { executeFile } from './executeFile';
 import * as fs from 'fs';
 // @ts-ignore
 import markdownInclude from 'markdown-include';

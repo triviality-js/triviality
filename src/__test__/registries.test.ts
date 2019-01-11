@@ -1,10 +1,10 @@
-import { Module } from '../Module';
+import { Feature } from '../Feature';
 import { triviality } from '../index';
 import { Container } from '../Container';
 
-it('A module can define a register', async () => {
+it('A feature can define a register', async () => {
 
-  class Module1 implements Module {
+  class Feature1 implements Feature {
     public registries() {
       return {
         personListeners: () => [1],
@@ -13,83 +13,83 @@ it('A module can define a register', async () => {
   }
 
   const container = await triviality()
-    .add(Module1)
+    .add(Feature1)
     .build();
   expect(container.registries().personListeners()).toEqual([1]);
 });
 
-it('A module can fetch it\s own registers services', async () => {
+it('A feature can fetch it\s own registers services', async () => {
 
-  class Module1 implements Module {
+  class Feature1 implements Feature {
     public registries() {
       return {
-        moduleVersions: (): number[] => {
+        featureVersions: (): number[] => {
           return [1, 2, 4];
         },
       };
     }
 
     public sum(): number {
-      const numbers = this.registries().moduleVersions();
+      const numbers = this.registries().featureVersions();
       return numbers.reduce((i: number, n: number) => i + n, 0);
     }
 
     public multiply(): number {
-      const numbers = this.registries().moduleVersions();
+      const numbers = this.registries().featureVersions();
       return numbers.reduce((i: number, n: number) => i * n, 1);
     }
   }
 
   const serviceContainer = await triviality()
-    .add(Module1)
+    .add(Feature1)
     .build();
   expect(serviceContainer.sum()).toEqual(7);
   expect(serviceContainer.multiply()).toEqual(8);
 });
 
-it('A module can fetch the registers from the container', async () => {
-  class Module1 implements Module {
+it('A feature can fetch the registers from the container', async () => {
+  class Feature1 implements Feature {
     public registries() {
       return {
-        moduleVersions: (): number[] => {
+        featureVersions: (): number[] => {
           return [1, 2, 4];
         },
       };
     }
   }
 
-  class Module2 implements Module {
+  class Feature2 implements Feature {
 
-    constructor(private container: Container<Module1>) {
+    constructor(private container: Container<Feature1>) {
 
     }
 
     public sum(): number {
-      const numbers = this.container.registries().moduleVersions();
+      const numbers = this.container.registries().featureVersions();
       return numbers.reduce((i: number, n: number) => i + n, 0);
     }
 
     public multiply(): number {
-      const numbers = this.container.registries().moduleVersions();
+      const numbers = this.container.registries().featureVersions();
       return numbers.reduce((i: number, n: number) => i * n, 1);
     }
   }
 
   const serviceContainer = await triviality()
-    .add(Module1)
-    .add(Module2)
+    .add(Feature1)
+    .add(Feature2)
     .build();
   expect(serviceContainer.sum()).toEqual(7);
   expect(serviceContainer.multiply()).toEqual(8);
 });
 
-it('Multiple modules can register to the same register', async () => {
+it('Multiple feature can register to the same register', async () => {
 
   interface PersonEventListener {
     courtesy(event: string): string;
   }
 
-  class ShoppingMall implements Module {
+  class ShoppingMall implements Feature {
     public registries() {
       return {
         // Template every listener should match to.
@@ -104,7 +104,7 @@ it('Multiple modules can register to the same register', async () => {
     }
   }
 
-  class Module1 implements Module {
+  class Feature1 implements Feature {
     public registries() {
       return {
         personListeners: (): PersonEventListener[] => {
@@ -120,7 +120,7 @@ it('Multiple modules can register to the same register', async () => {
     }
   }
 
-  class Module2 implements Module {
+  class Feature2 implements Feature {
     public registries() {
       return {
         personListeners: (): PersonEventListener[] => {
@@ -138,8 +138,8 @@ it('Multiple modules can register to the same register', async () => {
 
   const container = await triviality()
     .add(ShoppingMall)
-    .add(Module1)
-    .add(Module2)
+    .add(Feature1)
+    .add(Feature2)
     .build();
   expect(container.courtesies('John')).toEqual(['Hallo John', 'Bye John']);
   expect(container.courtesies('Jane')).toEqual(['Hallo Jane', 'Bye Jane']);
@@ -148,7 +148,7 @@ it('Multiple modules can register to the same register', async () => {
 
 it('registries are locked and cannot be changed', async () => {
   const container = await triviality()
-    .add(class Test implements Module {
+    .add(class Test implements Feature {
       public registries() {
         return {
           testReg: (): number[] => {
@@ -163,9 +163,9 @@ it('registries are locked and cannot be changed', async () => {
   }).toThrow('Container is locked and cannot be altered.');
 });
 
-it('Modules can add registry to the existing ones', async () => {
+it('Feature can add registry to the existing ones', async () => {
 
-  class PersonModule implements Module {
+  class PersonFeature implements Feature {
     public registries() {
       return {
         persons: (): string[] => {
@@ -175,7 +175,7 @@ it('Modules can add registry to the existing ones', async () => {
     }
   }
 
-  class ShopsModule implements Module {
+  class ShopsFeature implements Feature {
     public registries() {
       return {
         shops: (): string[] => {
@@ -185,7 +185,7 @@ it('Modules can add registry to the existing ones', async () => {
     }
   }
 
-  class MyModule implements Module {
+  class MyFeature implements Feature {
     public registries() {
       return {
         persons: (): string[] => {
@@ -198,22 +198,22 @@ it('Modules can add registry to the existing ones', async () => {
     }
   }
 
-  class EmptyModule implements Module {
+  class EmptyFeature implements Feature {
   }
 
   const container = await triviality()
-    .add(PersonModule)
-    .add(ShopsModule)
-    .add(MyModule)
-    .add(EmptyModule)
+    .add(PersonFeature)
+    .add(ShopsFeature)
+    .add(MyFeature)
+    .add(EmptyFeature)
     .build();
 
   expect(container.registries().shops()).toEqual(['KFC', 'Mac']);
   expect(container.registries().persons()).toEqual(['John', 'Jane', 'Superman']);
 });
 
-it('Modules can have async registries', async () => {
-  class MyModule implements Module {
+it('Feature can have async registries', async () => {
+  class MyFeature implements Feature {
     public async registries() {
       return {
         persons: (): string[] => {
@@ -227,7 +227,7 @@ it('Modules can have async registries', async () => {
   }
 
   const container = await triviality()
-    .add(MyModule)
+    .add(MyFeature)
     .build();
 
   expect(container.registries().shops()).toEqual(['Mac']);
@@ -237,7 +237,7 @@ it('Modules can have async registries', async () => {
 it('Async registries can fetch async services', async () => {
   const asyncService = jest.fn().mockResolvedValue({ hallo: () => 'hallo' });
 
-  class MyModule implements Module {
+  class MyFeature implements Feature {
     public async registries() {
       const halloService = await this.halloService();
       return {
@@ -253,7 +253,7 @@ it('Async registries can fetch async services', async () => {
   }
 
   const container = await triviality()
-    .add(MyModule)
+    .add(MyFeature)
     .build();
 
   expect(container.registries().listeners()[0].hallo()).toEqual('hallo');

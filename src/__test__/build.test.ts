@@ -1,8 +1,8 @@
 import 'jest';
-import { Container, triviality, Module } from '../index';
+import { Container, triviality, Feature } from '../index';
 import { ContainerError } from '../ContainerError';
 
-class TestModule implements Module {
+class TestFeature implements Feature {
 
   public testService() {
     return ['Test service'];
@@ -20,16 +20,16 @@ class TestModule implements Module {
 
 it('Container is locked and cannot be changed', async () => {
   const container = await triviality()
-    .add(TestModule)
+    .add(TestFeature)
     .build();
   expect(() => {
     (container as any).testService = 1;
   }).toThrow('Container is locked and cannot be altered.');
 });
 
-it('Module is locked and cannot be changed', async () => {
+it('Feature is locked and cannot be changed', async () => {
   const container = await triviality()
-    .add(TestModule)
+    .add(TestFeature)
     .build();
   expect(() => {
     container.changeMyself();
@@ -38,9 +38,9 @@ it('Module is locked and cannot be changed', async () => {
 
 it('Cannot fetched properties during build time', async () => {
   const serviceContainer = triviality()
-    .add(TestModule)
+    .add(TestFeature)
     .add(class {
-      constructor(container: Container<TestModule>) {
+      constructor(container: Container<TestFeature>) {
         container.testService();
       }
     });
@@ -54,15 +54,15 @@ it('Container cannot be rebuild', async () => {
   return expect(container.build()).rejects.toEqual(new ContainerError('Container already been build'));
 });
 
-it('Cannot add modules after it\'s build', async () => {
+it('Cannot add feature after it\'s build', async () => {
   const container = triviality();
   await container.build();
-  return expect(() => container.add(TestModule)).toThrow('Container already been build');
+  return expect(() => container.add(TestFeature)).toThrow('Container already been build');
 });
 
 it('Cannot have name coalitions', async () => {
   const container = triviality()
-    .add(TestModule)
+    .add(TestFeature)
     .add(class {
       public halloService() {
         return 'hallo world';

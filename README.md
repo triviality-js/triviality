@@ -1,14 +1,16 @@
 # Table of Contents
 
-* [Installation](#installation)
-* [Triviality (Dependency Container)](#triviality-(dependency-container))
-  * [Modules](#modules)
+* [Triviality](#triviality)
+  * [Why Triviality as a ServiceContainer](#why-triviality-as-a-servicecontainer)
+    * [Typescript to the rescue](#typescript-to-the-rescue)
+  * [Features](#features)
   * [Registers](#registers)
   * [Setup](#setup)
   * [Service overrides & decorators](#service-overrides-&-decorators)
     * [Overriding a service](#overriding-a-service)
     * [Decorating a service](#decorating-a-service)
-* [Modules](#modules)
+* [Existing triviality features](#existing-triviality-features)
+* [Installation](#installation)
 * [Facts](#facts)
 * [Thanks](#thanks)
 * [Reads](#reads)
@@ -16,43 +18,57 @@
 
 ![Licence](https://img.shields.io/npm/l/triviality.svg) [![Build Status](https://travis-ci.org/epinxteren/triviality.svg?branch=master)](https://travis-ci.org/epinxteren/triviality) [![npm version](https://badge.fury.io/js/triviality.svg)](https://badge.fury.io/js/triviality) ![coverage](https://github.com/epinxteren/triviality/raw/master/docs/coverage.svg?sanitize=true)  
 
-# Installation
+# Triviality
 
-To install the stable version:
+Your application is full of useful objects: a "HttpClient"
+object might help you send requests while another object might
+help you save things to some storage. Almost everything that your
+application "does" is actually done by one of these objects.
 
-```
-yarn add triviality
-```
+In Triviality, these useful objects are called services and
+each service lives inside a very special object
+called the service container. The approach how a service is constructed and configured
+is the definition of the service or in short the service definition.
+The container allows you to centralize the way objects are constructed.
+It makes your life easier, promotes a strong architecture. It’s
+a design pattern aiming to make high-level code reusable.
 
-This assumes you are using [yarn](https://yarnpkg.com) as your package manager.
+## Why Triviality as a ServiceContainer
 
-or 
+Triviality is inspired by the idea that non-trival issues should not
+take your precious time and **infect** your application code. **Triviality** highly aims to keep away from your application code.
+By separating the service definition from usage. **No magic** injection with tokens and/or annotations whatsoever. It will use your application code
+as a **strictly typed interface** to assure everything is connected properly.
 
-```
-npm install triviality
-```
+> Parkinson's law of triviality is C. Northcote Parkinson's 1957 argument
+that members of an organization give disproportionate weight to trivial issues.
+Parkinson provides the example of a fictional committee whose job was
+to approve the plans for a nuclear power plant spending the majority
+of its time on discussions about relatively minor but easy-to-grasp issues,
+such as what materials to use for the staff bike shed, while neglecting the proposed
+design of the plant itself, which is far more important and a
+far more difficult and complex task.
 
-# Triviality (Dependency Container)
+### Typescript to the rescue
 
-Dependency Injection is all about code reusability. 
-It’s a design pattern aiming to make high-level code reusable, 
-by separating the object creation/configuration from usage. **Triviality** highly aims to keep away from your application code. 
-**No magic** injection with tokens, annotations whatsoever. It will use your application code as a **strictly typed interface** to assure everything is connected properly. 
+Triviality uses the full power of Typescript to ensure the ServiceContainer
+is connected properly before your application code even has executed.
 
-Supported on *Web* and *Node*.
+> It's not required to use Typescript to use Triviality, but it's highly recommended.
 
-## Modules
+## Features
 
-Triviality by its core is split into Modules. A module is defined as a class. Each module has his own services definitions 
-so each module can serve it's unique and there separate logic.
+Triviality by its core is split into features. Each feature has his own services definitions
+so it can serve it's unique and there separate logic.
+A feature is defined as a class.
 
 
 ```typescript
-import { Module } from 'triviality';
+import { Feature } from 'triviality';
 import { LoggerInterface } from './LoggerInterface';
 import { ConsoleLogger } from './ConsoleLogger';
 
-export class LogModule implements Module {
+export class LogFeature implements Feature {
   public logger(): LoggerInterface {
     return new ConsoleLogger();
   }
@@ -60,16 +76,16 @@ export class LogModule implements Module {
 ```
         
 
-As you can see a module class has functions. The function name is the service name. The function is the service factory implementation. Before we can call the service from the container
+As you can see a feature class has functions. The function name is the service name. The function is the service factory implementation. Before we can call the service from the container
 we need to build it:   
 
 
 ```typescript
 import { triviality } from 'triviality';
-import { LogModule } from './LogModule';
+import { LogFeature } from './LogFeature';
 
 triviality()
-  .add(LogModule)
+  .add(LogFeature)
   .build()
   .then((container) => {
     const logger = container.logger();
@@ -83,11 +99,11 @@ singleton based on the service factory arguments. For example, create a service 
 
 
 ```typescript
-import { Module } from 'triviality';
-import { LoggerInterface } from '../module/LoggerInterface';
+import { Feature } from 'triviality';
+import { LoggerInterface } from '../features/LoggerInterface';
 import { PrefixedLogger } from './PrefixedLogger';
 
-export class LogModule implements Module {
+export class LogFeature implements Feature {
 
   public logger(): LoggerInterface {
     return console;
@@ -106,10 +122,10 @@ The logger service function and the 'prefixedLogger' functions will always retur
 
 ```typescript
 import { triviality } from 'triviality';
-import { LogModule } from './LogModule';
+import { LogFeature } from './LogFeature';
 
 triviality()
-  .add(LogModule)
+  .add(LogFeature)
   .build()
   .then((container) => {
     const johnLogger = container.prefixedLogger('John:');
@@ -120,24 +136,34 @@ triviality()
   });
 ```
         
+
+
+```bash
+./node_modules/.bin/ts-node example/singleton/LogFeatureContainer.ts 
+John: Hallo Jane!
+Jane: Hi John!
+```
+        
+
 ___
 
-The container service function types are inherited from the Modules.
+The container service function types are inherited from the Feature.
 This gives typescript the option to **strictly type check** if everything is connected properly. 
 And you the benefits of **code completion** and the option to quickly traverse the service chain.
 ___
 
-We can inject the Module with a Container that has multiple Module dependencies ```Container<...Modules>```. Let's put the type checking to the test, we create a nice module that dependence on the 'LogModule'. 
+We can inject the Feature with a Container that has multiple Feature dependencies ```Container<...Feature>```.
+Let's put the type checking to the test, we create a nice feature that dependence on the 'LogFeature'.
 
 
 ```typescript
 import { HalloService } from './HalloService';
-import { Container, Module } from 'triviality';
-import { LogModule } from '../module/LogModule';
+import { Container, Feature } from 'triviality';
+import { LogFeature } from '../features/LogFeature';
 
-export class HalloModule implements Module {
+export class HalloFeature implements Feature {
 
-  constructor(private container: Container<LogModule>) {
+  constructor(private container: Container<LogFeature>) {
   }
 
   public halloService(name: string): HalloService {
@@ -147,15 +173,15 @@ export class HalloModule implements Module {
 ```
         
 
-Build the container with missing 'LogModule' dependency:
+Build the container with missing 'LogFeature' dependency:
 
 
 ```typescript
 import { triviality } from 'triviality';
-import { HalloModule } from './HalloModule';
+import { HalloFeature } from './HalloFeature';
 
 triviality()
-  .add(HalloModule)
+  .add(HalloFeature)
   .build()
   .then((container) => {
     const service = container.halloService('John');
@@ -164,25 +190,23 @@ triviality()
 ```
         
 
-If you forget a module you see a nice error of typescript in your IDE.
+If you forget a feature you see a nice error of typescript in your IDE.
 
-!["Module requirement error"](./example/moduleDependency/HalloModuleErrorContainer.png)
-
-    Error:(6, 8) TS2345: Argument of type 'typeof HalloModule' is not assignable to parameter of type 'ModuleConstructor<HalloModule, {}>'.
+    Error:(6, 8) TS2345: Argument of type 'typeof HalloFeature' is not assignable to parameter of type 'FeatureConstructor<HalloFeature, {}>'.
       Types of parameters 'container' and 'container' are incompatible.
-        Property 'logger' is missing in type '{}' but required in type 'Readonly<Pick<LogModule, "logger">>'.
+        Property 'logger' is missing in type '{}' but required in type 'Readonly<Pick<LogFeature, "logger">>'.
 
-Let's fix the container by adding the LogModule:
+Let's fix the container by adding the LogFeature:
 
 
 ```typescript
 import { triviality } from 'triviality';
-import { LogModule } from '../singleton/LogModule';
-import { HalloModule } from './HalloModule';
+import { LogFeature } from '../singleton/LogFeature';
+import { HalloFeature } from './HalloFeature';
 
 triviality()
-  .add(LogModule)
-  .add(HalloModule)
+  .add(LogFeature)
+  .add(HalloFeature)
   .build()
   .then((container) => {
     const service = container.halloService('John');
@@ -192,23 +216,23 @@ triviality()
         
 
 ```bash
-./node_modules/.bin/ts-node example/moduleDependency/HalloModuleContainer.ts 
+./node_modules/.bin/ts-node example/featureDependency/HalloFeatureContainer.ts 
 Hallo John
 ```
         
 
 ## Registers
 
-Registers are a collection of services so another module can use the registered services without knowing about anything about the other module.
+Registers are a collection of services so another feature can use the registered services without knowing about anything about the other feature.
 
 Let's create a register for 'console commands'
 
 
 ```typescript
-import { Module } from 'triviality';
+import { Feature } from 'triviality';
 import { ConsoleCommand } from './ConsoleCommand';
 
-export class ConsoleModule implements Module {
+export class ConsoleFeature implements Feature {
 
   public registries() {
     return {
@@ -222,16 +246,16 @@ export class ConsoleModule implements Module {
 ```
         
 
-As a module, the 'registries' return value is an object with functions. The object property name represents the registry name. 
-The implementation returns the services that need to be added to the registry. It's possible to add a registry to multiple modules. In the next examples, both modules return one command service inside the registry function.
+As a feature, the 'registries' return value is an object with functions. The object property name represents the registry name.
+The implementation returns the services that need to be added to the registry. It's possible to add a registry to multiple feature. In the next examples, both feature return one command service inside the registry function.
  
 
 ```typescript
-import { Module } from 'triviality';
+import { Feature } from 'triviality';
 import { ConsoleCommand } from '../ConsoleCommand';
 import { HalloConsoleCommand } from './HalloConsoleCommand';
 
-export class HalloConsoleModule implements Module {
+export class HalloConsoleFeature implements Feature {
 
   public registries() {
     return {
@@ -251,11 +275,11 @@ export class HalloConsoleModule implements Module {
 
 
 ```typescript
-import { Module } from 'triviality';
+import { Feature } from 'triviality';
 import { ConsoleCommand } from '../ConsoleCommand';
 import { ByeConsoleCommand } from './ByeConsoleCommand';
 
-export class ByeConsoleModule implements Module {
+export class ByeConsoleFeature implements Feature {
 
   public registries() {
     return {
@@ -273,19 +297,19 @@ export class ByeConsoleModule implements Module {
 ```
         
 
-Multiple modules can define the registry. The implementation needs to match between modules otherwise typescript will assist you with strict type checking.
+Multiple feature can define the registry. The implementation needs to match between feature otherwise typescript will assist you with strict type checking.
 During the container build phase, the registries will be combined. 
 
 
 ```typescript
-import { Module } from 'triviality';
+import { Feature } from 'triviality';
 import { ConsoleCommand } from './ConsoleCommand';
 import { ConsoleService } from './ConsoleService';
 
-export class ConsoleModule implements Module {
+export class ConsoleFeature implements Feature {
 
   /**
-   * The strict interface, all other modules needs to follow.
+   * The strict interface, all other feature needs to follow.
    */
   public registries() {
     return {
@@ -308,19 +332,19 @@ export class ConsoleModule implements Module {
 ```
         
 
-Now we can combine the different command modules and build the container.
+Now we can combine the different command feature and build the container.
 
 
 ```typescript
 import { triviality } from 'triviality';
-import { ConsoleModule } from './ConsoleModule';
-import { HalloConsoleModule } from './Command/HalloConsoleModule';
-import { ByeConsoleModule } from './Command/ByeConsoleModule';
+import { ConsoleFeature } from './ConsoleFeature';
+import { HalloConsoleFeature } from './Command/HalloConsoleFeature';
+import { ByeConsoleFeature } from './Command/ByeConsoleFeature';
 
 triviality()
-  .add(ConsoleModule)
-  .add(HalloConsoleModule)
-  .add(ByeConsoleModule)
+  .add(ConsoleFeature)
+  .add(HalloConsoleFeature)
+  .add(ByeConsoleFeature)
   .build()
   .then((container) => {
     return container.consoleService().handle();
@@ -347,15 +371,15 @@ You can also fetch all registries from the container
 
 ## Setup
 
-The build step returns a single promise, Each module can have its own specific setup
-task. The module can check if everything is configured properly or connect to external service like a database.
+The build step returns a single promise, Each feature can have its own specific setup
+task. The feature can check if everything is configured properly or connect to external service like a database.
 
 
 ```typescript
-import { Module } from 'triviality';
+import { Feature } from 'triviality';
 import { Database } from './Database';
 
-export class DatabaseModule implements Module {
+export class DatabaseFeature implements Feature {
 
   public setup() {
     if (!this.database().isConnected()) {
@@ -376,10 +400,10 @@ Add a catch function to gracefully handle errors
 
 ```typescript
 import { triviality } from 'triviality';
-import { DatabaseModule } from './DatabaseModule';
+import { DatabaseFeature } from './DatabaseFeature';
 
 triviality()
-  .add(DatabaseModule)
+  .add(DatabaseFeature)
   .build()
   .then((container) => {
     container.database().someFancyQuery();
@@ -400,15 +424,15 @@ Error: Database is not connected!
 
 ## Service overrides & decorators
 
-If you use an external module, maybe you want to override some services. For example, we start with the following greetings module:
+If you use an external feature, maybe you want to override some services. For example, we start with the following greetings feature:
 
 
 ```typescript
-import { Module } from 'triviality';
+import { Feature } from 'triviality';
 import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 import { CasualGreetingService } from './services/CasualGreetingService';
 
-export class GreetingsModule implements Module {
+export class GreetingsFeature implements Feature {
 
   public greetingService(): GreetingsServiceInterface {
     return new CasualGreetingService();
@@ -423,12 +447,12 @@ When we run
 
 ```typescript
 import { triviality } from 'triviality';
-import { GreetingsModule } from './GreetingsModule';
-import { LogModule } from '../module/LogModule';
+import { GreetingsFeature } from './GreetingsFeature';
+import { LogFeature } from '../features/LogFeature';
 
 triviality()
-  .add(LogModule)
-  .add(GreetingsModule)
+  .add(LogFeature)
+  .add(GreetingsFeature)
   .build()
   .then((container) => {
     const logger = container.logger();
@@ -442,7 +466,7 @@ We get:
 
 
 ```bash
-./node_modules/.bin/ts-node example/overrides/bootstrapGreetingsModule.ts 
+./node_modules/.bin/ts-node example/overrides/bootstrapGreetingsFeature.ts 
 Hallo Triviality
 ```
         
@@ -453,13 +477,13 @@ If we want to use a different way to greet we need to override the 'greetingServ
 
 
 ```typescript
-import { Container, Module, Optional } from 'triviality';
-import { GreetingsModule } from './GreetingsModule';
+import { Container, Feature, Optional } from 'triviality';
+import { GreetingsFeature } from './GreetingsFeature';
 import { FormalGreetingsService } from './services/FormalGreetingsService';
 import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 
-export class FormalGreetingsModule implements Module {
-  public serviceOverrides(): Optional<Container<GreetingsModule>> {
+export class FormalGreetingsFeature implements Feature {
+  public serviceOverrides(): Optional<Container<GreetingsFeature>> {
     return {
       greetingService: () => this.formalGreetingsService(),
     };
@@ -475,14 +499,14 @@ export class FormalGreetingsModule implements Module {
 
 ```typescript
 import { triviality } from 'triviality';
-import { GreetingsModule } from './GreetingsModule';
-import { LogModule } from '../module/LogModule';
-import { FormalGreetingsModule } from './FormalGreetingsModule';
+import { GreetingsFeature } from './GreetingsFeature';
+import { LogFeature } from '../features/LogFeature';
+import { FormalGreetingsFeature } from './FormalGreetingsFeature';
 
 triviality()
-  .add(LogModule)
-  .add(GreetingsModule)
-  .add(FormalGreetingsModule)
+  .add(LogFeature)
+  .add(GreetingsFeature)
+  .add(FormalGreetingsFeature)
   .build()
   .then((container) => {
     const logger = container.logger();
@@ -496,7 +520,7 @@ Now the original 'greetingService' service is overridden for the hole applicatio
 
 
 ```bash
-./node_modules/.bin/ts-node example/overrides/bootstrapFormalGreetingsModule.ts 
+./node_modules/.bin/ts-node example/overrides/bootstrapFormalGreetingsFeature.ts 
 Pleased to meet you Triviality
 ```
         
@@ -526,12 +550,12 @@ export class ScreamGreetingsService implements GreetingsServiceInterface {
         
 
 ```typescript
-import { Container, Module, Optional } from 'triviality';
+import { Container, Feature, Optional } from 'triviality';
 import { ScreamGreetingsService } from './services/ScreamGreetingsService';
-import { GreetingsModule } from './GreetingsModule';
+import { GreetingsFeature } from './GreetingsFeature';
 
-export class ScreamGreetingsModule implements Module {
-  public serviceOverrides(container: Container<GreetingsModule>): Optional<Container<GreetingsModule>> {
+export class ScreamGreetingsFeature implements Feature {
+  public serviceOverrides(container: Container<GreetingsFeature>): Optional<Container<GreetingsFeature>> {
     return {
       greetingService: () => new ScreamGreetingsService(container.greetingService()),
     };
@@ -543,14 +567,14 @@ export class ScreamGreetingsModule implements Module {
 
 ```typescript
 import { triviality } from 'triviality';
-import { GreetingsModule } from './GreetingsModule';
-import { LogModule } from '../module/LogModule';
-import { ScreamGreetingsModule } from './ScreamGreetingsModule';
+import { GreetingsFeature } from './GreetingsFeature';
+import { LogFeature } from '../features/LogFeature';
+import { ScreamGreetingsFeature } from './ScreamGreetingsFeature';
 
 triviality()
-  .add(LogModule)
-  .add(GreetingsModule)
-  .add(ScreamGreetingsModule)
+  .add(LogFeature)
+  .add(GreetingsFeature)
+  .add(ScreamGreetingsFeature)
   .build()
   .then((container) => {
     const logger = container.logger();
@@ -564,24 +588,38 @@ Now the original 'greetingService' service is overridden and we get:
 
 
 ```bash
-./node_modules/.bin/ts-node example/overrides/bootstrapScreamGreetingsModule.ts 
+./node_modules/.bin/ts-node example/overrides/bootstrapScreamGreetingsFeature.ts 
 HALLO TRIVIALITY!!!!!!
 ```
         
 
-# Modules
+# Existing triviality features
 
-For nodejs there is commands:
-
-- npm: [Commander as a Triviality Module](https://www.npmjs.com/package/triviality-commander) github: [github](https://github.com/epinxteren/triviality-commander)    
+- npm: [Commander as a Triviality Definition](https://www.npmjs.com/package/triviality-commander) github: [github](https://github.com/epinxteren/triviality-commander)
 - npm: [Typescript loggers with an interface that support composition](https://www.npmjs.com/package/triviality-logger) github: [github](https://github.com/epinxteren/triviality-logger)
- 
+
+# Installation
+
+To install the stable version:
+
+```
+yarn add triviality
+```
+
+This assumes you are using [yarn](https://yarnpkg.com) as your package manager.
+
+or 
+
+```
+npm install triviality
+```
+
 # Facts
 
 * Supported both for *Web* and *Node*.
 * Supported for [es5](https://caniuse.com/#search=es5)
-* All module functions (registers, service overrides, modules setups) can be asynchronous (Promises based).
-* Support for Module circular dependencies.
+* All definition functions (registers, service overrides, feature setups) can be asynchronous (Promises based).
+* Support for Definition circular dependencies.
 
 # Thanks
 

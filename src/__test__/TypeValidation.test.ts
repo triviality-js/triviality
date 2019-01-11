@@ -19,21 +19,21 @@ describe('TypeValidation', async () => {
         .toMatch("error TS2339: Property 'someNonExistingService' does not exist on type 'HasRegistries<{}>");
     });
 
-    it('Should force the requirements of a Module', async () => {
+    it('Should force the requirements of a Feature', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Module } from '../Module';
+        import { Feature } from '../Feature';
         import { Container } from '../Container';
 
-        class Module1 implements Module {
+        class Feature1 implements Feature {
           public userService() {
             return 'John';
           }
         }
 
-        class Module2 implements Module {
-          public constructor(private container: Container<Module1>) {
+        class Feature2 implements Feature {
+          public constructor(private container: Container<Feature1>) {
 
           }
 
@@ -44,7 +44,7 @@ describe('TypeValidation', async () => {
         }
 
         export const container = triviality()
-          .add(Module2)
+          .add(Feature2)
           .build();
       `))
         .rejects
@@ -55,40 +55,40 @@ describe('TypeValidation', async () => {
       // language=TypeScript
       return expect(declarationOfTs(__dirname, `
         import { triviality } from '../index';
-        import { Module } from '../Module';
+        import { Feature } from '../Feature';
 
-        class Module1 implements Module {
+        class Feature1 implements Feature {
           public halloService() {
             return { hallo: () => 'hallo' };
           }
         }
 
         export const container = triviality()
-          .add(Module1);
+          .add(Feature1);
       `))
         .resolves
         .toMatchSnapshot();
     });
 
-    it('A module cannot have the same service name', async () => {
+    it('A feature cannot have the same service name', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Module } from '../Module';
+        import { Feature } from '../Feature';
 
-        class Module1 implements Module {
+        class Feature1 implements Feature {
           public halloService() {
           }
         }
 
-        class Module2 implements Module {
+        class Feature2 implements Feature {
           public halloService() {
           }
         }
 
         triviality()
-          .add(Module1)
-          .add(Module2);
+          .add(Feature1)
+          .add(Feature2);
       `))
         .rejects
         .toMatch(/Types of property 'halloService' are incompatible./);
@@ -99,9 +99,9 @@ describe('TypeValidation', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Module } from '../Module';
+        import { Feature } from '../Feature';
 
-        class Module1 implements Module {
+        class Feature1 implements Feature {
           public registries() {
             return {
               // Template every listener should match to.
@@ -112,7 +112,7 @@ describe('TypeValidation', async () => {
           }
         }
 
-        class Module2 implements Module {
+        class Feature2 implements Feature {
           public registries() {
             return {
               // Template every listener should match to.
@@ -124,8 +124,8 @@ describe('TypeValidation', async () => {
         }
 
         triviality()
-          .add(Module1)
-          .add(Module2)
+          .add(Feature1)
+          .add(Feature2)
           .build();
       `))
         .rejects
@@ -136,9 +136,9 @@ describe('TypeValidation', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Module } from '../Module';
+        import { Feature } from '../Feature';
 
-        class MyModule implements Module {
+        class MyFeature implements Feature {
           public serviceOverrides() {
             return {
               someExtraService: () => {
@@ -150,7 +150,7 @@ describe('TypeValidation', async () => {
         }
 
         triviality()
-          .add(MyModule)
+          .add(MyFeature)
           .build();
       `))
         .rejects
@@ -161,16 +161,16 @@ describe('TypeValidation', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Module } from '../Module';
+        import { Feature } from '../Feature';
 
-        class MyHalloModule implements Module {
+        class MyHalloFeature implements Feature {
           public halloService() {
             return { hallo: () => 'hallo', };
           }
         }
 
 
-        class MyOverrideModule implements Module {
+        class MyOverrideFeature implements Feature {
           public serviceOverrides() {
             return {
               halloService: () => {
@@ -182,8 +182,8 @@ describe('TypeValidation', async () => {
         }
 
         triviality()
-          .add(MyHalloModule)
-          .add(MyOverrideModule)
+          .add(MyHalloFeature)
+          .add(MyOverrideFeature)
           .build();
       `))
         .rejects

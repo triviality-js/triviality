@@ -1,4 +1,4 @@
-import { Module } from '../Module';
+import { Feature } from '../Feature';
 import { triviality } from '../index';
 import { Container } from '../Container';
 
@@ -6,7 +6,7 @@ interface SpeakServiceInterface {
   speak(name: string): string;
 }
 
-class GreetingsModule implements Module {
+class GreetingsFeature implements Feature {
 
   public halloService(): SpeakServiceInterface {
     return {
@@ -36,7 +36,7 @@ class GreetingsModule implements Module {
 
 it('Override service', async () => {
 
-  class MyHalloModule implements Module {
+  class MyHalloFeature implements Feature {
     public serviceOverrides() {
       return {
         halloService: () => {
@@ -56,8 +56,8 @@ it('Override service', async () => {
   }
 
   const container = await triviality()
-    .add(GreetingsModule)
-    .add(MyHalloModule)
+    .add(GreetingsFeature)
+    .add(MyHalloFeature)
     .build();
 
   expect(container.halloService().speak('John')).toEqual('@');
@@ -66,8 +66,8 @@ it('Override service', async () => {
 
 it('Can decorate by function', async () => {
 
-  class MyHalloModule implements Module {
-    public async serviceOverrides(c: Container<GreetingsModule>) {
+  class MyHalloFeature implements Feature {
+    public async serviceOverrides(c: Container<GreetingsFeature>) {
       return {
         halloService: () => {
           return this.officialHalloService(c.halloService());
@@ -86,16 +86,16 @@ it('Can decorate by function', async () => {
   }
 
   const container = await triviality()
-    .add(GreetingsModule)
-    .add(MyHalloModule)
+    .add(GreetingsFeature)
+    .add(MyHalloFeature)
     .build();
 
   expect(container.halloService().speak('John')).toEqual('Hallo John!!!');
   expect(container.halloAndByeService().speak('John')).toEqual('Hallo John!!!, Bye John');
 });
 
-class ScreamGreetingsModule implements Module {
-  public serviceOverrides(c: Container<GreetingsModule>) {
+class ScreamGreetingsFeature implements Feature {
+  public serviceOverrides(c: Container<GreetingsFeature>) {
     return {
       halloService: () => {
         return this.screamSpeakService(c.halloService());
@@ -116,8 +116,8 @@ class ScreamGreetingsModule implements Module {
 
 }
 
-class HiHalloModule implements Module {
-  public serviceOverrides(c: Container<GreetingsModule>) {
+class HiHalloFeature implements Feature {
+  public serviceOverrides(c: Container<GreetingsFeature>) {
     return {
       halloService: () => {
         return this.hiHalloService(c.halloService());
@@ -137,9 +137,9 @@ class HiHalloModule implements Module {
 
 it('Can be decorated multiple times', async () => {
   const container = await triviality()
-    .add(GreetingsModule)
-    .add(ScreamGreetingsModule)
-    .add(HiHalloModule)
+    .add(GreetingsFeature)
+    .add(ScreamGreetingsFeature)
+    .add(HiHalloFeature)
     .build();
 
   expect(container.halloService().speak('John')).toEqual('Hi John!!!');
@@ -149,9 +149,9 @@ it('Can be decorated multiple times', async () => {
 
 it('Can be decorated in a different order', async () => {
   const container = await triviality()
-    .add(GreetingsModule)
-    .add(HiHalloModule)
-    .add(ScreamGreetingsModule)
+    .add(GreetingsFeature)
+    .add(HiHalloFeature)
+    .add(ScreamGreetingsFeature)
     .build();
 
   expect(container.halloService().speak('John')).toEqual('Hi John!!!');
@@ -161,9 +161,9 @@ it('Can be decorated in a different order', async () => {
 
 it('Can alter multiple services', async () => {
   const container = await triviality()
-    .add(GreetingsModule)
-    .add(HiHalloModule)
-    .add(ScreamGreetingsModule)
+    .add(GreetingsFeature)
+    .add(HiHalloFeature)
+    .add(ScreamGreetingsFeature)
     .build();
 
   expect(container.byeService().speak('John')).toEqual('Bye John!!!');
@@ -173,7 +173,7 @@ it('Can alter multiple services', async () => {
 
 it('Cannot add extra services', async () => {
 
-  class MyHalloModule implements Module {
+  class MyHalloFeature implements Feature {
     public serviceOverrides() {
       return {
         halloServiceDope: () => {
@@ -193,44 +193,44 @@ it('Cannot add extra services', async () => {
   }
 
   const container = await triviality()
-    .add(GreetingsModule)
-    .add(MyHalloModule as any);
+    .add(GreetingsFeature)
+    .add(MyHalloFeature as any);
 
   await expect(container.build()).rejects.toThrow('Cannot add extra service "halloServiceDope" with serviceOverrides');
 });
 
 it('Can override nothing', async () => {
-  class UselessModule implements Module {
+  class UselessFeature implements Feature {
     public serviceOverrides() {
       return {};
     }
   }
 
   const container = await triviality()
-    .add(GreetingsModule)
-    .add(UselessModule)
+    .add(GreetingsFeature)
+    .add(UselessFeature)
     .build();
 
   expect(container.halloService().speak('John')).toEqual('Hallo John');
 });
 
 it('Cannot return container', async () => {
-  class UselessModule implements Module {
-    public serviceOverrides(c: Container<GreetingsModule>) {
+  class UselessFeature implements Feature {
+    public serviceOverrides(c: Container<GreetingsFeature>) {
       return c;
     }
   }
 
   const container = await triviality()
-    .add(GreetingsModule)
-    .add(UselessModule);
+    .add(GreetingsFeature)
+    .add(UselessFeature);
 
   await expect(container.build()).rejects.toThrow('serviceOverrides should return new object with services');
 });
 
 it('Can use service as from arguments', async () => {
-  class MyHalloModule implements Module {
-    public async serviceOverrides(c: Container<GreetingsModule>) {
+  class MyHalloFeature implements Feature {
+    public async serviceOverrides(c: Container<GreetingsFeature>) {
       return {
         halloService: () => {
           return c.byeService();
@@ -240,8 +240,8 @@ it('Can use service as from arguments', async () => {
   }
 
   const container = await triviality()
-    .add(GreetingsModule)
-    .add(MyHalloModule)
+    .add(GreetingsFeature)
+    .add(MyHalloFeature)
     .build();
 
   expect(container.halloService().speak('Eric')).toEqual('Bye Eric');

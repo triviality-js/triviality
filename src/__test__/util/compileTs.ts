@@ -28,10 +28,10 @@ export async function declarationOfTs(directory: string, ts: string): Promise<st
   try {
     await exec('node_modules/.bin/tsc');
     fs.unlinkSync(tmp);
-    const definitionFile = tmp
+    const featureFile = tmp
       .replace('src', 'build/src')
       .replace('.ts', '.d.ts');
-    return fs.readFileSync(definitionFile,
+    return fs.readFileSync(featureFile,
     ).toString();
   } catch (e) {
     fs.unlinkSync(tmp);
