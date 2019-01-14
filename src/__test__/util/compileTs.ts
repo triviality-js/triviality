@@ -10,7 +10,7 @@ export async function compileTs(directory: string, ts: string): Promise<string> 
   }
   fs.writeFileSync(tmp, ts);
   try {
-    const result = await exec(`node_modules/.bin/ts-node ${tmp}`);
+    const result = await exec(`node_modules/.bin/ts-node --no-cache ${tmp}`);
     fs.unlinkSync(tmp);
     return result.stdout.toString();
   } catch (e) {
