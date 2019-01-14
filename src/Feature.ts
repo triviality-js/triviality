@@ -1,14 +1,14 @@
-import { HasRegistries, Registries } from './value/Registry';
-import { Optional } from './util/Types';
+import { Optional, PromiseOrValue } from './util/Types';
+import { HasRegistries } from './value/Registry';
 
-export interface Feature<C = {}, R extends Registries = {}> {
+export interface Feature<C = {}, R = {}> {
 
   toString(): string;
 
   /**
    * Entry point after the hole container is build. You do your general feature setup logic here.
    */
-  setup?(): void | Promise<void>;
+  setup?(): PromiseOrValue<void>;
 
   /**
    * Registries, result will be combined into one array or object.
@@ -33,7 +33,7 @@ export interface Feature<C = {}, R extends Registries = {}> {
    *     };
    *   }
    */
-  registries?(): Optional<R> | Promise<Optional<R>>;
+  registries?(): PromiseOrValue<Optional<R>>;
 
   /**
    * The entry hook to override or decorate a service.
@@ -44,5 +44,5 @@ export interface Feature<C = {}, R extends Registries = {}> {
    *    };
    *   }
    */
-  serviceOverrides?(container: Readonly<C & HasRegistries<Registries>>): Optional<C> | Promise<Optional<C>>;
+  serviceOverrides?(container: Readonly<C & HasRegistries<R>>): PromiseOrValue<Optional<C>>;
 }

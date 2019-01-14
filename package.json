@@ -1,7 +1,7 @@
 {
   "name": "triviality",
   "private": false,
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Purely typed service container",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -17,7 +17,7 @@
     "tslint": "tslint --project tsconfig.json",
     "jscpd": "jscpd",
     "jest-badges": "yarn jest-coverage && jest-coverage-badges",
-    "create-container-types": "ts-node src/cli/createContainerTypes.ts",
+    "create-types": "ts-node src/cli/createTypes.ts",
     "create-docs": "ts-node docs/build.ts",
     "create-build": "rm -fr build && yarn tsc --project tsconfig.build.json"
   },

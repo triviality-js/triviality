@@ -1,3 +1,10 @@
+
+/**
+ * Nothing interface.
+ */
+export interface Empty {
+}
+
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 /**
@@ -15,3 +22,5 @@ export type NoDuplicates<T> = {
 };
 
 export type PromiseType<T> = T extends Promise<infer U> ? U : T extends (...args: any[]) => Promise<infer J> ? J : T;
+
+export type PromiseOrValue<T> = T | Promise<T>;

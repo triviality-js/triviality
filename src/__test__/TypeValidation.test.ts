@@ -132,6 +132,32 @@ describe('TypeValidation', async () => {
         .toMatch(/Types of property 'someRegister' are incompatible./);
     });
 
+    it('Cannot add extra services with serviceOverrides defined with an OptionalContainer type', async () => {
+      // language=TypeScript
+      return expect(compileTs(__dirname, `
+        import { triviality } from '../index';
+        import { Feature } from '../Feature';
+        import { OptionalContainer } from '../Container';
+
+        class MyFeature implements Feature {
+          public serviceOverrides(): OptionalContainer<{}> {
+            return {
+              someExtraService: () => {
+                return {};
+              },
+            };
+          }
+
+        }
+
+        triviality()
+          .add(MyFeature)
+          .build();
+      `))
+        .rejects
+        .toMatch('Object literal may only specify known properties, and \'someExtraService\' does not exist in type ');
+    });
+
     it.skip('Cannot add extra services with serviceOverrides', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `

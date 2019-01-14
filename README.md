@@ -1,10 +1,10 @@
 # Table of Contents
 
 * [Triviality](#triviality)
-  * [Why Triviality as a ServiceContainer](#why-triviality-as-a-servicecontainer)
+  * [Why should you use Triviality](#why-should-you-use-triviality)
     * [Typescript to the rescue](#typescript-to-the-rescue)
   * [Features](#features)
-  * [Registers](#registers)
+  * [Service registries](#service-registries)
   * [Setup](#setup)
   * [Service overrides & decorators](#service-overrides-&-decorators)
     * [Overriding a service](#overriding-a-service)
@@ -33,7 +33,7 @@ The container allows you to centralize the way objects are constructed.
 It makes your life easier, promotes a strong architecture. It’s
 a design pattern aiming to make high-level code reusable.
 
-## Why Triviality as a ServiceContainer
+## Why should you use Triviality
 
 Triviality is inspired by the idea that non-trival issues should not
 take your precious time and **infect** your application code. **Triviality** highly aims to keep away from your application code.
@@ -54,7 +54,7 @@ far more difficult and complex task.
 Triviality uses the full power of Typescript to ensure the ServiceContainer
 is connected properly before your application code even has executed.
 
-> It's not required to use Typescript to use Triviality, but it's highly recommended.
+> It's not required to use Typescript when using Triviality, but it's highly recommended.
 
 ## Features
 
@@ -76,7 +76,8 @@ export class LogFeature implements Feature {
 ```
         
 
-As you can see a feature class has functions. The function name is the service name. The function is the service factory implementation. Before we can call the service from the container
+As you can see a feature class has functions. The function name is the service name.
+The function implementation is the service definition. Before we can use the service from the service container
 we need to build it:   
 
 
@@ -94,7 +95,7 @@ triviality()
 ```
         
 
-Now we can fetch the 'logger' service from the container and start using it. In the build step of the container, function results will be memorized and can be threaded as a 
+Now we can fetch the 'logger' service from the service container and start using it. In the build step of the container, function results will be memorized and can be threaded as a
 singleton based on the service factory arguments. For example, create a service with a single service factory argument:
 
 
@@ -147,7 +148,7 @@ Jane: Hi John!
 
 ___
 
-The container service function types are inherited from the Feature.
+The service container inherited the service types from all added features.
 This gives typescript the option to **strictly type check** if everything is connected properly. 
 And you the benefits of **code completion** and the option to quickly traverse the service chain.
 ___
@@ -173,7 +174,7 @@ export class HalloFeature implements Feature {
 ```
         
 
-Build the container with missing 'LogFeature' dependency:
+Build the service container with missing 'LogFeature' dependency:
 
 
 ```typescript
@@ -196,7 +197,7 @@ If you forget a feature you see a nice error of typescript in your IDE.
       Types of parameters 'container' and 'container' are incompatible.
         Property 'logger' is missing in type '{}' but required in type 'Readonly<Pick<LogFeature, "logger">>'.
 
-Let's fix the container by adding the LogFeature:
+Let's fix the service container by adding the LogFeature:
 
 
 ```typescript
@@ -221,11 +222,36 @@ Hallo John
 ```
         
 
-## Registers
+## Service registries
 
-Registers are a collection of services so another feature can use the registered services without knowing about anything about the other feature.
+For triviality a service registry is a collection of services that share a common interface.
+Multiple Features can *register* services to the service registry without knowing
+anything about the other features.
 
-Let's create a register for 'console commands'
+For example let's create a service register for 'console commands' the services that are registered
+should match the common interface 'ConsoleCommand':
+
+
+```typescript
+import { ConsoleInput } from './ConsoleInput';
+import { ConsoleOutput } from './ConsoleOutput';
+
+export interface ConsoleCommand {
+
+  name(): string;
+
+  execute(input: ConsoleInput, output: ConsoleOutput): void | Promise<void>;
+}
+```
+        
+
+For triviality a service registry is defined as a function
+
+```typescript
+() => ConsoleCommand[];
+```
+
+To define a registry inside a feature it needs to implement the 'registries' function.
 
 
 ```typescript
@@ -246,18 +272,20 @@ export class ConsoleFeature implements Feature {
 ```
         
 
-As a feature, the 'registries' return value is an object with functions. The object property name represents the registry name.
-The implementation returns the services that need to be added to the registry. It's possible to add a registry to multiple feature. In the next examples, both feature return one command service inside the registry function.
+The 'registries' returns an associative-map, the key represents the name of the registry and the value the service registry.
+
+It's possible to add a registry to multiple feature. In the next examples, both feature return one command service inside the registry function.
  
 
 ```typescript
-import { Feature } from 'triviality';
+import { Feature, Registries } from 'triviality';
 import { ConsoleCommand } from '../ConsoleCommand';
 import { HalloConsoleCommand } from './HalloConsoleCommand';
+import { ConsoleFeature } from '../ConsoleFeature';
 
 export class HalloConsoleFeature implements Feature {
 
-  public registries() {
+  public registries(): Registries<ConsoleFeature> {
     return {
       consoleCommands: (): ConsoleCommand[] => {
         return [this.halloConsoleCommand()];
@@ -275,13 +303,14 @@ export class HalloConsoleFeature implements Feature {
 
 
 ```typescript
-import { Feature } from 'triviality';
+import { Feature, OptionalRegistries } from 'triviality';
 import { ConsoleCommand } from '../ConsoleCommand';
 import { ByeConsoleCommand } from './ByeConsoleCommand';
+import { ConsoleFeature } from '../ConsoleFeature';
 
 export class ByeConsoleFeature implements Feature {
 
-  public registries() {
+  public registries(): OptionalRegistries<ConsoleFeature> {
     return {
       consoleCommands: (): ConsoleCommand[] => {
         return [this.byeConsoleCommand()];
@@ -297,8 +326,8 @@ export class ByeConsoleFeature implements Feature {
 ```
         
 
-Multiple feature can define the registry. The implementation needs to match between feature otherwise typescript will assist you with strict type checking.
-During the container build phase, the registries will be combined. 
+Multiple feature can define the registry. The implementation needs to match between features otherwise typescript will assist you with strict type checking errors.
+During the service container build phase, the registries will be combined, so all registry functions will return the complete combined result.
 
 
 ```typescript
@@ -332,7 +361,7 @@ export class ConsoleFeature implements Feature {
 ```
         
 
-Now we can combine the different command feature and build the container.
+Now we can combine the different command feature and build the service container.
 
 
 ```typescript
@@ -365,9 +394,12 @@ Bye john !!!
 ```
         
 
-You can also fetch all registries from the container
+Registries can be fetched from the service container.
 
 !["containerRegistries"](./example/registries/containerRegistries.png)
+
+Typescript will verify if registers interface matches over multiple Features. You can add an extra verify by adding
+response type to the feature registry function.
 
 ## Setup
 
@@ -477,13 +509,13 @@ If we want to use a different way to greet we need to override the 'greetingServ
 
 
 ```typescript
-import { Container, Feature, Optional } from 'triviality';
+import { Feature, OptionalContainer } from 'triviality';
 import { GreetingsFeature } from './GreetingsFeature';
 import { FormalGreetingsService } from './services/FormalGreetingsService';
 import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 
 export class FormalGreetingsFeature implements Feature {
-  public serviceOverrides(): Optional<Container<GreetingsFeature>> {
+  public serviceOverrides(): OptionalContainer<GreetingsFeature> {
     return {
       greetingService: () => this.formalGreetingsService(),
     };
@@ -527,7 +559,7 @@ Pleased to meet you Triviality
 
 ### Decorating a service
 
-If we still we to use the original service from the container. We can fetch the original service from the 'serviceOverrides' container argument.
+If we still we to use the original service from the service container. We can fetch the original service from the 'serviceOverrides' container argument.
  
 Let's be less formal by screaming the sentence: 
 
@@ -550,12 +582,12 @@ export class ScreamGreetingsService implements GreetingsServiceInterface {
         
 
 ```typescript
-import { Container, Feature, Optional } from 'triviality';
+import { Container, Feature, OptionalContainer } from 'triviality';
 import { ScreamGreetingsService } from './services/ScreamGreetingsService';
 import { GreetingsFeature } from './GreetingsFeature';
 
 export class ScreamGreetingsFeature implements Feature {
-  public serviceOverrides(container: Container<GreetingsFeature>): Optional<Container<GreetingsFeature>> {
+  public serviceOverrides(container: Container<GreetingsFeature>): OptionalContainer<GreetingsFeature> {
     return {
       greetingService: () => new ScreamGreetingsService(container.greetingService()),
     };

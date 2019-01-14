@@ -1,5 +1,5 @@
 import { Feature } from '../Feature';
-import { triviality } from '../index';
+import { ContainerError, OptionalContainer, triviality } from '../index';
 import { Container } from '../Container';
 
 interface SpeakServiceInterface {
@@ -37,7 +37,7 @@ class GreetingsFeature implements Feature {
 it('Override service', async () => {
 
   class MyHalloFeature implements Feature {
-    public serviceOverrides() {
+    public serviceOverrides(): OptionalContainer<GreetingsFeature> {
       return {
         halloService: () => {
           return this.ignoreService();
@@ -67,7 +67,7 @@ it('Override service', async () => {
 it('Can decorate by function', async () => {
 
   class MyHalloFeature implements Feature {
-    public async serviceOverrides(c: Container<GreetingsFeature>) {
+    public async serviceOverrides(c: Container<GreetingsFeature>): Promise<OptionalContainer<GreetingsFeature>> {
       return {
         halloService: () => {
           return this.officialHalloService(c.halloService());
@@ -261,4 +261,50 @@ it('Can override properties', async () => {
     })
     .build();
   expect(container.property).toEqual(2);
+});
+
+it('Can not directly fetch registries from service overrides', async () => {
+  class MyFeatures implements Feature {
+    public property: number[] = [1];
+
+    public registries() {
+      return {
+        testRegistry: () => [2],
+      };
+    }
+  }
+  const container = triviality()
+    .add(MyFeatures)
+    .add(class implements Feature {
+      public serviceOverrides(c: Container<MyFeatures>): OptionalContainer<MyFeatures> {
+        return {
+          property: c.registries().testRegistry(),
+        };
+      }
+    })
+    .build();
+  return expect(container).rejects.toEqual(ContainerError.containerIsLockedDuringBuild());
+});
+
+it('Can indirectly fetch registries from service overrides', async () => {
+  class MyFeatures implements Feature {
+    public property: () => number = () => 1;
+
+    public registries() {
+      return {
+        testRegistry: () => [2],
+      };
+    }
+  }
+  const container = await triviality()
+    .add(MyFeatures)
+    .add(class implements Feature {
+      public serviceOverrides(c: Container<MyFeatures>) {
+        return {
+          property: () => c.registries().testRegistry()[0],
+        };
+      }
+    })
+    .build();
+  expect(container.property()).toEqual(2);
 });

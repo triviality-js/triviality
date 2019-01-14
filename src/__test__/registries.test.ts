@@ -1,5 +1,5 @@
 import { Feature } from '../Feature';
-import { triviality } from '../index';
+import { OptionalRegistries, triviality } from '../index';
 import { Container } from '../Container';
 
 it('A feature can define a register', async () => {
@@ -186,7 +186,7 @@ it('Feature can add registry to the existing ones', async () => {
   }
 
   class MyFeature implements Feature {
-    public registries() {
+    public registries(): OptionalRegistries<PersonFeature, ShopsFeature> {
       return {
         persons: (): string[] => {
           return ['Superman'];

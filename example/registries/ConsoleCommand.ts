@@ -3,7 +3,7 @@ import { ConsoleOutput } from './ConsoleOutput';
 
 export interface ConsoleCommand {
 
-  names(): string[];
+  name(): string;
 
   execute(input: ConsoleInput, output: ConsoleOutput): void | Promise<void>;
 }

@@ -4,6 +4,7 @@ import { OverrideableReferenceContainer } from './OverrideableReferenceContainer
 import { Service, ServiceName } from './Service';
 import { memorize } from '../util/memorize';
 import { FeatureDependency } from './FeatureDependency';
+import { RegistriesMap } from './Registry';
 
 export class BuildableContainer<C> {
   /**
@@ -13,9 +14,14 @@ export class BuildableContainer<C> {
 
   constructor(private container: C) {
     this.defineLockedService('container', container as any);
+    Object.defineProperty(this.container, 'registries', {
+      get: ContainerError.throwIsLockedDuringBuild,
+      set: ContainerError.throwIsLocked,
+      configurable: true,
+    });
   }
 
-  public defineLockedFeatureervice(dependency: FeatureDependency, name: ServiceName, service: Service) {
+  public defineLockedFeatureService(dependency: FeatureDependency, name: ServiceName, service: Service) {
     if (typeof service === 'function') {
       this.defineLockedService(name, memorize(service.bind(this.container)));
       dependency.defineProperty(this, name as any);
@@ -34,6 +40,10 @@ export class BuildableContainer<C> {
       set: ContainerError.throwIsLocked,
       configurable: true,
     });
+  }
+
+  public defineRegistries(registries: RegistriesMap) {
+    this.services.registries = () => registries;
   }
 
   public overrideService(name: ServiceName, value: Service) {

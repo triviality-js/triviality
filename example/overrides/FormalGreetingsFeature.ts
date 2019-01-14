@@ -1,10 +1,10 @@
-import { Container, Feature, Optional } from '../../src';
+import { Feature, OptionalContainer } from '../../src';
 import { GreetingsFeature } from './GreetingsFeature';
 import { FormalGreetingsService } from './services/FormalGreetingsService';
 import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 
 export class FormalGreetingsFeature implements Feature {
-  public serviceOverrides(): Optional<Container<GreetingsFeature>> {
+  public serviceOverrides(): OptionalContainer<GreetingsFeature> {
     return {
       greetingService: () => this.formalGreetingsService(),
     };

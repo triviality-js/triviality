@@ -4,8 +4,8 @@ import { ConsoleCommand } from '../ConsoleCommand';
 
 export class ByeConsoleCommand implements ConsoleCommand {
 
-  public names(): string[] {
-    return ['bye'];
+  public name(): string {
+    return 'bye';
   }
 
   public execute(input: ConsoleInput, output: ConsoleOutput) {

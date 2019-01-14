@@ -12,9 +12,7 @@ export class ConsoleService {
               private input: ConsoleInput = new ProcessInput(),
               private output: ConsoleOutput = new ProcessOutput()) {
     commands.forEach((command) => {
-      command.names().forEach((name) => {
-        this.commandMap[name] = command;
-      });
+      this.commandMap[command.name()] = command;
     });
   }
 

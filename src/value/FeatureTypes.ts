@@ -4,7 +4,7 @@
  * Moved Feature types to this file instead of Feature.ts, so users won't be distracted of complex types they don't need to use.
  */
 
-import { NoDuplicates, Omit, PromiseType } from '../util/Types';
+import { Empty, NoDuplicates, Omit, PromiseType } from '../util/Types';
 import { Feature } from '../Feature';
 import { HasRegistries, RegistriesMap } from './Registry';
 
@@ -16,7 +16,7 @@ export const FeatureExcludes: Array<keyof Feature> = [('container') as any, 'reg
 export type FeatureOptionalRegistries<C, R> = Feature<C, R & RegistriesMap>;
 
 /**
- * Feature constructor with type guard it never return a duplicate service of the container.
+ * Feature constructor with type guard it can never return a duplicate service of the container.
  */
 export type FeatureConstructor<T, Container, Registries> = new (container: Container & HasRegistries<Registries>) => T & NoDuplicates<Container>;
 
@@ -28,14 +28,14 @@ export type FeatureServices<T extends Feature> = T extends { container: any } ? 
 /**
  * Return type of feature registries.
  */
-export type FeatureRegistries<T extends Feature> = T extends HasRegistries<{}> ? PromiseType<ReturnType<NonNullable<T['registries']>>> : {};
+export type FeatureRegistries<T extends Feature> = T extends HasRegistries<{}> ? PromiseType<ReturnType<NonNullable<T['registries']>>> : Empty;
 
 /**
  * Feature can be null. {@see FeatureServices}
  */
-export type OptionalFeatureServices<T extends (null | Feature)> = T extends null ? {} : FeatureServices<NonNullable<T>>;
+export type OptionalFeatureServices<T extends (null | Feature)> = T extends null ? Empty : FeatureServices<NonNullable<T>>;
 
 /**
  * Feature can be null. {@see FeatureRegistries}
  */
-export type OptionalFeatureRegistries<T extends (null | Feature)> = T extends null ? {} : FeatureRegistries<NonNullable<T>>;
+export type OptionalFeatureRegistries<T extends (null | Feature)> = T extends null ? Empty : FeatureRegistries<NonNullable<T>>;

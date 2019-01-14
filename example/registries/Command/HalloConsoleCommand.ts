@@ -4,8 +4,8 @@ import { ConsoleCommand } from '../ConsoleCommand';
 
 export class HalloConsoleCommand implements ConsoleCommand {
 
-  public names(): string[] {
-    return ['hallo'];
+  public name(): string {
+    return 'hallo';
   }
 
   public execute(input: ConsoleInput, output: ConsoleOutput) {

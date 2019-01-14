@@ -7,7 +7,7 @@ declare class Feature1 implements Feature {
         hallo: () => string;
     };
 }
-export declare const container: import(\\"..\\").ContainerFactory<Pick<Feature1, \\"halloService\\">, {}>;
+export declare const container: import(\\"..\\").ContainerFactory<Pick<Feature1, \\"halloService\\">, import(\\"..\\").Empty>;
 export {};
 "
 `;
