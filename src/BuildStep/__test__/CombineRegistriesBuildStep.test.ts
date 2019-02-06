@@ -1,42 +1,4 @@
-import { mergeRegistries, mergeRegistryValues } from '../Registry';
-
-describe('mergeRegistries', () => {
-  it('Can create new index', () => {
-    const registry1 = () => [1, 2];
-    const registry2 = () => ({ John: 23, Jane: 21 });
-
-    const merged = mergeRegistries({}, {
-      registry1,
-      registry2,
-    });
-    expect(merged).toEqual({
-      registry1: [registry1],
-      registry2: [registry2],
-    });
-  });
-
-  it('Add to existing indexes', () => {
-
-    const registry1 = () => [1, 2];
-    const registry2 = () => ({ John: 23, Jane: 21 });
-
-    const merged = mergeRegistries(
-      {
-        registry1: [registry1],
-        registry2: [registry2],
-      },
-      {
-        registry1,
-        registry2,
-      },
-    );
-    expect(merged).toEqual({
-      registry1: [registry1, registry1],
-      registry2: [registry2, registry2],
-    });
-  });
-
-});
+import {  mergeRegistryValues } from '../MergeRegistries';
 
 describe('mergeRegistryValues', () => {
 

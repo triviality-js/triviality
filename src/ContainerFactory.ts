@@ -1,111 +1,69 @@
-import { FeatureConstructor, FeatureConstructor as FC, FeatureOptionalRegistries as FO, FeatureRegistries as FR, FeatureServices as FS } from './value/FeatureTypes';
-import { ContainerError } from './ContainerError';
-import { BuildableContainer } from './value/BuildableContainer';
-import { FeatureDependencyCollection } from './value/FeatureDependencyCollection';
-import { FeatureDependency } from './value/FeatureDependency';
-import { getAllPropertyValues } from './util/getAllPropertyNames';
-import { HasRegistries } from './value/Registry';
+import {
+  FeatureConstructor,
+  FeatureConstructor as FC,
+  FeatureOptionalRegistries as FO,
+  FeatureRegistries as FR,
+  FeatureServices as FS,
+} from './Type/FeatureTypes';
+import { BuildableContainer } from './Buildable/BuildableContainer';
+import { FeatureDependencyCollection } from './Value/FeatureDependencyCollection';
+import { ServiceContainer } from './Type/Container';
+import { BuildContext } from './BuildStep/BuildStep';
+import { BuildChain } from './BuildStep/BuildChain';
 
 /**
  * Container factory.
  */
-export class ContainerFactory<C /* Container */, R /* Registry */> {
+export class ContainerFactory<S /* Services */, R /* Registries */> {
 
   public static create(): ContainerFactory<{}, {}> {
-    return new ContainerFactory<{}, {}>(new BuildableContainer({}));
+    return new ContainerFactory<{}, {}>();
   }
 
-  private featureClasses: Array<FeatureConstructor<any, C, R>> = [];
-  private feature: FeatureDependencyCollection = new FeatureDependencyCollection();
-  private isBuild = false;
-
-  private constructor(private container: BuildableContainer<C>) {
+  public constructor(
+    private featureClasses: Array<FeatureConstructor<any, S, R>> = [],
+    private buildChain = new BuildChain<S, R>()) {
   }
 
   /**
-   * Only add feature as second argument when there are circular dependencies between them.
+   * Only add feature as rest argument when there are circular dependencies between them.
    */
-  public add<F1 extends FO<C, R>>(f1: FC<F1, C, R>): ContainerFactory<(C & FS<F1>), (R & FR<F1>)>;
-  public add<F1 extends FO<C, R>, F2 extends FO<C, R>>(f1: FC<F1, C & FS<F2>, R & FR<F2>>, f2: FC<F2, C & FS<F1>, R & FR<F1>>): ContainerFactory<(C & FS<F1> & FS<F2>), (R & FR<F1> & FR<F2>)>;
-  public add<F1 extends FO<C, R>, F2 extends FO<C, R>, F3 extends FO<C, R>>(f1: FC<F1, C & FS<F2> & FS<F3>, R & FR<F2> & FR<F3>>, f2: FC<F2, C & FS<F1> & FS<F3>, R & FR<F1> & FR<F3>>, f3: FC<F3, C & FS<F1> & FS<F2>, R & FR<F1> & FR<F2>>): ContainerFactory<(C & FS<F1> & FS<F2> & FS<F3>), (R & FR<F1> & FR<F2> & FR<F3>)>;
-  public add<F1 extends FO<C, R>, F2 extends FO<C, R>, F3 extends FO<C, R>, F4 extends FO<C, R>>(f1: FC<F1, C & FS<F2> & FS<F3> & FS<F4>, R & FR<F2> & FR<F3> & FR<F4>>, f2: FC<F2, C & FS<F1> & FS<F3> & FS<F4>, R & FR<F1> & FR<F3> & FR<F4>>, f3: FC<F3, C & FS<F1> & FS<F2> & FS<F4>, R & FR<F1> & FR<F2> & FR<F4>>, f4: FC<F4, C & FS<F1> & FS<F2> & FS<F3>, R & FR<F1> & FR<F2> & FR<F3>>): ContainerFactory<(C & FS<F1> & FS<F2> & FS<F3> & FS<F4>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4>)>;
-  public add<F1 extends FO<C, R>, F2 extends FO<C, R>, F3 extends FO<C, R>, F4 extends FO<C, R>, F5 extends FO<C, R>>(f1: FC<F1, C & FS<F2> & FS<F3> & FS<F4> & FS<F5>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5>>, f2: FC<F2, C & FS<F1> & FS<F3> & FS<F4> & FS<F5>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5>>, f3: FC<F3, C & FS<F1> & FS<F2> & FS<F4> & FS<F5>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5>>, f4: FC<F4, C & FS<F1> & FS<F2> & FS<F3> & FS<F5>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5>>, f5: FC<F5, C & FS<F1> & FS<F2> & FS<F3> & FS<F4>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4>>): ContainerFactory<(C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5>)>;
-  public add<F1 extends FO<C, R>, F2 extends FO<C, R>, F3 extends FO<C, R>, F4 extends FO<C, R>, F5 extends FO<C, R>, F6 extends FO<C, R>>(f1: FC<F1, C & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6>>, f2: FC<F2, C & FS<F1> & FS<F3> & FS<F4> & FS<F5> & FS<F6>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5> & FR<F6>>, f3: FC<F3, C & FS<F1> & FS<F2> & FS<F4> & FS<F5> & FS<F6>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5> & FR<F6>>, f4: FC<F4, C & FS<F1> & FS<F2> & FS<F3> & FS<F5> & FS<F6>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5> & FR<F6>>, f5: FC<F5, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F6>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F6>>, f6: FC<F6, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5>>): ContainerFactory<(C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6>)>;
-  public add<F1 extends FO<C, R>, F2 extends FO<C, R>, F3 extends FO<C, R>, F4 extends FO<C, R>, F5 extends FO<C, R>, F6 extends FO<C, R>, F7 extends FO<C, R>>(f1: FC<F1, C & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7>>, f2: FC<F2, C & FS<F1> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7>>, f3: FC<F3, C & FS<F1> & FS<F2> & FS<F4> & FS<F5> & FS<F6> & FS<F7>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5> & FR<F6> & FR<F7>>, f4: FC<F4, C & FS<F1> & FS<F2> & FS<F3> & FS<F5> & FS<F6> & FS<F7>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5> & FR<F6> & FR<F7>>, f5: FC<F5, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F6> & FS<F7>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F6> & FR<F7>>, f6: FC<F6, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F7>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F7>>, f7: FC<F7, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6>>): ContainerFactory<(C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7>)>;
-  public add<F1 extends FO<C, R>, F2 extends FO<C, R>, F3 extends FO<C, R>, F4 extends FO<C, R>, F5 extends FO<C, R>, F6 extends FO<C, R>, F7 extends FO<C, R>, F8 extends FO<C, R>>(f1: FC<F1, C & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8>>, f2: FC<F2, C & FS<F1> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8>>, f3: FC<F3, C & FS<F1> & FS<F2> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8>>, f4: FC<F4, C & FS<F1> & FS<F2> & FS<F3> & FS<F5> & FS<F6> & FS<F7> & FS<F8>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5> & FR<F6> & FR<F7> & FR<F8>>, f5: FC<F5, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F6> & FS<F7> & FS<F8>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F6> & FR<F7> & FR<F8>>, f6: FC<F6, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F7> & FS<F8>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F7> & FR<F8>>, f7: FC<F7, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F8>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F8>>, f8: FC<F8, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7>>): ContainerFactory<(C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8>)>;
-  public add<F1 extends FO<C, R>, F2 extends FO<C, R>, F3 extends FO<C, R>, F4 extends FO<C, R>, F5 extends FO<C, R>, F6 extends FO<C, R>, F7 extends FO<C, R>, F8 extends FO<C, R>, F9 extends FO<C, R>>(f1: FC<F1, C & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>, f2: FC<F2, C & FS<F1> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>, f3: FC<F3, C & FS<F1> & FS<F2> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>, f4: FC<F4, C & FS<F1> & FS<F2> & FS<F3> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>, f5: FC<F5, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>, f6: FC<F6, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F7> & FR<F8> & FR<F9>>, f7: FC<F7, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F8> & FR<F9>>, f8: FC<F8, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F9>>, f9: FC<F9, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8>>): ContainerFactory<(C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>)>;
-  public add<F1 extends FO<C, R>, F2 extends FO<C, R>, F3 extends FO<C, R>, F4 extends FO<C, R>, F5 extends FO<C, R>, F6 extends FO<C, R>, F7 extends FO<C, R>, F8 extends FO<C, R>, F9 extends FO<C, R>, F10 extends FO<C, R>>(f1: FC<F1, C & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f2: FC<F2, C & FS<F1> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f3: FC<F3, C & FS<F1> & FS<F2> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f4: FC<F4, C & FS<F1> & FS<F2> & FS<F3> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f5: FC<F5, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f6: FC<F6, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f7: FC<F7, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F8> & FR<F9> & FR<F10>>, f8: FC<F8, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F9> & FR<F10>>, f9: FC<F9, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F10>>, f10: FC<F10, C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>): ContainerFactory<(C & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>)>;
-  public add(...featureClasses: Array<FeatureConstructor<any, C, R>>): ContainerFactory<any, any> {
-    this.assertNotYetBuild();
-    for (const FeatureClass of featureClasses) {
-      this.featureClasses.push(FeatureClass);
-    }
-    return this;
+  public add<F1 extends FO<S, R>>(f1: FC<F1, S, R>): ContainerFactory<(S & FS<F1>), (R & FR<F1>)>;
+  public add<F1 extends FO<S, R>, F2 extends FO<S, R>>(f1: FC<F1, S & FS<F2>, R & FR<F2>>, f2: FC<F2, S & FS<F1>, R & FR<F1>>): ContainerFactory<(S & FS<F1> & FS<F2>), (R & FR<F1> & FR<F2>)>;
+  public add<F1 extends FO<S, R>, F2 extends FO<S, R>, F3 extends FO<S, R>>(f1: FC<F1, S & FS<F2> & FS<F3>, R & FR<F2> & FR<F3>>, f2: FC<F2, S & FS<F1> & FS<F3>, R & FR<F1> & FR<F3>>, f3: FC<F3, S & FS<F1> & FS<F2>, R & FR<F1> & FR<F2>>): ContainerFactory<(S & FS<F1> & FS<F2> & FS<F3>), (R & FR<F1> & FR<F2> & FR<F3>)>;
+  public add<F1 extends FO<S, R>, F2 extends FO<S, R>, F3 extends FO<S, R>, F4 extends FO<S, R>>(f1: FC<F1, S & FS<F2> & FS<F3> & FS<F4>, R & FR<F2> & FR<F3> & FR<F4>>, f2: FC<F2, S & FS<F1> & FS<F3> & FS<F4>, R & FR<F1> & FR<F3> & FR<F4>>, f3: FC<F3, S & FS<F1> & FS<F2> & FS<F4>, R & FR<F1> & FR<F2> & FR<F4>>, f4: FC<F4, S & FS<F1> & FS<F2> & FS<F3>, R & FR<F1> & FR<F2> & FR<F3>>): ContainerFactory<(S & FS<F1> & FS<F2> & FS<F3> & FS<F4>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4>)>;
+  public add<F1 extends FO<S, R>, F2 extends FO<S, R>, F3 extends FO<S, R>, F4 extends FO<S, R>, F5 extends FO<S, R>>(f1: FC<F1, S & FS<F2> & FS<F3> & FS<F4> & FS<F5>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5>>, f2: FC<F2, S & FS<F1> & FS<F3> & FS<F4> & FS<F5>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5>>, f3: FC<F3, S & FS<F1> & FS<F2> & FS<F4> & FS<F5>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5>>, f4: FC<F4, S & FS<F1> & FS<F2> & FS<F3> & FS<F5>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5>>, f5: FC<F5, S & FS<F1> & FS<F2> & FS<F3> & FS<F4>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4>>): ContainerFactory<(S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5>)>;
+  public add<F1 extends FO<S, R>, F2 extends FO<S, R>, F3 extends FO<S, R>, F4 extends FO<S, R>, F5 extends FO<S, R>, F6 extends FO<S, R>>(f1: FC<F1, S & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6>>, f2: FC<F2, S & FS<F1> & FS<F3> & FS<F4> & FS<F5> & FS<F6>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5> & FR<F6>>, f3: FC<F3, S & FS<F1> & FS<F2> & FS<F4> & FS<F5> & FS<F6>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5> & FR<F6>>, f4: FC<F4, S & FS<F1> & FS<F2> & FS<F3> & FS<F5> & FS<F6>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5> & FR<F6>>, f5: FC<F5, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F6>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F6>>, f6: FC<F6, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5>>): ContainerFactory<(S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6>)>;
+  public add<F1 extends FO<S, R>, F2 extends FO<S, R>, F3 extends FO<S, R>, F4 extends FO<S, R>, F5 extends FO<S, R>, F6 extends FO<S, R>, F7 extends FO<S, R>>(f1: FC<F1, S & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7>>, f2: FC<F2, S & FS<F1> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7>>, f3: FC<F3, S & FS<F1> & FS<F2> & FS<F4> & FS<F5> & FS<F6> & FS<F7>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5> & FR<F6> & FR<F7>>, f4: FC<F4, S & FS<F1> & FS<F2> & FS<F3> & FS<F5> & FS<F6> & FS<F7>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5> & FR<F6> & FR<F7>>, f5: FC<F5, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F6> & FS<F7>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F6> & FR<F7>>, f6: FC<F6, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F7>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F7>>, f7: FC<F7, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6>>): ContainerFactory<(S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7>)>;
+  public add<F1 extends FO<S, R>, F2 extends FO<S, R>, F3 extends FO<S, R>, F4 extends FO<S, R>, F5 extends FO<S, R>, F6 extends FO<S, R>, F7 extends FO<S, R>, F8 extends FO<S, R>>(f1: FC<F1, S & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8>>, f2: FC<F2, S & FS<F1> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8>>, f3: FC<F3, S & FS<F1> & FS<F2> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8>>, f4: FC<F4, S & FS<F1> & FS<F2> & FS<F3> & FS<F5> & FS<F6> & FS<F7> & FS<F8>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5> & FR<F6> & FR<F7> & FR<F8>>, f5: FC<F5, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F6> & FS<F7> & FS<F8>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F6> & FR<F7> & FR<F8>>, f6: FC<F6, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F7> & FS<F8>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F7> & FR<F8>>, f7: FC<F7, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F8>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F8>>, f8: FC<F8, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7>>): ContainerFactory<(S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8>)>;
+  public add<F1 extends FO<S, R>, F2 extends FO<S, R>, F3 extends FO<S, R>, F4 extends FO<S, R>, F5 extends FO<S, R>, F6 extends FO<S, R>, F7 extends FO<S, R>, F8 extends FO<S, R>, F9 extends FO<S, R>>(f1: FC<F1, S & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>, f2: FC<F2, S & FS<F1> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>, f3: FC<F3, S & FS<F1> & FS<F2> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>, f4: FC<F4, S & FS<F1> & FS<F2> & FS<F3> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>, f5: FC<F5, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>, f6: FC<F6, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F7> & FR<F8> & FR<F9>>, f7: FC<F7, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F8> & FR<F9>>, f8: FC<F8, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F9>>, f9: FC<F9, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8>>): ContainerFactory<(S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>)>;
+  public add<F1 extends FO<S, R>, F2 extends FO<S, R>, F3 extends FO<S, R>, F4 extends FO<S, R>, F5 extends FO<S, R>, F6 extends FO<S, R>, F7 extends FO<S, R>, F8 extends FO<S, R>, F9 extends FO<S, R>, F10 extends FO<S, R>>(f1: FC<F1, S & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f2: FC<F2, S & FS<F1> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f3: FC<F3, S & FS<F1> & FS<F2> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f4: FC<F4, S & FS<F1> & FS<F2> & FS<F3> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f5: FC<F5, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f6: FC<F6, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F7> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F7> & FR<F8> & FR<F9> & FR<F10>>, f7: FC<F7, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F8> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F8> & FR<F9> & FR<F10>>, f8: FC<F8, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F9> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F9> & FR<F10>>, f9: FC<F9, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F10>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F10>>, f10: FC<F10, S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9>, R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9>>): ContainerFactory<(S & FS<F1> & FS<F2> & FS<F3> & FS<F4> & FS<F5> & FS<F6> & FS<F7> & FS<F8> & FS<F9> & FS<F10>), (R & FR<F1> & FR<F2> & FR<F3> & FR<F4> & FR<F5> & FR<F6> & FR<F7> & FR<F8> & FR<F9> & FR<F10>)>;
+  public add(...featureClasses: Array<FeatureConstructor<any, S, R>>): ContainerFactory<any, any> {
+    return new ContainerFactory([...this.featureClasses, ...featureClasses], this.buildChain);
   }
 
-  public async build(): Promise<C & HasRegistries<R>> {
-    this.assertNotYetBuild();
-    this.isBuild = true;
-
-    this.combineServices();
-
-    await this.overrideServices();
-    this.container.freezeContainer();
-
-    await this.combineRegistries();
-    this.container.freezeContainer();
-
-    await this.setup();
-
-    return this.container.getReference() as any;
+  public async build(): Promise<ServiceContainer<S, R>> {
+    const context = this.createBuildContext();
+    const { buildChain, container } = context;
+    for (const step of buildChain.getStepsInOrder()) {
+      await step.build(context);
+    }
+    return container.getReference();
   }
 
-  private combineServices() {
-    for (const FeatureClass of this.featureClasses) {
-      const feature = new FeatureDependency(new FeatureClass(this.container.getReference() as any));
-      this.feature.add(feature);
-      for (const [name, service] of feature.getServices()) {
-        this.container.defineLockedFeatureService(feature, name, service);
-      }
-    }
-  }
-
-  private async combineRegistries() {
-    const registries = await this.feature.getRegistries();
-    this.container.defineRegistries(registries);
-    for (const feature of this.feature.withRegistries().toArray()) {
-      feature.defineProperty(this.container, 'registries' as any);
-    }
-  }
-
-  private async setup() {
-    for (const feature of this.feature.withSetupsFunctions().toArray()) {
-      await feature.getSetupFunction()();
-    }
-  }
-
-  private async overrideServices() {
-    for (const feature of this.feature.withServiceOverridesFunctions().toArray()) {
-      const container = this.container.getOverrideableReferenceContainer();
-      const returnValue = await feature.getServiceOverrideFunction()(container.getReference());
-      if (container.getReference() === returnValue || this.container.getReference() === returnValue) {
-        throw ContainerError.shouldReturnNewObjectWithServices();
-      }
-      const overrides = getAllPropertyValues(returnValue);
-      if (overrides.length === 0) {
-        container.freezeContainer();
-        continue;
-      }
-      for (const [name, service] of overrides) {
-        container.overrideService(name, service);
-      }
-      container.freezeContainer();
-    }
-  }
-
-  private assertNotYetBuild() {
-    if (this.isBuild) {
-      throw ContainerError.containerAlreadyBuild();
-    }
+  /**
+   * Only used between Buildable feature and maybe for debuggable purposes.
+   */
+  public createBuildContext(): BuildContext<S, R> {
+    // tslint:disable-next-line
+    const { featureClasses, buildChain } = this;
+    const features = new FeatureDependencyCollection();
+    const container = new BuildableContainer<S, R>();
+    return {
+      features,
+      container,
+      featureClasses,
+      buildChain,
+    };
   }
 }

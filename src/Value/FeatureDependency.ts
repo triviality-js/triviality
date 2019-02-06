@@ -1,9 +1,9 @@
-import { Feature } from '../Feature';
+import { Feature } from '../Type/Feature';
 import { getAllPropertyNames } from '../util/getAllPropertyNames';
-import { Service, ServiceName } from './Service';
-import { BuildableContainer } from './BuildableContainer';
-import { RegistriesMap } from './Registry';
-import { FeatureExcludes } from './FeatureTypes';
+import { Service, ServiceName } from '../Type/Service';
+import { BuildableContainer } from '../Buildable/BuildableContainer';
+import { RegistriesMap } from '../Type/Registry';
+import { FeatureExcludes } from '../Type/FeatureTypes';
 
 export class FeatureDependency {
   public constructor(private readonly feature: Feature<any, any>) {
@@ -51,8 +51,8 @@ export class FeatureDependency {
     return (setup as any).bind(this.feature);
   }
 
-  public defineProperty<C>(container: BuildableContainer<C>, name: keyof C): any {
-    const reference = container.getReference();
+  public defineProperty<S, R>(container: BuildableContainer<S, R>, name: ServiceName): any {
+    const reference: any = container.getReference();
     Object.defineProperty(this.feature, name, {
       get: () => reference[name],
       set: (value: any) => {

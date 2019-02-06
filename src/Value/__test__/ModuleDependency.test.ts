@@ -1,5 +1,5 @@
 import { FeatureDependency } from '../FeatureDependency';
-import { BuildableContainer } from '../BuildableContainer';
+import { BuildableContainer } from '../../Buildable/BuildableContainer';
 
 class MyFeature {
   public someService() {
@@ -30,11 +30,10 @@ describe('defineProperty', () => {
   it('Set defined values on container', () => {
     const myFeature = new MyFeature();
     const dependency = new FeatureDependency(myFeature);
-    const container = { someService: null };
-    const buildableContainer = new BuildableContainer(container);
+    const buildableContainer = new BuildableContainer<any, any>();
     dependency.defineProperty(buildableContainer, 'someService');
-    expect(buildableContainer.getReference().someService).toEqual(null);
+    expect(buildableContainer.getReference().someService).toEqual(undefined);
     myFeature.someService = 1 as any;
-    expect(container.someService).toEqual(1);
+    expect(buildableContainer.getReference().someService).toEqual(1);
   });
 });

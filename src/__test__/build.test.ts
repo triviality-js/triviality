@@ -1,6 +1,6 @@
 import 'jest';
 import { Container, triviality, Feature } from '../index';
-import { ContainerError } from '../ContainerError';
+import { ContainerError } from '../Error/ContainerError';
 
 class TestFeature implements Feature {
 
@@ -46,18 +46,6 @@ it('Cannot fetched properties during build time', async () => {
     });
   await expect(serviceContainer.build()).rejects.toEqual(
     new ContainerError('Container is locked. Cannot get or set services during build time.'));
-});
-
-it('Container cannot be rebuild', async () => {
-  const container = triviality();
-  await container.build();
-  return expect(container.build()).rejects.toEqual(new ContainerError('Container already been build'));
-});
-
-it('Cannot add feature after it\'s build', async () => {
-  const container = triviality();
-  await container.build();
-  return expect(() => container.add(TestFeature)).toThrow('Container already been build');
 });
 
 it('Cannot have name coalitions', async () => {

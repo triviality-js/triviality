@@ -1,5 +1,5 @@
-import { FeatureRegistries as FR } from './value/FeatureTypes';
-import { Optional } from './util/Types';
+import { FeatureRegistries as FR } from './FeatureTypes';
+import { Optional } from '../util/Types';
 
 /**
  * Return type for all registries from multiple Features.

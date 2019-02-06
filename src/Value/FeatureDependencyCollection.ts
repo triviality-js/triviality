@@ -1,8 +1,5 @@
 import { FeatureDependency } from './FeatureDependency';
-import { mergeRegistries, mergeRegistryValues, Registry } from './Registry';
-import { getAllPropertyNames } from '../util/getAllPropertyNames';
-import { ContainerError } from '../ContainerError';
-import { memorize } from '../util/memorize';
+import { Registry } from '../Type/Registry';
 
 export class FeatureDependencyCollection {
 
@@ -34,20 +31,16 @@ export class FeatureDependencyCollection {
     return new FeatureDependencyCollection(this.feature.filter(filter));
   }
 
-  public async getRegistries(): Promise<{ [name: string]: Registry }> {
-    const combined: { [name: string]: Registry[] } = await this.getFeatureRegistries();
-    const registries: { [name: string]: Registry } = {};
-    getAllPropertyNames(combined).forEach((register) => {
-      const registerCached = memorize(() => mergeRegistryValues(combined[register].map((reg) => reg())));
-      Object.defineProperty(registries, register, { get: () => registerCached, set: ContainerError.throwIsLocked });
-    });
-    return registries;
-  }
-
-  private async getFeatureRegistries(): Promise<{ [name: string]: Registry[] }> {
-    let combined: { [name: string]: Registry[] } = {};
+  public async getFeatureRegistries(): Promise<{ [name: string]: Registry[] }> {
+    const combined: { [name: string]: Registry[] } = {};
     for (const feature of this.withRegistries().toArray()) {
-      combined = mergeRegistries(combined, await feature.getRegistries());
+      const registries = await feature.getRegistries();
+      for (const name of Object.getOwnPropertyNames(registries)) {
+        if (!combined[name]) {
+          combined[name] = [];
+        }
+        combined[name].push(registries[name]);
+      }
     }
     return combined;
   }

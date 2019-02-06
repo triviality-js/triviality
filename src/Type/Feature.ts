@@ -1,7 +1,7 @@
-import { Optional, PromiseOrValue } from './util/Types';
-import { HasRegistries } from './value/Registry';
+import { Optional, PromiseOrValue } from '../util/Types';
+import { ServiceContainer } from './Container';
 
-export interface Feature<C = {}, R = {}> {
+export interface Feature<ContainerServices = {}, ContainerRegistries = {}> {
 
   toString(): string;
 
@@ -33,7 +33,7 @@ export interface Feature<C = {}, R = {}> {
    *     };
    *   }
    */
-  registries?(): PromiseOrValue<Optional<R>>;
+  registries?(): PromiseOrValue<Optional<ContainerRegistries>>;
 
   /**
    * The entry hook to override or decorate a service.
@@ -44,5 +44,5 @@ export interface Feature<C = {}, R = {}> {
    *    };
    *   }
    */
-  serviceOverrides?(container: Readonly<C & HasRegistries<R>>): PromiseOrValue<Optional<C>>;
+  serviceOverrides?(container: ServiceContainer<ContainerServices, ContainerRegistries>): PromiseOrValue<Optional<ContainerServices>>;
 }

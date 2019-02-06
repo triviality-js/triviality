@@ -1,5 +1,5 @@
 import { triviality } from '../index';
-import { Feature } from '../Feature';
+import { Feature } from '../Type/Feature';
 
 describe('triviality', () => {
 

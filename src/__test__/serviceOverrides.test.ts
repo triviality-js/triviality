@@ -1,6 +1,6 @@
-import { Feature } from '../Feature';
+import { Feature } from '../Type/Feature';
 import { ContainerError, OptionalContainer, triviality } from '../index';
-import { Container } from '../Container';
+import { Container } from '../Type/Container';
 
 interface SpeakServiceInterface {
   speak(name: string): string;
@@ -62,6 +62,30 @@ it('Override service', async () => {
 
   expect(container.halloService().speak('John')).toEqual('@');
   expect(container.halloAndByeService().speak('John')).toEqual('@, Bye John');
+});
+
+it('Override service should be cached', async () => {
+
+  class MyHalloFeature implements Feature {
+    public serviceOverrides(): OptionalContainer<GreetingsFeature> {
+      return {
+        halloService: () => {
+          return {
+            speak: (_name: string): string => {
+              return '@'; // tumbleweed
+            },
+          };
+        },
+      };
+    }
+  }
+
+  const container = await triviality()
+    .add(GreetingsFeature)
+    .add(MyHalloFeature)
+    .build();
+
+  expect(container.halloService()).toBe(container.halloService());
 });
 
 it('Can decorate by function', async () => {

@@ -14,20 +14,20 @@ function createArrayOf(length: number): number[] {
  * public add<F1 extends FO<C, R>>(f1: FC<F1, C, R>): ContainerFactory<(C & FS<F1>), (R & FR<F1>)>;
  * public add<F1 extends FO<C, R>, F2 extends FO<C, R>>(f1: FC<F1, C & FS<F2>, R & FR<F2>>, f2: FC<F2, C & FS<F1>, R & FR<F1>>): ContainerFactory<(C & FS<F1> & FS<F2>), (R & FR<F1> & FR<F2>)>;
  */
-function addArgumentTypes(args: number) {
+function addArgumentTypes(args: number, name: 'FeatureFactory' | 'ContainerFactory') {
   for (let i = 1; i <= args; i += 1) {
     const indexes = createArrayOf(i);
-    const features = indexes.map((index) => `F${index} extends FO<C, R>`).join(', ');
+    const features = indexes.map((index) => `F${index} extends FO<S, R>`).join(', ');
     const registries = indexes.map((index) => `FR<F${index}>`).join(' & ');
     const argument = indexes.map((index) => {
       const otherFeature = indexes.filter(j => j !== index);
-      const specificFeatureContainer = ['C'].concat(otherFeature.map((j) => `FS<F${j}>`)).join(' & ');
+      const specificFeatureContainer = ['S'].concat(otherFeature.map((j) => `FS<F${j}>`)).join(' & ');
       const specificFeatureRegistries = ['R'].concat(otherFeature.map((j) => `FR<F${j}>`)).join(' & ');
       return `f${index}: FC<F${index}, ${specificFeatureContainer}, ${specificFeatureRegistries}>`;
     }).join(', ');
     const container = indexes.map((index) => `FS<F${index}>`).join(' & ');
     process.stdout.write(
-      `public add<${features}>(${argument}): ContainerFactory<(C & ${container}), (R & ${registries})>;${os.EOL}`);
+      `public add<${features}>(${argument}): ${name}<(S & ${container}), (R & ${registries})>;${os.EOL}`);
   }
 }
 
@@ -57,9 +57,13 @@ function registryType(args: number) {
   process.stdout.write(`export type OptionalRegistries<${features}> = Optional<Registries<${featuresArgs}>>;${os.EOL}`);
 }
 
-process.stdout.write(`Member: ${os.EOL}`);
+process.stdout.write(`ContainerFactory add: ${os.EOL}`);
 
-addArgumentTypes(10);
+addArgumentTypes(10, 'ContainerFactory');
+
+process.stdout.write(`FeatureFactory add: ${os.EOL}`);
+
+addArgumentTypes(10, 'FeatureFactory');
 
 process.stdout.write(`Container: ${os.EOL}`);
 

@@ -1,10 +1,11 @@
+
 export class ContainerError extends Error {
 
-  public static throwIsLockedDuringBuild() {
+  public static throwIsLockedDuringBuild(): never {
     throw ContainerError.containerIsLockedDuringBuild();
   }
 
-  public static throwIsLocked() {
+  public static throwIsLocked(): never {
     throw ContainerError.containerIsLocked();
   }
 
@@ -22,10 +23,6 @@ export class ContainerError extends Error {
 
   public static containerIsLocked() {
     return new this('Container is locked and cannot be altered.');
-  }
-
-  public static containerAlreadyBuild() {
-    return new this('Container already been build');
   }
 
   public static registerShouldAllReturnSameType() {

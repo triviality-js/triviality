@@ -16,15 +16,15 @@ describe('TypeValidation', async () => {
           });
       `))
         .rejects
-        .toMatch("error TS2339: Property 'someNonExistingService' does not exist on type 'HasRegistries<{}>");
+        .toMatch("Property 'someNonExistingService' does not exist on type");
     });
 
     it('Should force the requirements of a Feature', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Feature } from '../Feature';
-        import { Container } from '../Container';
+        import { Feature } from '../Type/Feature';
+        import { Container } from '../Type/Container';
 
         class Feature1 implements Feature {
           public userService() {
@@ -55,7 +55,7 @@ describe('TypeValidation', async () => {
       // language=TypeScript
       return expect(declarationOfTs(__dirname, `
         import { triviality } from '../index';
-        import { Feature } from '../Feature';
+        import { Feature } from '../Type/Feature';
 
         class Feature1 implements Feature {
           public halloService() {
@@ -74,7 +74,7 @@ describe('TypeValidation', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Feature } from '../Feature';
+        import { Feature } from '../Type/Feature';
 
         class Feature1 implements Feature {
           public halloService() {
@@ -99,7 +99,7 @@ describe('TypeValidation', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Feature } from '../Feature';
+        import { Feature } from '../Type/Feature';
 
         class Feature1 implements Feature {
           public registries() {
@@ -136,8 +136,8 @@ describe('TypeValidation', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Feature } from '../Feature';
-        import { OptionalContainer } from '../Container';
+        import { Feature } from '../Type/Feature';
+        import { OptionalContainer } from '../Type/Container';
 
         class MyFeature implements Feature {
           public serviceOverrides(): OptionalContainer<{}> {
@@ -162,7 +162,7 @@ describe('TypeValidation', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Feature } from '../Feature';
+        import { Feature } from '../Type/Feature';
 
         class MyFeature implements Feature {
           public serviceOverrides() {
@@ -187,7 +187,7 @@ describe('TypeValidation', async () => {
       // language=TypeScript
       return expect(compileTs(__dirname, `
         import { triviality } from '../index';
-        import { Feature } from '../Feature';
+        import { Feature } from '../Type/Feature';
 
         class MyHalloFeature implements Feature {
           public halloService() {

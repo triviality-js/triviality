@@ -1,10 +1,10 @@
-import { ContainerError } from '../ContainerError';
-import { BuildableContainer } from './BuildableContainer';
+import { ContainerError } from '../Error/ContainerError';
+import { BuildableContainer } from '../Buildable/BuildableContainer';
 import { getAllPropertyNames } from '../util/getAllPropertyNames';
-import { Service, ServiceName } from './Service';
+import { Service, ServiceName } from '../Type/Service';
 
-export class OverrideableReferenceContainer<C> {
-  public static fromBuildableContainer<C>(container: BuildableContainer<C>) {
+export class OverrideableReferenceContainer<S, R> {
+  public static fromBuildableContainer<S, R>(container: BuildableContainer<S, R>) {
     const references: any = {};
     for (const name of getAllPropertyNames(container.getReference() as any)) {
       Object.defineProperty(references, name, {
@@ -13,15 +13,15 @@ export class OverrideableReferenceContainer<C> {
         configurable: true,
       });
     }
-    return new this<C>(container, references);
+    return new this<S, R>(container, references);
   }
 
   /**
-   * Contains the references to the orginal services.
+   * Contains the references to the original services.
    */
   private overridden: { [name: string]: Service } = {};
 
-  constructor(private buildableContainer: BuildableContainer<C>, private reference: C) {
+  constructor(private buildableContainer: BuildableContainer<S, R>, private reference: S) {
   }
 
   public overrideService(name: ServiceName, service: Service) {
@@ -32,7 +32,7 @@ export class OverrideableReferenceContainer<C> {
     this.buildableContainer.overrideService(name, service);
   }
 
-  public getReference(): C {
+  public getReference(): S {
     return this.reference;
   }
 

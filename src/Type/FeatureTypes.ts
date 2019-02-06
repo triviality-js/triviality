@@ -5,20 +5,21 @@
  */
 
 import { Empty, NoDuplicates, Omit, PromiseType } from '../util/Types';
-import { Feature } from '../Feature';
+import { Feature } from './Feature';
 import { HasRegistries, RegistriesMap } from './Registry';
+import { ServiceContainer } from './Container';
 
-export const FeatureExcludes: Array<keyof Feature> = [('container') as any, 'registries', 'setup', 'serviceOverrides'];
+export const FeatureExcludes: Array<keyof Feature> = ['container' as any, 'registries', 'setup', 'serviceOverrides', 'beforeBuildStep' as any, 'afterBuildStep' as any];
 
 /**
  * Define type with all registries as optional and allow new registries to be defined.
  */
-export type FeatureOptionalRegistries<C, R> = Feature<C, R & RegistriesMap>;
+export type FeatureOptionalRegistries<Services, Registries> = Feature<Services, Registries & RegistriesMap>;
 
 /**
  * Feature constructor with type guard it can never return a duplicate service of the container.
  */
-export type FeatureConstructor<T, Container, Registries> = new (container: Container & HasRegistries<Registries>) => T & NoDuplicates<Container>;
+export type FeatureConstructor<T, Services, Registries> = new (container: ServiceContainer<Services, Registries>) => T & NoDuplicates<Services>;
 
 /**
  * Only return the feature service types.

@@ -1,9 +1,11 @@
-import { OptionalFeatureRegistries as FR, OptionalFeatureServices as FS } from './value/FeatureTypes';
-import { HasRegistries } from './value/Registry';
-import { Optional } from './util/Types';
+import { OptionalFeatureRegistries as FR, OptionalFeatureServices as FS } from './FeatureTypes';
+import { HasRegistries } from './Registry';
+import { Optional } from '../util/Types';
+
+export type ServiceContainer<S, R> = Readonly<S & HasRegistries<R>>;
 
 /**
- * Type to express a container by feature dependencies.
+ * Type to express a service container by features.
  *
  * Example:
  *

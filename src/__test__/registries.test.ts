@@ -1,6 +1,6 @@
-import { Feature } from '../Feature';
+import { Feature } from '../Type/Feature';
 import { OptionalRegistries, triviality } from '../index';
-import { Container } from '../Container';
+import { Container } from '../Type/Container';
 
 it('A feature can define a register', async () => {
 

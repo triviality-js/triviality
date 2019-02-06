@@ -1,5 +1,5 @@
-import { Feature } from '../../Feature';
-import { Container } from '../../Container';
+import { Feature } from '../../Type/Feature';
+import { Container } from '../../Type/Container';
 import { MyOtherFeature } from './MyOtherFeature';
 
 export class MyFeature implements Feature {
