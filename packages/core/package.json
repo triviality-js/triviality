@@ -6,6 +6,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
+    "prepublish": "yarn build",
     "build": "tsc --project src",
     "watch": "tsc --project src --watch",
     "create-docs": "ts-node ../../scripts/build.ts",
@@ -26,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/epinxteren/triviality/issues"
   },
-  "homepage": "https://github.com/epinxteren/triviality#README"
+  "homepage": "https://github.com/epinxteren/triviality#README",
+  "publishConfig": {
+    "access": "public"
+  }
 }
