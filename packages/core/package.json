@@ -1,0 +1,30 @@
+{
+  "name": "@triviality/core",
+  "private": false,
+  "version": "0.7.2",
+  "description": "Purely typed service container",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "tsc --project src",
+    "watch": "tsc --project src --watch",
+    "create-docs": "ts-node ../../scripts/build.ts",
+    "create-types": "ts-node src/cli/createTypes.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/epinxteren/triviality.git"
+  },
+  "keywords": [
+    "typescript",
+    "service container",
+    "di",
+    "dependency injection"
+  ],
+  "author": "Eric Pinxteren",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/epinxteren/triviality/issues"
+  },
+  "homepage": "https://github.com/epinxteren/triviality#README"
+}

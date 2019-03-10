@@ -1,20 +1,15 @@
 module.exports = {
     collectCoverage: false,
-    testEnvironment: 'node',
+    testEnvironment: "node",
     moduleFileExtensions: [
         "ts",
         "tsx",
         "js",
         "jsx",
-        "json"
+        "json",
     ],
     transform: {
-        "\\.(ts|tsx)$": "ts-jest"
+        "\\.(ts|tsx)$": "ts-jest",
     },
     testRegex: ".*\\.test\\.ts$",
-    globals: {
-        "ts-jest": {
-            tsConfigFile: "tsconfig.json",
-        }
-    }
 };

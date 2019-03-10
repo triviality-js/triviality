@@ -3,7 +3,7 @@ languages:
   - javascript
   - typescript
 files:
-  - "src/**/*"
+  - "packages/*/src/**/*"
 exclude:
   - '**/__test__/**'
   - '**/*d.ts'

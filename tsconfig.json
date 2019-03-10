@@ -2,9 +2,9 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "./build",
     "removeComments": false,
     "noLib": false,
+    "noEmit": true,
     "lib": [
       "ES2015"
     ],
@@ -28,7 +28,13 @@
     "noUnusedParameters": true,               /* Report errors on unused parameters. */
     "noImplicitReturns": true,                /* Report error when not all code paths in function return a value. */
     "noFallthroughCasesInSwitch": true,       /* Report errors for fallthrough cases in switch statement. */
-    "forceConsistentCasingInFileNames": true /* Force consistent casing in file names  */
+    "forceConsistentCasingInFileNames": true, /* Force consistent casing in file names  */
+
+
+    "experimentalDecorators": true
   },
-  "exclude": ["build", "node_modules"]
+  "exclude": [
+    "packages/core/build",
+    "node_modules"
+  ]
 }
