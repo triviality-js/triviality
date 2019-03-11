@@ -1,0 +1,34 @@
+{
+  "name": "@triviality/core",
+  "private": false,
+  "version": "0.8.1",
+  "description": "Purely typed service container",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "prepublish": "yarn build",
+    "build": "tsc --project src",
+    "watch": "tsc --project src --watch",
+    "create-types": "ts-node src/cli/createTypes.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/triviality-js/triviality.git"
+  },
+  "keywords": [
+    "typescript",
+    "service container",
+    "di",
+    "dependency injection"
+  ],
+  "author": "Eric Pinxteren",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/triviality-js/triviality/issues"
+  },
+  "homepage": "https://github.com/triviality-js/triviality#README",
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "d22f69a2477db96ea0eb9401301a35f4ba58a64e"
+}

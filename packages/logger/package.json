@@ -1,0 +1,40 @@
+{
+  "name": "@triviality/logger",
+  "private": false,
+  "version": "0.2.2",
+  "description": "Typescript loggers with an interface that support composition",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "prepublish": "yarn build",
+    "build": "tsc --project src",
+    "watch": "tsc --project src --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/triviality-js/triviality.git"
+  },
+  "keywords": [
+    "typescript",
+    "logger",
+    "triviality",
+    "ts-log",
+    "log4js",
+    "node-bunyan"
+  ],
+  "author": "Eric Pinxteren",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/triviality-js/triviality/issues"
+  },
+  "homepage": "https://github.com/triviality-js/triviality#README",
+  "dependencies": {
+    "@triviality/core": "^0.8.1",
+    "moment": "^2.23",
+    "ts-log": "^2.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "813adbfa6ea8a00167d4058de3d5d6870f497e26"
+}

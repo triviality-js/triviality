@@ -1,61 +1,46 @@
 {
-  "name": "triviality",
-  "private": false,
-  "version": "0.8.1",
-  "description": "Purely typed service container",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "scripts": {
-    "prepublish": "yarn test && yarn create-docs && yarn create-build",
-    "watch": "tsc --watch",
-    "test": "npm-run-all --parallel jest-coverage tslint jscpd tsc",
-    "jest": "jest",
-    "tsc": "tsc",
-    "stryker": "stryker run",
-    "jest-coverage": "jest --coverage",
-    "tslint-fix": "tslint --fix --project tsconfig.json",
-    "tslint": "tslint --project tsconfig.json",
-    "jscpd": "jscpd",
-    "jest-badges": "yarn jest-coverage && jest-coverage-badges",
-    "create-types": "ts-node src/cli/createTypes.ts",
-    "create-docs": "ts-node docs/build.ts",
-    "create-build": "rm -fr build && yarn tsc --project tsconfig.build.json"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/epinxteren/triviality.git"
-  },
-  "keywords": [
-    "typescript",
-    "service container",
-    "di",
-    "dependency injection"
-  ],
-  "author": "Eric Pinxteren",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/epinxteren/triviality/issues"
-  },
-  "homepage": "https://github.com/epinxteren/triviality#README",
+  "name": "root",
+  "private": true,
   "devDependencies": {
+    "@types/find": "^0.2.1",
+    "@types/fs-extra": "^5.0.5",
     "@types/jest": "^23",
     "@types/node": "^10",
     "child-process-promise": "^2",
-    "jest": "^23",
+    "find": "^0.3.0",
+    "fs-extra": "^7.0.1",
+    "jest": "^24",
     "jscpd": "^2",
+    "lerna": "^3.13.1",
     "markdown-include": "^0",
     "npm-run-all": "^4",
-    "stryker": "^0",
-    "stryker-api": "^0",
-    "stryker-html-reporter": "^0",
-    "stryker-jest-runner": "^1",
-    "stryker-typescript": "^0",
-    "ts-jest": "^23",
+    "ts-jest": "^24",
     "ts-node": "^7",
     "tslint": "^5",
     "tslint-config-airbnb": "^5",
     "tslint-loader": "^3",
     "tslint-microsoft-contrib": "^6",
-    "typescript": "^3"
+    "typescript": "^3",
+    "@stryker-mutator/core": "^1.1.0",
+    "@stryker-mutator/jest-runner": "^1.1.0",
+    "@stryker-mutator/typescript": "^1.1.0",
+    "@stryker-mutator/html-reporter": "^1.1.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm-run-all ts-lint unit-test copy-past-detection security-audit",
+    "build": "lerna run build",
+    "ts-lint": "lerna exec 'tslint --project src'",
+    "ts-lint-fix": "lerna exec 'tslint --project src --fix'",
+    "security-audit": "lerna exec 'yarn audit'",
+    "create-readme": "lerna exec 'ts-node ../../scripts/build_readme.ts'",
+    "watch": "lerna run --parallel watch",
+    "unit-test": "jest",
+    "publish-packages": "yarn build && lerna publish",
+    "unit-test-coverage": "jest --coverage",
+    "mutation-test": "stryker run",
+    "copy-past-detection": "jscpd"
   }
 }

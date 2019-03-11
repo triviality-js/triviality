@@ -1,0 +1,41 @@
+{
+  "name": "@triviality/serializer",
+  "private": false,
+  "version": "0.2.1",
+  "description": "Typescript serializer with an interface",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "prepublish": "yarn build",
+    "build": "tsc --project src",
+    "watch": "tsc --project src --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/triviality-js/triviality.git"
+  },
+  "keywords": [
+    "typescript",
+    "serializer",
+    "triviality",
+    "transit",
+    "class-transformer",
+    "byte-serializer"
+  ],
+  "author": "Eric Pinxteren",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/triviality-js/triviality/issues"
+  },
+  "homepage": "https://github.com/triviality-js/triviality#README",
+  "dependencies": {
+    "@triviality/core": "^0.8.1",
+    "immutable": "^4.0.0-rc.12",
+    "transit-immutable-js": "^0.7.0",
+    "transit-js": "^0.8.861"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "d22f69a2477db96ea0eb9401301a35f4ba58a64e"
+}
