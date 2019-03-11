@@ -5,8 +5,9 @@ packages/*/reports/
 packages/*/build/
 packages/*/example/**/*.md
 example/*.md
-packages/*/src/**/*.d.ts
-packages/*/src/**/*.js
+packages/*/**/*.d.ts
+packages/*/**/*.js
+packages/*/**/*.js.map
 .jscpd
 lerna-debug.log
 packages/*/.stryker-tmp/
