@@ -32,5 +32,6 @@
     "@types/find-up": "^2.1.1",
     "commander": "^2",
     "find-up": "^3"
-  }
+  },
+  "gitHead": "d22f69a2477db96ea0eb9401301a35f4ba58a64e"
 }

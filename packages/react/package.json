@@ -38,5 +38,6 @@
   "devDependencies": {
     "@types/react-test-renderer": "^16.8.1",
     "react-test-renderer": "^16.8.4"
-  }
+  },
+  "gitHead": "d22f69a2477db96ea0eb9401301a35f4ba58a64e"
 }

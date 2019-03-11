@@ -29,5 +29,6 @@
   "homepage": "https://github.com/triviality-js/triviality#README",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "d22f69a2477db96ea0eb9401301a35f4ba58a64e"
 }
