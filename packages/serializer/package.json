@@ -8,8 +8,7 @@
   "scripts": {
     "prepublish": "yarn build",
     "build": "tsc --project src",
-    "watch": "tsc --project src --watch",
-    "create-docs": "ts-node docs/build.ks"
+    "watch": "tsc --project src --watch"
   },
   "repository": {
     "type": "git",

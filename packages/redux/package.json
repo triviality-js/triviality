@@ -1,0 +1,48 @@
+{
+  "name": "@triviality/redux",
+  "private": false,
+  "version": "0.0.8",
+  "description": "Redux triviality integration",
+  "main": "build",
+  "types": "build",
+  "scripts": {
+    "publish-build": "rm -fr build && yarn create-docs && yarn copy-config-files && cd build && yarn tsc && yarn publish && cd -",
+    "watch": "tsc --watch",
+    "test": "npm-run-all --parallel jest-coverage tslint jscpd tsc",
+    "jest": "jest",
+    "tsc": "tsc",
+    "stryker": "stryker run",
+    "jest-coverage": "jest --coverage",
+    "tslint-fix": "tslint --fix --project tsconfig.json",
+    "tslint": "tslint --project tsconfig.json",
+    "jscpd": "jscpd --limit=-1",
+    "create-container-types": "ts-node src/cli/createContainerTypes.ts",
+    "create-docs": "ts-node docs/build.ts",
+    "copy-config-files": "yarn cpy '(package.json|README.md|LICENSE|.npmignore|assets)' build/. && cp tsconfig.build.json build/tsconfig.json && cp -r src build/."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/triviality-js/triviality.git"
+  },
+  "keywords": [
+    "typescript",
+    "redux",
+    "triviality"
+  ],
+  "author": "Eric Pinxteren",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/triviality-js/triviality/issues"
+  },
+  "homepage": "https://github.com/triviality-js/triviality#README",
+  "dependencies": {
+    "redux": "^4",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-observable": "^1",
+    "rxjs": "^6",
+    "@triviality/core": "^0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

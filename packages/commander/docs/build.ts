@@ -1,9 +1,7 @@
-import { executeFile } from './executeFile';
+import { executeCli, executeFile } from './executeFile';
 import * as fs from 'fs';
 // @ts-ignore
 import markdownInclude from 'markdown-include';
-
-const name = process.cwd().split('/').slice(-1)[0];
 
 markdownInclude.registerPlugin({
   pattern: /^######typescript ".+"/gm,
@@ -15,7 +13,7 @@ markdownInclude.registerPlugin({
     const file = matches[1];
     const data = fs.readFileSync(file).toString();
     const result = data
-      .replace(/'.*src.*'/gm, `'@triviality/${name}'`)
+      .replace(/'.*src.*'/gm, '\'triviality-commander\'')
       .replace(/\.\/Example/gm, './docs/Example')
       .trim();
     return `
@@ -44,6 +42,31 @@ markdownInclude.registerPlugin({
           result: `
 \`\`\`bash
 ./node_modules/.bin/ts-node ${file} ${args ? args : ''}
+${result.trim()}
+\`\`\`
+        `,
+        };
+      }));
+    return tag;
+  },
+});
+
+markdownInclude.registerPlugin({
+  pattern: /^######cli ".+"(\(.*\))?.*/gm,
+  replace: (tag: string) => {
+    const matches = /"(.*?)"(\((.*)\))?/gm.exec(tag);
+    if (!matches) {
+      throw new Error(`No matches found. ${tag}`);
+    }
+    const file = matches[1];
+    const args = matches[3];
+    promises.push(executeCli('', file, args)
+      .then((result: string) => {
+        return {
+          tag,
+          result: `
+\`\`\`bash
+./${file} ${args ? args : ''}
 ${result.trim()}
 \`\`\`
         `,

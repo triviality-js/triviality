@@ -81,18 +81,18 @@ Logger with jest spies for each particular log function.
 
 ######typescript "src/JestTestLogger.ts"
 
-# triviality modules !heading
+# triviality features !heading
 
 Logger reference module, so you can reference your module to a non-concrete implementation.
 
-######typescript "src/Module/LoggerModule.ts"
+######typescript "src/Feature/LoggerFeature.ts"
 
 For example you reference the logger module like:
 
-######typescript "example/Module/MyModule.ts"
+######typescript "example/Feature/MyFeature.ts"
 
 And build the container like:
 
-######typescript "example/defaultLoggerModule.ts"
+######typescript "example/defaultLoggerFeature.ts"
 
-######ts-node "example/defaultLoggerModule.ts"
+######ts-node "example/defaultLoggerFeature.ts"

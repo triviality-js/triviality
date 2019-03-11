@@ -12,7 +12,7 @@
   * [ts-log logger](#ts-log-logger)
   * [null logger](#null-logger)
   * [collection of loggers](#collection-of-loggers)
-* [triviality modules](#triviality-modules)
+* [triviality features](#triviality-features)
 * [Thanks](#thanks)
 * [Reads](#reads)
 
@@ -336,22 +336,22 @@ export class JestTestLogger extends AbstractFunctionLogger implements LoggerInte
 ```
         
 
-# triviality modules
+# triviality features
 
 Logger reference module, so you can reference your module to a non-concrete implementation.
 
 
 ```typescript
-import { Module } from '@triviality/core';
+import { Feature } from '@triviality/core';
 import { LoggerInterface } from '../LoggerInterface';
 
-abstract class LoggerModule implements Module {
+abstract class LoggerFeature implements Feature {
 
   public abstract logger(): LoggerInterface;
 
 }
 
-export { LoggerModule };
+export { LoggerFeature };
 ```
         
 
@@ -359,13 +359,13 @@ For example you reference the logger module like:
 
 
 ```typescript
-import { Container, Module } from '@triviality/core';
-import { LoggerModule } from '@triviality/logger';
+import { Container, Feature } from '@triviality/core';
+import { LoggerFeature } from '@triviality/logger';
 import { HalloService } from './HalloService';
 
-export class MyModule implements Module {
+export class MyFeature implements Feature {
 
-  constructor(private container: Container<LoggerModule>) {
+  constructor(private container: Container<LoggerFeature>) {
 
   }
 
@@ -382,13 +382,13 @@ And build the container like:
 
 ```typescript
 import { ContainerFactory } from '@triviality/core';
-import { DefaultLoggerModule } from '@triviality/logger';
-import { MyModule } from './Module/MyModule';
+import { DefaultLoggerFeature } from '@triviality/logger';
+import { MyFeature } from './Feature/MyFeature';
 
 ContainerFactory
   .create()
-  .add(DefaultLoggerModule)
-  .add(MyModule)
+  .add(DefaultLoggerFeature)
+  .add(MyFeature)
   .build()
   .then((container) => {
     container.halloService().printHallo('Jane');
@@ -398,8 +398,8 @@ ContainerFactory
 
 
 ```bash
-./node_modules/.bin/ts-node example/defaultLoggerModule.ts 
-03/10/2019 7:43:42 PM:Hallo Jane
+./node_modules/.bin/ts-node example/defaultLoggerFeature.ts 
+03/11/2019 9:47:48 AM:Hallo Jane
 ```
         
 

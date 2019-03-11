@@ -1,10 +1,10 @@
 {
-  "name": "@triviality/core",
+  "name": "@triviality/react",
   "private": false,
-  "version": "0.7.3",
-  "description": "Purely typed service container",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "version": "0.0.2",
+  "description": "Exposes triviality service container to react components",
+  "main": "index.js",
+  "types": "index.js",
   "scripts": {
     "prepublish": "yarn build",
     "build": "tsc --project src",
@@ -17,9 +17,8 @@
   },
   "keywords": [
     "typescript",
-    "service container",
-    "di",
-    "dependency injection"
+    "react",
+    "triviality"
   ],
   "author": "Eric Pinxteren",
   "license": "MIT",
@@ -27,7 +26,17 @@
     "url": "https://github.com/triviality-js/triviality/issues"
   },
   "homepage": "https://github.com/triviality-js/triviality#README",
+  "dependencies": {
+    "@triviality/core": "^0",
+    "@types/react": "^16",
+    "moment": "^2",
+    "react": "^16"
+  },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "@types/react-test-renderer": "^16.8.1",
+    "react-test-renderer": "^16.8.4"
   }
 }

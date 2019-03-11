@@ -1,11 +1,11 @@
 import { ContainerFactory } from '@triviality/core';
-import { DefaultLoggerModule } from '../src/Module/DefaultLoggerModule';
-import { MyModule } from './Module/MyModule';
+import { DefaultLoggerFeature } from '../src/Feature/DefaultLoggerFeature';
+import { MyFeature } from './Feature/MyFeature';
 
 ContainerFactory
   .create()
-  .add(DefaultLoggerModule)
-  .add(MyModule)
+  .add(DefaultLoggerFeature)
+  .add(MyFeature)
   .build()
   .then((container) => {
     container.halloService().printHallo('Jane');

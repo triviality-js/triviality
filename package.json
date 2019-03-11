@@ -30,17 +30,16 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "npm-run-all tslint unit-test cpd",
+    "test": "npm-run-all ts-lint unit-test copy-past-detection security-audit",
     "build": "lerna run build",
     "ts-lint": "lerna exec 'tslint --project src'",
     "ts-lint-fix": "lerna exec 'tslint --project src --fix'",
-    "create-docs": "lerna exec 'ts-node ../../scripts/build.ts'",
+    "security-audit": "lerna exec 'yarn audit'",
+    "create-readme": "lerna exec 'ts-node ../../scripts/build_readme.ts'",
     "watch": "lerna run --parallel watch",
     "unit-test": "jest",
+    "unit-test-coverage": "jest --coverage",
     "mutation-test": "stryker run",
-    "test-coverage": "jest --coverage",
-    "tslint-fix": "tslint --fix --project tsconfig.json",
-    "tslint": "tslint --project tsconfig.json",
-    "cpd": "jscpd"
+    "copy-past-detection": "jscpd"
   }
 }

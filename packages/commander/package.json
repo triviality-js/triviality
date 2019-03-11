@@ -1,15 +1,14 @@
 {
-  "name": "@triviality/core",
+  "name": "@triviality/commander",
   "private": false,
-  "version": "0.7.3",
-  "description": "Purely typed service container",
+  "version": "0.4.0",
+  "description": "Commander as a Triviality Module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
     "build": "tsc --project src",
-    "watch": "tsc --project src --watch",
-    "create-types": "ts-node src/cli/createTypes.ts"
+    "watch": "tsc --project src --watch"
   },
   "repository": {
     "type": "git",
@@ -17,9 +16,9 @@
   },
   "keywords": [
     "typescript",
-    "service container",
-    "di",
-    "dependency injection"
+    "cli",
+    "commander",
+    "triviality"
   ],
   "author": "Eric Pinxteren",
   "license": "MIT",
@@ -27,7 +26,11 @@
     "url": "https://github.com/triviality-js/triviality/issues"
   },
   "homepage": "https://github.com/triviality-js/triviality#README",
-  "publishConfig": {
-    "access": "public"
+  "dependencies": {
+    "@types/find-up": "^2.1.1",
+    "commander": "^2",
+    "find-up": "^3",
+    "@triviality/core": "^0",
+    "@triviality/logger": "^0"
   }
 }
