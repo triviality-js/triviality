@@ -1,24 +1,14 @@
 {
   "name": "@triviality/redux",
   "private": false,
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Redux triviality integration",
-  "main": "build",
-  "types": "build",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
-    "publish-build": "rm -fr build && yarn create-docs && yarn copy-config-files && cd build && yarn tsc && yarn publish && cd -",
-    "watch": "tsc --watch",
-    "test": "npm-run-all --parallel jest-coverage tslint jscpd tsc",
-    "jest": "jest",
-    "tsc": "tsc",
-    "stryker": "stryker run",
-    "jest-coverage": "jest --coverage",
-    "tslint-fix": "tslint --fix --project tsconfig.json",
-    "tslint": "tslint --project tsconfig.json",
-    "jscpd": "jscpd --limit=-1",
-    "create-container-types": "ts-node src/cli/createContainerTypes.ts",
-    "create-docs": "ts-node docs/build.ts",
-    "copy-config-files": "yarn cpy '(package.json|README.md|LICENSE|.npmignore|assets)' build/. && cp tsconfig.build.json build/tsconfig.json && cp -r src build/."
+    "prepublish": "yarn build",
+    "build": "tsc --project src",
+    "watch": "tsc --project src --watch"
   },
   "repository": {
     "type": "git",

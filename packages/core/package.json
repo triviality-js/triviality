@@ -3,8 +3,8 @@
   "private": false,
   "version": "0.8.0",
   "description": "Purely typed service container",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
     "build": "tsc --project src",

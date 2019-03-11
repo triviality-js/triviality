@@ -4,7 +4,7 @@
   "version": "0.1.1",
   "description": "Exposes triviality service container to react components",
   "main": "index.js",
-  "types": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
     "build": "tsc --project src",
