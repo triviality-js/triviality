@@ -1,7 +1,7 @@
 {
   "name": "@triviality/logger",
   "private": false,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Typescript loggers with an interface that support composition",
   "main": "index.js",
   "types": "index.d.ts",
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/triviality-js/triviality#README",
   "dependencies": {
-    "@triviality/core": "^0.8.0",
+    "@triviality/core": "^0.8.1",
     "moment": "^2.23",
     "ts-log": "^2.1"
   },
