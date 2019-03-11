@@ -1,7 +1,7 @@
 {
   "name": "@triviality/commander",
   "private": false,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Commander as a Triviality Module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -27,10 +27,10 @@
   },
   "homepage": "https://github.com/triviality-js/triviality#README",
   "dependencies": {
+    "@triviality/core": "^0.7.4",
+    "@triviality/logger": "^0.1.8",
     "@types/find-up": "^2.1.1",
     "commander": "^2",
-    "find-up": "^3",
-    "@triviality/core": "^0",
-    "@triviality/logger": "^0"
+    "find-up": "^3"
   }
 }
