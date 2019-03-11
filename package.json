@@ -38,6 +38,7 @@
     "create-readme": "lerna exec 'ts-node ../../scripts/build_readme.ts'",
     "watch": "lerna run --parallel watch",
     "unit-test": "jest",
+    "publish-packages": "yarn build && lerna publish",
     "unit-test-coverage": "jest --coverage",
     "mutation-test": "stryker run",
     "copy-past-detection": "jscpd"

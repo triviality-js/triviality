@@ -1,4 +1,4 @@
-import { LoggerInterface } from '@triviality/logger/build/LoggerInterface';
+import { LoggerInterface } from '@triviality/logger/LoggerInterface';
 import { Command } from 'commander';
 
 /**
