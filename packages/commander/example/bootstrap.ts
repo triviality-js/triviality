@@ -1,5 +1,5 @@
 import { ContainerFactory } from '@triviality/core';
-import { DefaultLoggerFeature } from '@triviality/logger/build/Feature/DefaultLoggerFeature';
+import { DefaultLoggerFeature } from '@triviality/logger';
 import { CommanderFeature } from '../src';
 import { CommanderPackageVersionFeature } from '../src';
 import { CommanderExampleModule } from './CommanderExampleModule';

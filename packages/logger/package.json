@@ -33,6 +33,11 @@
     "moment": "^2.23",
     "ts-log": "^2.1"
   },
+  "devDependencies": {
+    "ts-node": "^7",
+    "ts-jest": "^23",
+    "jest": "^23"
+  },
   "publishConfig": {
     "access": "public"
   },

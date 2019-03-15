@@ -32,6 +32,11 @@
     "redux-observable": "^1",
     "rxjs": "^6"
   },
+  "devDependencies": {
+    "ts-node": "^7",
+    "ts-jest": "^23",
+    "jest": "^23"
+  },
   "publishConfig": {
     "access": "public"
   },

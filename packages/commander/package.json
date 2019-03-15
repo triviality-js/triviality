@@ -33,5 +33,10 @@
     "commander": "^2",
     "find-up": "^3"
   },
+  "devDependencies": {
+    "ts-node": "^7",
+    "ts-jest": "^23",
+    "jest": "^23"
+  },
   "gitHead": "813adbfa6ea8a00167d4058de3d5d6870f497e26"
 }
