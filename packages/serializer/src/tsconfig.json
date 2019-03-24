@@ -2,9 +2,10 @@
   "extends": "../../../tsconfig",
   "compilerOptions": {
     "outDir": "../",
-    "noEmit": false
+    "noEmit": false,
   },
   "include": [
-    "./"
+    "./",
+    "transit-js/transit-immutable-js.d.ts"
   ]
 }

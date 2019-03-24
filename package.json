@@ -18,7 +18,6 @@
     "ts-node": "^7",
     "tslint": "^5",
     "tslint-config-airbnb": "^5",
-    "tslint-loader": "^3",
     "tslint-microsoft-contrib": "^6",
     "typescript": "^3",
     "@stryker-mutator/core": "^1.1.0",
@@ -31,7 +30,8 @@
   ],
   "scripts": {
     "test": "npm-run-all ts-lint unit-test copy-past-detection security-audit",
-    "build": "lerna run build",
+    "build": "yarn clean-build && lerna run build",
+    "clean-build": "(cd packages && git clean -fdX --exclude node_modules)",
     "ts-lint": "lerna exec 'tslint --project src'",
     "ts-lint-fix": "lerna exec 'tslint --project src --fix'",
     "security-audit": "lerna exec 'yarn audit'",

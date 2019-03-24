@@ -1,5 +1,5 @@
 {
-  "name": "@trivaility/eventsourcing",
+  "name": "@triviality/eventsourcing",
   "private": false,
   "version": "1.2.1",
   "description": "Typed event sourcing framework",
@@ -50,5 +50,8 @@
     "rxjs": "^6",
     "uuid": "^3",
     "uuid-validate": "^0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

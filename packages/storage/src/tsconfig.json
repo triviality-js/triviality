@@ -1,0 +1,14 @@
+{
+  "extends": "../../../tsconfig",
+  "compilerOptions": {
+    "outDir": "../",
+    "noEmit": false,
+    "lib": [
+      "dom",
+      "es2015.collection"
+    ]
+  },
+  "include": [
+    "./"
+  ]
+}

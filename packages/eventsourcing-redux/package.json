@@ -1,0 +1,54 @@
+{
+  "name": "@triviality/eventsourcing-redux",
+  "private": false,
+  "version": "1.4.2",
+  "description": "Bridge between event sourcing and redux",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "prepublish": "yarn build",
+    "build": "tsc --project src",
+    "watch": "tsc --project src --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/triviality-js/triviality.git"
+  },
+  "keywords": [
+    "typescript",
+    "ts",
+    "eventsourcing",
+    "cqrs",
+    "commandbus",
+    "eventbus",
+    "redux"
+  ],
+  "author": "Eric Pinxteren",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/triviality-js/triviality/issues"
+  },
+  "homepage": "https://github.com/triviality-js/triviality#README",
+  "devDependencies": {
+    "ts-node": "^7",
+    "ts-jest": "^23",
+    "jest": "^23"
+  },
+  "dependencies": {
+    "@types/socket.io": "^1.4.38",
+    "@types/socket.io-client": "^1.4.32",
+    "immutable": "4.0.0-rc.10",
+    "moment": "^2.22.2",
+    "redux": "^4.0.0",
+    "rxjs": "^6.3.3",
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1",
+    "@triviality/eventsourcing": "^1",
+    "@triviality/serializer": "^0",
+    "@triviality/storage": "^0",
+    "uuid-validate": "^0.0.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

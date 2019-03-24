@@ -11,7 +11,7 @@
     "target": "es5",
     "esModuleInterop": true,
     /* Basic Options */
-    "skipLibCheck": true,                     /* Skip type checking of declaration files.  */
+    "skipLibCheck": false,                     /* Skip type checking of declaration files.  */
     "sourceMap": true,                        /* Generates corresponding '.map' file. */
     "declaration": true,
     /* Strict Type-Checking Options */

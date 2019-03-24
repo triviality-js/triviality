@@ -2,7 +2,8 @@
   "extends": "../../../tsconfig",
   "compilerOptions": {
     "outDir": "../",
-    "noEmit": false
+    "noEmit": false,
+    "lib": ["dom"]
   },
   "include": [
     "./"

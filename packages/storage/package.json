@@ -1,0 +1,40 @@
+{
+  "name": "@triviality/storage",
+  "private": false,
+  "version": "0.0.1",
+  "description": "Storage interfaces and adapters",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "prepublish": "yarn build",
+    "build": "tsc --project src",
+    "watch": "tsc --project src --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/triviality-js/triviality.git"
+  },
+  "keywords": [
+    "typescript",
+    "ts",
+    "storage",
+    "triviality"
+  ],
+  "author": "Eric Pinxteren",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/epinxteren/eventsourcing-redux-bridge/issues"
+  },
+  "homepage": "https://gitlab.com/epinxteren/eventsourcing-redux-bridge#README",
+  "devDependencies": {
+    "jest": "^23",
+    "ts-jest": "^23",
+    "ts-node": "^7"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@triviality/serializer": "^0.2.1"
+  }
+}

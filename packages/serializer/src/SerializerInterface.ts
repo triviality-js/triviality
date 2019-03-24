@@ -1,7 +1,7 @@
 
-export interface SerializerInterface {
+export interface SerializerInterface<T = unknown> {
 
-  serialize(data: unknown): string;
+  serialize(data: T): string;
 
-  deserialize(serialized: string): unknown;
+  deserialize(serialized: string): T;
 }
