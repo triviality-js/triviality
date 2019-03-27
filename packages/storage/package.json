@@ -1,7 +1,7 @@
 {
   "name": "@triviality/storage",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Storage interfaces and adapters",
   "main": "index.js",
   "types": "index.d.ts",
@@ -35,6 +35,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@triviality/serializer": "^0.2.1"
+    "@triviality/serializer": "^0.2.2"
   }
 }
