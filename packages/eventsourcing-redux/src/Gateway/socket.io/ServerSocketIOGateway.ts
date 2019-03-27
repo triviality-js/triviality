@@ -2,7 +2,7 @@ import { ServerGatewayInterface } from '../ServerGatewayInterface';
 import { Socket } from 'socket.io';
 import { EMPTY, fromEvent, Observable, Subject } from 'rxjs';
 import { catchError, finalize, map, mapTo, share, switchMap, takeUntil } from 'rxjs/operators';
-import { SerializerInterface } from '../../Serializer/SerializerInterface';
+import { SerializerInterface } from '@triviality/serializer';
 import { SerializableAction } from '../../Redux/SerializableAction';
 import { ServerGatewayMessage } from '../ValueObject/ServerGatewayMessage';
 import { NodeJSEventEmitterGateway } from '../node/NodeJSEventEmitterGateway';

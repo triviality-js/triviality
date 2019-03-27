@@ -1,3 +1,4 @@
+import { ClassConstructor } from '@triviality/serializer';
 import {
   actionTypeWithEntity,
   EntityMetadata,
@@ -8,7 +9,6 @@ import { Query, QueryConstructor } from '@triviality/eventsourcing/QueryHandling
 import { InvalidQueryTypeError } from './Error/InvalidQueryTypeError';
 import { EntityName } from '../ValueObject/EntityName';
 import { ClassUtil } from '@triviality/eventsourcing/ClassUtil';
-import { ClassConstructor } from '../Serializer/ClassConstructor';
 
 export interface QueryAction<T extends SerializableQuery = SerializableQuery, Metadata = {}> {
   type: string;

@@ -1,7 +1,7 @@
 import { ImmutableUuIdIdentity } from '../ImmutableUuIdIdentity';
 import { Map } from 'immutable';
-import { TransitJSSerializer } from '../../Serializer/transit-js/TransitJSSerializer';
-import { createClassHandlers } from '../../Serializer/transit-js/createClassHandlers';
+import { TransitJSSerializer } from '@triviality/serializer/transit-js';
+import { createClassHandlers } from '@triviality/serializer/transit-js';
 
 it('Can create an instance', () => {
   const instance: ImmutableUuIdIdentity = ImmutableUuIdIdentity.create();

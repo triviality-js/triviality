@@ -1,7 +1,7 @@
 import { Namespace, Server, Socket } from 'socket.io';
 import { Identity } from '@triviality/eventsourcing/ValueObject/Identity';
 import { ServerSocketIOGateway } from './ServerSocketIOGateway';
-import { SerializerInterface } from '../../Serializer/SerializerInterface';
+import { SerializerInterface } from '@triviality/serializer';
 import { StoreRepositoryInterface } from '../../ReadModel/StoreRepositoryInterface';
 import { SimpleProjectorGateway } from '../../ReadModel/Projector/SimpleProjectorGateway';
 import { ReadModelAction, ReadModelMetadata } from '../../ReadModel/ReadModelAction';

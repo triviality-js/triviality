@@ -1,7 +1,7 @@
+import { SerializerInterface } from '@triviality/serializer';
 import { map } from 'rxjs/operators';
 import { DeserializationError } from '../Error/DeserializationError';
 import { Observable } from 'rxjs';
-import { SerializerInterface } from '../../Serializer/SerializerInterface';
 import { SerializableCommand } from '../../CommandHandling/SerializableCommand';
 import { MalformedSerializableCommandError } from '../Error/MalformedSerializableCommandError';
 import { EntityMetadata } from '../../Redux/EntityMetadata';

@@ -1,6 +1,6 @@
+import { DeNormalize, Normalize } from '@triviality/serializer';
 import { ValueObject, hash } from 'immutable';
 import { UuidIdentity } from '@triviality/eventsourcing/ValueObject/UuidIdentity';
-import { DeNormalize, Normalize } from '../Serializer/Serializeable';
 
 /**
  * This can also be used as keys for has tables.

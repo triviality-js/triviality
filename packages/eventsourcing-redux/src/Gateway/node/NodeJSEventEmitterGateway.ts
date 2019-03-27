@@ -1,6 +1,6 @@
 import { EMPTY, fromEvent, merge, Observable } from 'rxjs';
 import { isSerializableAction, SerializableAction } from '../../Redux/SerializableAction';
-import { SerializerInterface } from '../../Serializer/SerializerInterface';
+import { SerializerInterface } from '@triviality/serializer';
 import { MalformedSerializableActionError } from '../Error/MalformedSerializableActionError';
 import { SerializationError } from '../Error/SerializationError';
 import { ServerGatewayInterface } from '../ServerGatewayInterface';

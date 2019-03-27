@@ -1,7 +1,7 @@
 import 'jest';
 import { SerializableStateRepository, SerializedStateData } from '../SerializableStateRepository';
 import { StateReadModel } from '../../Model/StateReadModel';
-import { SerializerInterface } from '../../../Serializer/SerializerInterface';
+import { SerializerInterface } from '@triviality/serializer';
 import { Repository } from '@triviality/eventsourcing/ReadModel/Repository';
 import { BlobReadModel } from '@triviality/eventsourcing/ReadModel/BlobReadModel';
 import { InMemoryRepository } from '@triviality/eventsourcing/ReadModel/InMemoryRepository';

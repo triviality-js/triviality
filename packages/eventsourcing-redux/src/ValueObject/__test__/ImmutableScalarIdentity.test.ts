@@ -1,7 +1,7 @@
 import { ImmutableScalarIdentity } from '../ImmutableScalarIdentity';
 import { Map } from 'immutable';
-import { TransitJSSerializer } from '../../Serializer/transit-js/TransitJSSerializer';
-import { createClassHandlers } from '../../Serializer/transit-js/createClassHandlers';
+import { TransitJSSerializer } from '@triviality/serializer/transit-js';
+import { createClassHandlers } from '@triviality/serializer/transit-js';
 
 it('Can create an instance with string identity', () => {
   const instance = new ImmutableScalarIdentity<string>('test');

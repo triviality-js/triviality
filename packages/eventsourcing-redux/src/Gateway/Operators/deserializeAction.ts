@@ -1,7 +1,7 @@
+import { SerializerInterface } from '@triviality/serializer';
 import { map } from 'rxjs/operators';
 import { DeserializationError } from '../Error/DeserializationError';
 import { Observable } from 'rxjs';
-import { SerializerInterface } from '../../Serializer/SerializerInterface';
 import { isSerializableAction, SerializableAction } from '../../Redux/SerializableAction';
 import { MalformedSerializableActionError } from '../Error/MalformedSerializableActionError';
 

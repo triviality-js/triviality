@@ -1,7 +1,7 @@
 import { ClientSocketIOGateway } from '../ClientSocketIOGateway';
 import { SerializableAction } from '../../../Redux/SerializableAction';
 import { SerializableCommand } from '../../../CommandHandling/SerializableCommand';
-import { SerializerInterface } from '../../../Serializer/SerializerInterface';
+import { SerializerInterface } from '@triviality/serializer';
 import { SerializationError } from '../../Error/SerializationError';
 
 class DoSomethingCommand extends SerializableCommand {

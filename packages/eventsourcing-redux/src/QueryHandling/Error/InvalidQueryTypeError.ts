@@ -1,6 +1,6 @@
 import { ClassUtil } from '@triviality/eventsourcing/ClassUtil';
 import { QueryConstructor } from '@triviality/eventsourcing/QueryHandling/Query';
-import { ClassConstructor } from '../../Serializer/ClassConstructor';
+import { ClassConstructor } from '@triviality/serializer';
 
 export class InvalidQueryTypeError extends Error {
 
@@ -16,7 +16,7 @@ export class InvalidQueryTypeError extends Error {
     return new this(`Query response action ${ClassUtil.nameOffInstance(query)} is missing response value`);
   }
 
-  public static doesNotHaveCorrectResponse(query: any, Response: ClassConstructor) {
+  public static doesNotHaveCorrectResponse(query: any, Response: ClassConstructor<any>) {
     return new this(`Query response action ${ClassUtil.nameOffInstance(query)} does not have correct response ${ClassUtil.nameOffConstructor(Response)}`);
   }
 }

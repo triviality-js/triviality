@@ -2,7 +2,7 @@ import { fromEvent, merge, Observable, of, throwError } from 'rxjs';
 import { SerializableCommand } from '../../CommandHandling/SerializableCommand';
 import { SerializableAction } from '../../Redux/SerializableAction';
 
-import { SerializerInterface } from '../../Serializer/SerializerInterface';
+import { SerializerInterface } from '@triviality/serializer';
 import { SerializationError } from '../Error/SerializationError';
 import { ClientGatewayInterface } from '../ClientGatewayInterface';
 import { MalformedSerializableCommandError } from '../Error/MalformedSerializableCommandError';
