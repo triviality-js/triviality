@@ -2,7 +2,7 @@ import { SerializerInterface } from '@triviality/serializer';
 import { StoreError } from './Error/StoreError';
 import { KeyValueStoreInterface } from './KeyValueStoreInterface';
 
-export class SerializableLocalValueStore<T, K = string> implements KeyValueStoreInterface<T, K> {
+export class SerializableKeyValueStoreAdapter<T, K = string> implements KeyValueStoreInterface<T, K> {
 
   constructor(private serializer: SerializerInterface, private storage: KeyValueStoreInterface<string, K>) {
 
