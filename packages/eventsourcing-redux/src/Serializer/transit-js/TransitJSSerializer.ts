@@ -1,12 +1,10 @@
-/// <reference path="./transit-immutable-js.d.ts" />
 
+// @ts-ignore
 import * as transit from 'transit-immutable-js';
 import { Record } from 'immutable';
 import { SerializerInterface } from '../SerializerInterface';
 
-export interface RecordConstructor {
-  new(...args: any[]): Record<any>;
-}
+export type RecordConstructor = new(...args: any[]) => Record<any>;
 
 export class TransitJSSerializer implements SerializerInterface {
 

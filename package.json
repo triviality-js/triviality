@@ -29,16 +29,16 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "npm-run-all ts-lint unit-test copy-past-detection security-audit",
-    "build": "yarn clean-build && lerna run build",
-    "clean-build": "(cd packages && git clean -fdX --exclude node_modules)",
-    "ts-lint": "lerna exec 'tslint --project src'",
-    "ts-lint-fix": "lerna exec 'tslint --project src --fix'",
-    "security-audit": "lerna exec 'yarn audit'",
+    "test": "npm-run-all ts-lint unit-test copy-past-detection security-audit clean-build build",
+    "build": "lerna run build --parallel",
+    "clean-build": "lerna exec  'git clean -fdX --exclude node_modules'",
+    "ts-lint": "lerna exec 'tslint --project src' --parallel",
+    "ts-lint-fix": "lerna exec 'tslint --project src --fix' --parallel",
+    "security-audit": "lerna exec 'yarn audit' --parallel",
     "create-readme": "lerna exec 'ts-node ../../scripts/build_readme.ts'",
     "watch": "lerna run --parallel watch",
     "unit-test": "lerna exec 'jest'",
-    "publish-packages": "yarn build && lerna publish",
+    "publish-packages": "yarn clean-build && yarn build && lerna publish",
     "unit-test-coverage": "jest --coverage",
     "mutation-test": "stryker run",
     "copy-past-detection": "jscpd"

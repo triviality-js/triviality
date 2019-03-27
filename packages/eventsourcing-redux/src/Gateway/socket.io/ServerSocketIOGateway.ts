@@ -5,7 +5,7 @@ import { catchError, finalize, map, mapTo, share, switchMap, takeUntil } from 'r
 import { SerializerInterface } from '../../Serializer/SerializerInterface';
 import { SerializableAction } from '../../Redux/SerializableAction';
 import { ServerGatewayMessage } from '../ValueObject/ServerGatewayMessage';
-import { NodeJSEventEmitterGateway } from '../node.js/NodeJSEventEmitterGateway';
+import { NodeJSEventEmitterGateway } from '../node/NodeJSEventEmitterGateway';
 import { ServerGatewayMetadata } from '../ValueObject/ServerGatewayMetadata';
 
 export interface ServerSocketIOGatewayMetadata extends ServerGatewayMetadata<ServerGatewayInterface<ServerSocketIOGatewayMetadata>> {
