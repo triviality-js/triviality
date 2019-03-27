@@ -1,7 +1,7 @@
 {
   "name": "@triviality/eventsourcing-redux",
   "private": false,
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Bridge between event sourcing and redux",
   "main": "index.js",
   "types": "index.d.ts",
