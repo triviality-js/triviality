@@ -1,7 +1,7 @@
-import { Input, InputProps, Label, FormField } from 'semantic-ui-react';
+import { FormikProps } from 'formik';
 import * as _ from 'lodash';
 import React from 'react';
-import { FormikProps } from 'formik';
+import { FormField, Input, InputProps, Label } from 'semantic-ui-react';
 
 const DisplayError = (error: string | undefined, touched: boolean | undefined) => {
   if (!error || !touched) {

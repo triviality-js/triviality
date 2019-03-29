@@ -1,19 +1,19 @@
-import { Container, Module } from 'triviality';
-import { LoggerModule } from 'triviality-logger/Module/LoggerModule';
-import { CommonModule } from '../shared/CommonModule';
+import { CommanderConfigurationInterface } from '@triviality/commander';
+import { Container, Feature } from '@triviality/core';
+import { ServerSocketIOGateway } from '@triviality/eventsourcing-redux/Gateway/socket.io/ServerSocketIOGateway';
+import { LoggerFeature } from '@triviality/logger';
+import { SerializerFeature } from '@triviality/serializer';
 import { default as express, Express } from 'express';
 import * as http from 'http';
 import * as path from 'path';
 import { default as socketIo } from 'socket.io';
-import { ServerSocketIOGateway } from 'eventsourcing-redux-bridge/Gateway/socket.io/ServerSocketIOGateway';
-import { CommanderConfigurationInterface } from 'triviality-commander';
 import { ServerCommanderCommand } from './Cli/ServerCommanderCommand';
-import { EventSourcingModule } from './EventSourcingModule';
 import { IndexController } from './Controller/IndexController';
+import { EventSourcingFeature } from './EventSourcingFeature';
 
-export class WebModule implements Module {
+export class WebFeature implements Feature {
 
-  constructor(private container: Container<LoggerModule, CommonModule, EventSourcingModule>) {
+  constructor(private container: Container<LoggerFeature, SerializerFeature, EventSourcingFeature>) {
   }
 
   public registries() {

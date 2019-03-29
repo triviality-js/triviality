@@ -1,36 +1,36 @@
-import { Container, Module } from 'triviality';
-import { CommandHandler } from 'ts-eventsourcing/CommandHandling/CommandHandler';
-import { EventListener } from 'ts-eventsourcing/EventHandling/EventListener';
-import { EventSourcingModule } from './EventSourcingModule';
-import { WebModule } from './WebModule';
-import { SimpleStoreFactory } from 'eventsourcing-redux-bridge/Redux/Store/SimpleStoreFactory';
-import { ReadModelAction } from 'eventsourcing-redux-bridge/ReadModel/ReadModelAction';
-import { StoreRepository } from 'eventsourcing-redux-bridge/ReadModel/Repository/StoreRepository';
-import { InMemoryRepository } from 'ts-eventsourcing/ReadModel/InMemoryRepository';
-import { UserAggregateRepository } from './Aggregate/UserAggregateRepository';
-import { UserRegisterCommandHandler } from './CommandHandler/UserRegisterCommandHandler';
+import { Container, Feature } from '@triviality/core';
+import { combineClientChain } from '@triviality/eventsourcing-redux/Gateway/ClientConnectionChain';
+import { SocketIoGatewayFactory } from '@triviality/eventsourcing-redux/Gateway/socket.io/SocketIoGatewayFactory';
+import { SocketConnection } from '@triviality/eventsourcing-redux/Gateway/socket.io/ValueObject/SocketConnection';
+import { ReadModelAction } from '@triviality/eventsourcing-redux/ReadModel/ReadModelAction';
+import { ActionWithSnapshotRepository } from '@triviality/eventsourcing-redux/ReadModel/Repository/ActionWithSnapshotRepository';
+import { InMemoryActionRepository } from '@triviality/eventsourcing-redux/ReadModel/Repository/InMemoryActionRepository';
+import { StoreRepository } from '@triviality/eventsourcing-redux/ReadModel/Repository/StoreRepository';
+import { SimpleStoreFactory } from '@triviality/eventsourcing-redux/Redux/Store/SimpleStoreFactory';
+import { CommandHandler } from '@triviality/eventsourcing/CommandHandling/CommandHandler';
+import { EventListener } from '@triviality/eventsourcing/EventHandling/EventListener';
+import { QueryHandler } from '@triviality/eventsourcing/QueryHandling/QueryHandler';
+import { InMemoryRepository } from '@triviality/eventsourcing/ReadModel/InMemoryRepository';
+import { SerializerFeature } from '@triviality/serializer';
+import { accountReducer } from '../client/Account/accountReducer';
 import { AccountState } from '../client/Account/AcountState';
 import { UserId } from '../shared/ValueObject/UserId';
-import { accountReducer } from '../client/Account/accountReducer';
-import { ActionWithSnapshotRepository } from 'eventsourcing-redux-bridge/ReadModel/Repository/ActionWithSnapshotRepository';
-import { InMemoryActionRepository } from 'eventsourcing-redux-bridge/ReadModel/Repository/InMemoryActionRepository';
-import { SocketIoGatewayFactory } from 'eventsourcing-redux-bridge/Gateway/socket.io/SocketIoGatewayFactory';
-import { combineClientChain } from 'eventsourcing-redux-bridge/Gateway/ClientConnectionChain';
-import { SocketConnection } from 'eventsourcing-redux-bridge/Gateway/socket.io/ValueObject/SocketConnection';
-import { CommonModule } from '../shared/CommonModule';
-import { QueryHandler } from 'ts-eventsourcing/QueryHandling/QueryHandler';
-import { createStateQueryHandler } from './QueryHandler/StateQueryHandler';
-import { QueryAccountState } from './Query/QueryAccountState';
+import { UserAggregateRepository } from './Aggregate/UserAggregateRepository';
+import { UserLoginCommandHandler } from './CommandHandler/UserLoginCommandHandler';
+import { UserLogoutCommandHandler } from './CommandHandler/UserLogoutCommandHandler';
+import { UserRegisterCommandHandler } from './CommandHandler/UserRegisterCommandHandler';
+import { EventSourcingFeature } from './EventSourcingFeature';
 import { AccountProjector } from './Projector/AccountProjector';
 import { AccountGatewayFactory } from './Projector/Gateway/AccountGatewayFactory';
-import { UserLogoutCommandHandler } from './CommandHandler/UserLogoutCommandHandler';
-import { UserLoginCommandHandler } from './CommandHandler/UserLoginCommandHandler';
 import { UserProjector } from './Projector/UserProjector';
+import { QueryAccountState } from './Query/QueryAccountState';
+import { createStateQueryHandler } from './QueryHandler/StateQueryHandler';
 import { UserModelRepository } from './ReadModel/UserModelRepository';
+import { WebFeature } from './WebFeature';
 
-export class UserModule implements Module {
+export class UserFeature implements Feature {
 
-  constructor(private container: Container<EventSourcingModule, WebModule, CommonModule>) {
+  constructor(private container: Container<EventSourcingFeature, WebFeature, SerializerFeature>) {
   }
 
   public registries() {

@@ -1,7 +1,7 @@
+import { RecordWithPlayhead } from '@triviality/eventsourcing-redux/ReadModel/PlayheadRecord';
 import { Map } from 'immutable';
 import { User } from '../ValueObject/User';
 import { UserId } from '../ValueObject/UserId';
-import { RecordWithPlayhead } from "eventsourcing-redux-bridge/ReadModel/PlayheadRecord";
 
 export interface ChatStateInterface {
   users: Map<UserId, User>;

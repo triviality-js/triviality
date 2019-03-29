@@ -1,8 +1,8 @@
-import React, { ComponentClass, PureComponent } from 'react';
-import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 import { Formik, FormikActions, FormikProps } from 'formik';
-import { logoutAccount } from '../actions';
+import React, { ComponentClass, PureComponent } from 'react';
 import { connect } from 'react-redux';
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
+import { logoutAccount } from '../actions';
 
 export interface LogoutFormProps {
   logout: () => Promise<void>;

@@ -1,7 +1,7 @@
 import { KeyValueStore } from './KeyValueStore';
-import { ValueStoreInterface } from './ValueStoreInterface';
+import { StateStorageInterface } from './StateStorageInterface';
 
-export class ValueStore<T> implements ValueStoreInterface<T> {
+export class ValueStore<T> implements StateStorageInterface<T> {
 
   constructor(private store: KeyValueStore<T>, private key: string) {
 

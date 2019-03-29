@@ -1,12 +1,12 @@
-import React, { PureComponent } from 'react';
-import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
 import { Formik, FormikActions, FormikProps } from 'formik';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
 import * as Yup from 'yup';
 import { Assert } from '../../../shared/Assert';
 import { FormikSemanticInput } from '../../Component/FormikSemanticInput';
 import { loginAccount } from '../actions';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
 const LoginSchema = Yup.object().shape({
   name: Assert.userName,
@@ -44,7 +44,7 @@ export const LoginForm = connect(null, mapDispatchToProps)(
                 render={this.renderForm}
               />
               <Message>
-                New to us? <Link to="/register" >Sign Up</Link>
+                New to us? <Link to="/register">Sign Up</Link>
               </Message>
             </Grid.Column>
           </Grid>

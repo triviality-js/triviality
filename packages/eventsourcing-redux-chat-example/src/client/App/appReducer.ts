@@ -1,6 +1,6 @@
-import { SerializableAction } from 'eventsourcing-redux-bridge/Redux/SerializableAction';
-import { AppState } from './AppState';
+import { SerializableAction } from '@triviality/eventsourcing-redux/Redux/SerializableAction';
 import { ACCOUNT_STATE_RECEIVED } from '../Account/actions';
+import { AppState } from './AppState';
 
 export function appReducer(state: AppState = new AppState(), action: SerializableAction): AppState {
   switch (action.type) {

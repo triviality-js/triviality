@@ -1,4 +1,4 @@
-import { ReadModelAction } from 'eventsourcing-redux-bridge/ReadModel/ReadModelAction';
+import { ReadModelAction } from '@triviality/eventsourcing-redux/ReadModel/ReadModelAction';
 
 export class QueryStateResponse<T> {
 

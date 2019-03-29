@@ -1,4 +1,10 @@
-import { SerializerInterface } from 'ts-eventsourcing/Serializer/SerializerInterface';
+import { SerializerInterface } from '@triviality/serializer';
+
+export interface KeyValueStore<T> {
+  get(key: string): T | null;
+
+  set(key: string, value: T): void;
+}
 
 export class KeyValueStore<T> {
 

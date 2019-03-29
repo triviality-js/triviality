@@ -1,11 +1,11 @@
-import { UserAggregate } from '../Aggregate/UserAggregate';
-import { HandleCommand } from 'ts-eventsourcing/CommandHandling/HandleCommand';
-import { CommandHandler } from 'ts-eventsourcing/CommandHandling/CommandHandler';
+import { CommandHandler } from '@triviality/eventsourcing/CommandHandling/CommandHandler';
+import { HandleCommand } from '@triviality/eventsourcing/CommandHandling/HandleCommand';
+import { EventSourcingRepositoryInterface } from '@triviality/eventsourcing/EventSourcing/EventSourcingRepositoryInterface';
+import * as bcrypt from 'bcrypt';
 import { UserId } from '../../shared/ValueObject/UserId';
-import { EventSourcingRepositoryInterface } from 'ts-eventsourcing/EventSourcing/EventSourcingRepositoryInterface';
+import { UserAggregate } from '../Aggregate/UserAggregate';
 import { UserLoginCommand } from '../Command/UserLoginCommand';
 import { UserModelRepository } from '../ReadModel/UserModelRepository';
-import * as bcrypt from 'bcrypt';
 
 export class UserLoginCommandHandler implements CommandHandler {
 

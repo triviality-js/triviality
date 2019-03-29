@@ -1,4 +1,3 @@
-
 export class NameInvalidError extends Error {
 
   public static doesNotMatchCriteria() {

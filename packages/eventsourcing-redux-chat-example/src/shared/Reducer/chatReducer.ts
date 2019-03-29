@@ -1,9 +1,11 @@
-import { ChannelState } from '../State/ChannelState';
+import {
+  asDomainEventAction,
+  domainEventActionType,
+} from '@triviality/eventsourcing-redux/ReadModel/DomainEventAction';
+import { SerializableAction } from '@triviality/eventsourcing-redux/Redux/SerializableAction';
 import { UserHasRegistered } from '../../server/DomainEvent/UserHasRegistered';
+import { ChannelState } from '../State/ChannelState';
 import { UserId } from '../ValueObject/UserId';
-import { SerializableAction } from 'eventsourcing-redux-bridge/Redux/SerializableAction';
-import { asDomainEventAction, domainEventActionType } from "eventsourcing-redux-bridge/ReadModel/DomainEventAction";
-
 
 const USER_HAS_REGISTERED = domainEventActionType(UserHasRegistered, 'register');
 

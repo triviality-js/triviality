@@ -1,13 +1,13 @@
-import { UserRegisterCommand } from '../Command/UserRegisterCommand';
+import { CommandHandler } from '@triviality/eventsourcing/CommandHandling/CommandHandler';
+import { HandleCommand } from '@triviality/eventsourcing/CommandHandling/HandleCommand';
+import { EventSourcingRepositoryInterface } from '@triviality/eventsourcing/EventSourcing/EventSourcingRepositoryInterface';
+import * as bcrypt from 'bcrypt';
 import { default as validate } from 'uuid-validate';
+import { UserId } from '../../shared/ValueObject/UserId';
+import { UserAggregate } from '../Aggregate/UserAggregate';
+import { UserRegisterCommand } from '../Command/UserRegisterCommand';
 import { InvalidUserIdError } from '../Error/InvalidUserIdError';
 import { UserExistsError } from '../Error/UserExistsError';
-import { UserAggregate } from '../Aggregate/UserAggregate';
-import { HandleCommand } from 'ts-eventsourcing/CommandHandling/HandleCommand';
-import { CommandHandler } from 'ts-eventsourcing/CommandHandling/CommandHandler';
-import * as bcrypt from 'bcrypt';
-import { EventSourcingRepositoryInterface } from 'ts-eventsourcing/EventSourcing/EventSourcingRepositoryInterface';
-import { UserId } from '../../shared/ValueObject/UserId';
 import { UserModelRepository } from '../ReadModel/UserModelRepository';
 
 export class UserRegisterCommandHandler implements CommandHandler {

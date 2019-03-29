@@ -1,10 +1,10 @@
+import { CommandHandler } from '@triviality/eventsourcing/CommandHandling/CommandHandler';
+import { HandleCommand } from '@triviality/eventsourcing/CommandHandling/HandleCommand';
 import { default as validate } from 'uuid-validate';
-import { CreateChannelCommand } from '../Command/CreateChannelCommand';
-import { ChatChannelAggregateRepository } from '../Aggregate/ChatChannelAggregateRepository';
 import { ChatChannelAggregate } from '../Aggregate/ChatChannelAggregate';
+import { ChatChannelAggregateRepository } from '../Aggregate/ChatChannelAggregateRepository';
+import { CreateChannelCommand } from '../Command/CreateChannelCommand';
 import { InvalidChannelIdError } from '../Error/InvalidChannelIdError';
-import { HandleCommand } from 'ts-eventsourcing/CommandHandling/HandleCommand';
-import { CommandHandler } from 'ts-eventsourcing/CommandHandling/CommandHandler';
 
 export class ChatChannelCommandHandler implements CommandHandler {
 

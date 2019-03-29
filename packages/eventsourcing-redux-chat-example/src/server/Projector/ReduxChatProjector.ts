@@ -1,12 +1,12 @@
+import { ProjectorGatewayInterface } from '@triviality/eventsourcing-redux/ReadModel/ProjectorGatewayInterface';
+import { StoreRepositoryInterface } from '@triviality/eventsourcing-redux/ReadModel/StoreRepositoryInterface';
+import { DomainMessage } from '@triviality/eventsourcing/Domain/DomainMessage';
+import { HandleDomainEvent } from '@triviality/eventsourcing/EventHandling/HandleDomainEvent';
+import { Projector } from '@triviality/eventsourcing/ReadModel/Projector';
 import { ChannelState } from '../../shared/State/ChannelState';
 import { ChatChannelId } from '../../shared/ValueObject/ChatChannelId';
-import { Projector } from 'ts-eventsourcing/ReadModel/Projector';
-import { StoreRepositoryInterface } from 'eventsourcing-redux-bridge/ReadModel/StoreRepositoryInterface';
-import { ProjectorGatewayInterface } from 'eventsourcing-redux-bridge/ReadModel/ProjectorGatewayInterface';
-import { UserHasRegistered } from '../DomainEvent/UserHasRegistered';
 import { UserId } from '../../shared/ValueObject/UserId';
-import { DomainMessage } from 'ts-eventsourcing/Domain/DomainMessage';
-import { HandleDomainEvent } from 'ts-eventsourcing/EventHandling/HandleDomainEvent';
+import { UserHasRegistered } from '../DomainEvent/UserHasRegistered';
 
 export class ReduxChatProjector implements Projector {
 
@@ -16,6 +16,7 @@ export class ReduxChatProjector implements Projector {
 
   @HandleDomainEvent
   public async handleUserHasRegistered(_event: UserHasRegistered, _message: DomainMessage<UserHasRegistered, UserId>) {
+    // Noop.
   }
 
 }

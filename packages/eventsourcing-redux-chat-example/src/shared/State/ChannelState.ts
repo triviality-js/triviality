@@ -1,7 +1,7 @@
+import { Playhead } from '@triviality/eventsourcing-redux/ValueObject/Playhead';
 import { List, Map, Record } from 'immutable';
 import { User } from '../ValueObject/User';
 import { UserId } from '../ValueObject/UserId';
-import { Playhead } from 'eventsourcing-redux-bridge/ValueObject/Playhead';
 
 export interface ChannelStateInterface {
   users: Map<UserId, User>;

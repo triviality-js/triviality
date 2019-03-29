@@ -1,32 +1,42 @@
+import { Container, triviality } from '@triviality/core';
+import { DefaultLoggerFeature } from '@triviality/logger';
+import { ServiceContainerConsumer } from '@triviality/react/ServiceContainerConsumer';
+import { ServiceContainerProvider } from '@triviality/react/ServiceContainerProvider';
+import { TransitJsSerializerFeature } from '@triviality/serializer/transit-js';
 import 'babel-polyfill';
-import '../../style/style.scss';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { gatewayOpen } from 'eventsourcing-redux-bridge/Gateway/actions';
 import { Provider } from 'react-redux';
-import { RoutesConnected } from './App/Component/RoutesConnected';
-import { triviality } from 'triviality';
-import { CommonModule } from '../shared/CommonModule';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { ReduxModule } from './ReduxModule';
+import '../../style/style.scss';
+import { CommonFeature } from '../shared/CommonFeature';
+import { AccountFeature } from './Account/AccountFeature';
+import { AppFeature } from './App/AppFeature';
+import { RoutesConnected } from './App/Component/RoutesConnected';
+import { ChatReduxFeature } from './ChatReduxFeature';
 
-triviality()
-  .add(CommonModule)
-  .add(ReduxModule)
-  .build()
-  .then((container) => {
-    const store = container.store();
-
-    ReactDOM.render(
-      (
-        <Provider store={store}>
+ReactDOM.render(
+  (
+    <ServiceContainerProvider
+      factory={
+        triviality()
+          .add(DefaultLoggerFeature)
+          .add(TransitJsSerializerFeature)
+          .add(CommonFeature)
+          .add(ChatReduxFeature)
+          .add(AccountFeature)
+          .add(AppFeature)
+          .build()
+      }
+    >
+      <ServiceContainerConsumer>{(container: Container<ChatReduxFeature>) =>
+        <Provider store={container.store()}>
           <Router>
-            <RoutesConnected/>
+            <RoutesConnected />
           </Router>
         </Provider>
-      ) as any,
-      document.getElementById('app') as any,
-    );
-
-    store.dispatch(gatewayOpen('bootstrap', '/chat'));
-  });
+      }</ServiceContainerConsumer>
+    </ServiceContainerProvider>
+  ),
+  document.getElementById('app'),
+);

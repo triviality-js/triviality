@@ -1,8 +1,8 @@
-import { ReadModelMetadata } from 'eventsourcing-redux-bridge/ReadModel/ReadModelAction';
-import { ProjectorGatewayInterface } from 'eventsourcing-redux-bridge/ReadModel/ProjectorGatewayInterface';
-import { ProjectorGatewayFactory } from 'eventsourcing-redux-bridge/Gateway/Projector/ProjectorGatewayFactory';
+import { ProjectorGatewayFactory } from '@triviality/eventsourcing-redux/Gateway/Projector/ProjectorGatewayFactory';
+import { SocketIoGatewayOptions } from '@triviality/eventsourcing-redux/Gateway/socket.io/SocketIoGatewayFactory';
+import { ProjectorGatewayInterface } from '@triviality/eventsourcing-redux/ReadModel/ProjectorGatewayInterface';
+import { ReadModelMetadata } from '@triviality/eventsourcing-redux/ReadModel/ReadModelAction';
 import { UserId } from '../../../shared/ValueObject/UserId';
-import { SocketIoGatewayOptions } from 'eventsourcing-redux-bridge/Gateway/socket.io/SocketIoGatewayFactory';
 
 export class AccountGatewayFactory implements ProjectorGatewayFactory<UserId, UserId> {
 

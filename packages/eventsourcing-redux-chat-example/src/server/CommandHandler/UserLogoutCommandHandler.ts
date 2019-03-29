@@ -1,8 +1,8 @@
-import { UserAggregate } from '../Aggregate/UserAggregate';
-import { HandleCommand } from 'ts-eventsourcing/CommandHandling/HandleCommand';
-import { CommandHandler } from 'ts-eventsourcing/CommandHandling/CommandHandler';
+import { CommandHandler } from '@triviality/eventsourcing/CommandHandling/CommandHandler';
+import { HandleCommand } from '@triviality/eventsourcing/CommandHandling/HandleCommand';
+import { EventSourcingRepositoryInterface } from '@triviality/eventsourcing/EventSourcing/EventSourcingRepositoryInterface';
 import { UserId } from '../../shared/ValueObject/UserId';
-import { EventSourcingRepositoryInterface } from 'ts-eventsourcing/EventSourcing/EventSourcingRepositoryInterface';
+import { UserAggregate } from '../Aggregate/UserAggregate';
 import { UserLogoutCommand } from '../Command/UserLogoutCommand';
 
 export class UserLogoutCommandHandler implements CommandHandler {

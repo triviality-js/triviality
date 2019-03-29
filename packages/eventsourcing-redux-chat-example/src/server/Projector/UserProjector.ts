@@ -1,10 +1,10 @@
-import { UserHasRegistered } from '../DomainEvent/UserHasRegistered';
-import { Projector } from 'ts-eventsourcing/ReadModel/Projector';
-import { HandleDomainEvent } from 'ts-eventsourcing/EventHandling/HandleDomainEvent';
-import { UserModelRepository } from '../ReadModel/UserModelRepository';
-import { UserModel } from '../ReadModel/UserModel';
-import { DomainMessage } from 'ts-eventsourcing/Domain/DomainMessage';
+import { DomainMessage } from '@triviality/eventsourcing/Domain/DomainMessage';
+import { HandleDomainEvent } from '@triviality/eventsourcing/EventHandling/HandleDomainEvent';
+import { Projector } from '@triviality/eventsourcing/ReadModel/Projector';
 import { UserId } from '../../shared/ValueObject/UserId';
+import { UserHasRegistered } from '../DomainEvent/UserHasRegistered';
+import { UserModel } from '../ReadModel/UserModel';
+import { UserModelRepository } from '../ReadModel/UserModelRepository';
 
 export class UserProjector implements Projector {
 

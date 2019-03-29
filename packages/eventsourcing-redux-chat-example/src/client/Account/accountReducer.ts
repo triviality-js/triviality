@@ -1,9 +1,9 @@
-import { SerializableAction } from 'eventsourcing-redux-bridge/Redux/SerializableAction';
+import { asDomainEventAction } from '@triviality/eventsourcing-redux/ReadModel/DomainEventAction';
+import { SerializableAction } from '@triviality/eventsourcing-redux/Redux/SerializableAction';
+import { UserHasRegistered } from '../../server/DomainEvent/UserHasRegistered';
+import { UserId } from '../../shared/ValueObject/UserId';
 import { AccountState } from './AcountState';
 import { ACCOUNT_STATE_RECEIVED } from './actions';
-import { asDomainEventAction } from 'eventsourcing-redux-bridge/ReadModel/DomainEventAction';
-import { UserId } from '../../shared/ValueObject/UserId';
-import { UserHasRegistered } from '../../server/DomainEvent/UserHasRegistered';
 
 export function accountReducer(state: AccountState = new AccountState(), action: SerializableAction): AccountState {
 

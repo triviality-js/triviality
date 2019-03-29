@@ -1,21 +1,25 @@
+import { CommanderFeature, CommanderPackageVersionFeature } from '@triviality/commander';
+import { ContainerFactory } from '@triviality/core';
+import { DefaultLoggerFeature } from '@triviality/logger';
+import { TransitJsSerializerFeature } from '@triviality/serializer/transit-js';
 import 'source-map-support/register';
-import { ContainerFactory } from 'triviality';
-import { CommonModule } from '../shared/CommonModule';
-import { EventSourcingModule } from './EventSourcingModule';
-import { UserModule } from './UserModule';
-import { WebModule } from './WebModule';
-import { ChatChannelModule } from './ChatChannelModule';
-import { CommanderModule, CommanderPackageVersionModule } from 'triviality-commander';
+import { CommonFeature } from '../shared/CommonFeature';
+import { ChatChannelFeature } from './ChatChannelFeature';
+import { EventSourcingFeature } from './EventSourcingFeature';
+import { UserFeature } from './UserFeature';
+import { WebFeature } from './WebFeature';
 
 ContainerFactory
   .create()
-  .add(CommanderModule)
-  .add(CommanderPackageVersionModule)
-  .add(CommonModule)
-  .add(EventSourcingModule)
-  .add(WebModule)
-  .add(UserModule)
-  .add(ChatChannelModule)
+  .add(TransitJsSerializerFeature)
+  .add(DefaultLoggerFeature)
+  .add(CommanderFeature)
+  .add(CommanderPackageVersionFeature)
+  .add(CommonFeature)
+  .add(EventSourcingFeature)
+  .add(WebFeature)
+  .add(UserFeature)
+  .add(ChatChannelFeature)
   .build()
   .then((container) => {
     container.startCommanderService().start();

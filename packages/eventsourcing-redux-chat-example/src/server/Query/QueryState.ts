@@ -1,6 +1,6 @@
-import { SerializableQuery } from 'eventsourcing-redux-bridge/QueryHandling/SerializableQuery';
-import { Playhead } from 'eventsourcing-redux-bridge/ValueObject/Playhead';
-import { Identity } from 'ts-eventsourcing/ValueObject/Identity';
+import { SerializableQuery } from '@triviality/eventsourcing-redux/QueryHandling/SerializableQuery';
+import { Playhead } from '@triviality/eventsourcing-redux/ValueObject/Playhead';
+import { Identity } from '@triviality/eventsourcing/ValueObject/Identity';
 
 export class QueryState<Id extends Identity = Identity> extends SerializableQuery {
 

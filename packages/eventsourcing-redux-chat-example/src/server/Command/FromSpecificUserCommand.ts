@@ -1,4 +1,4 @@
-import { SerializableCommand } from 'eventsourcing-redux-bridge/CommandHandling/SerializableCommand';
+import { SerializableCommand } from '@triviality/eventsourcing-redux/CommandHandling/SerializableCommand';
 import { UserId } from '../../shared/ValueObject/UserId';
 
 export class FromSpecificUserCommand extends SerializableCommand {

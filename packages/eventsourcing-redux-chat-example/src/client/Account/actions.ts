@@ -1,20 +1,17 @@
-import { UserRegisterCommand } from '../../server/Command/UserRegisterCommand';
-import { UserId } from '../../shared/ValueObject/UserId';
 import {
-  sendCommandAndListenToHandler,
   commandHandelingActionTypes,
-} from 'eventsourcing-redux-bridge/CommandHandling/actions';
-import {
-  queryHandelingActionTypes,
-  sendQuery,
-} from 'eventsourcing-redux-bridge/QueryHandling/actions';
-import { QueryAccountState } from '../../server/Query/QueryAccountState';
-import { EntityName } from 'eventsourcing-redux-bridge/ValueObject/EntityName';
-import { actionTypeWithEntity } from 'eventsourcing-redux-bridge/Redux/EntityMetadata';
+  sendCommandAndListenToHandler,
+} from '@triviality/eventsourcing-redux/CommandHandling/actions';
+import { queryHandelingActionTypes, sendQuery } from '@triviality/eventsourcing-redux/QueryHandling/actions';
+import { WithPlayheadInterface } from '@triviality/eventsourcing-redux/ReadModel/PlayheadRecord';
+import { actionTypeWithEntity } from '@triviality/eventsourcing-redux/Redux/EntityMetadata';
+import { EntityName } from '@triviality/eventsourcing-redux/ValueObject/EntityName';
+import { INITIAL_PLAYHEAD } from '@triviality/eventsourcing-redux/ValueObject/Playhead';
 import { UserLoginCommand } from '../../server/Command/UserLoginCommand';
 import { UserLogoutCommand } from '../../server/Command/UserLogoutCommand';
-import { INITIAL_PLAYHEAD } from 'eventsourcing-redux-bridge/ValueObject/Playhead';
-import { WithPlayheadInterface } from 'eventsourcing-redux-bridge/ReadModel/PlayheadRecord';
+import { UserRegisterCommand } from '../../server/Command/UserRegisterCommand';
+import { QueryAccountState } from '../../server/Query/QueryAccountState';
+import { UserId } from '../../shared/ValueObject/UserId';
 
 export const ACCOUNT: EntityName = 'account';
 

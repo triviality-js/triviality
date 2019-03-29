@@ -1,4 +1,4 @@
-import { SerializableCommand } from 'eventsourcing-redux-bridge/CommandHandling/SerializableCommand';
+import { SerializableCommand } from '@triviality/eventsourcing-redux/CommandHandling/SerializableCommand';
 
 export class UserLoginCommand extends SerializableCommand {
 

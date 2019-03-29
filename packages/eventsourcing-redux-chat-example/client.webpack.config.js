@@ -2,6 +2,7 @@ const path = require('path');
 const BrowserSyncPlugin = require("browser-sync-webpack-plugin");
 
 module.exports = {
+    name: 'client',
     entry: {
         client: './src/client/bootstrap.tsx'
     },

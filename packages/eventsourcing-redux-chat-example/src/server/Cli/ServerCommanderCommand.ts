@@ -1,19 +1,19 @@
+import { CommanderConfigurationInterface } from '@triviality/commander';
+import { dispatchClientCommandOnCommandBus } from '@triviality/eventsourcing-redux/CommandHandling/Operator/dispatchClientCommandOnCommandBus';
+import { emitCommandHandlerResponseOrErrorToClientGateway } from '@triviality/eventsourcing-redux/CommandHandling/Operator/emitCommandHandlerResponseOrErrorToClientGateway';
+import { ServerSocketIOGateway } from '@triviality/eventsourcing-redux/Gateway/socket.io/ServerSocketIOGateway';
+import { dispatchClientQueryOnQueryBus } from '@triviality/eventsourcing-redux/QueryHandling/Operator/dispatchClientQueryOnQueryBus';
+import { emitQueryHandlerResponseOrErrorToClientGateway } from '@triviality/eventsourcing-redux/QueryHandling/Operator/emitQueryHandlerResponseOrErrorToClientGateway';
+import { ClassUtil } from '@triviality/eventsourcing/ClassUtil';
+import { CommandBus } from '@triviality/eventsourcing/CommandHandling/CommandBus';
+import { QueryBus } from '@triviality/eventsourcing/QueryHandling/QueryBus';
+import { LoggerInterface } from '@triviality/logger/LoggerInterface';
 import { Command } from 'commander';
-import { LoggerInterface } from 'triviality-logger/LoggerInterface';
-import { CommanderConfigurationInterface } from 'triviality-commander';
+import * as http from 'http';
+import { merge, of } from 'rxjs';
+import { catchError, concatMap, tap } from 'rxjs/operators';
 import { Socket } from 'socket.io';
 import { ClientLogger } from '../Logger/SocketClientLogger';
-import { ClassUtil } from 'ts-eventsourcing/ClassUtil';
-import { emitQueryHandlerResponseOrErrorToClientGateway } from 'eventsourcing-redux-bridge/QueryHandling/Operator/emitQueryHandlerResponseOrErrorToClientGateway';
-import { dispatchClientQueryOnQueryBus } from 'eventsourcing-redux-bridge/QueryHandling/Operator/dispatchClientQueryOnQueryBus';
-import { ServerSocketIOGateway } from 'eventsourcing-redux-bridge/Gateway/socket.io/ServerSocketIOGateway';
-import { catchError, tap, concatMap } from 'rxjs/operators';
-import { merge, of } from 'rxjs';
-import { CommandBus } from 'ts-eventsourcing/CommandHandling/CommandBus';
-import { QueryBus } from 'ts-eventsourcing/QueryHandling/QueryBus';
-import * as http from 'http';
-import { emitCommandHandlerResponseOrErrorToClientGateway } from 'eventsourcing-redux-bridge/CommandHandling/Operator/emitCommandHandlerResponseOrErrorToClientGateway';
-import { dispatchClientCommandOnCommandBus } from 'eventsourcing-redux-bridge/CommandHandling/Operator/dispatchClientCommandOnCommandBus';
 
 export class ServerCommanderCommand implements CommanderConfigurationInterface {
 
@@ -83,7 +83,7 @@ export class ServerCommanderCommand implements CommanderConfigurationInterface {
             tap((response) => {
               const error = response.metadata.error;
               if (error) {
-                clientLogger.warn(`Response failed with action response: "${response.type}" (${error})`);
+                clientLogger.warn(`Failed with action response: "${response.type}" (${error})`);
               } else {
                 clientLogger.info(`Response succeeded with action response: "${response.type}"`);
               }

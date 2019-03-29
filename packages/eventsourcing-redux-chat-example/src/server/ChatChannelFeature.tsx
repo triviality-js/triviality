@@ -1,24 +1,24 @@
-import { Container, Module } from 'triviality';
-import { CommandHandler } from 'ts-eventsourcing/CommandHandling/CommandHandler';
-import { EventListener } from 'ts-eventsourcing/EventHandling/EventListener';
-import { EventSourcingModule } from './EventSourcingModule';
-import { WebModule } from './WebModule';
+import { Container, Feature } from '@triviality/core';
+import { SimpleProjectorGateway } from '@triviality/eventsourcing-redux/ReadModel/Projector/SimpleProjectorGateway';
+import { ReadModelAction } from '@triviality/eventsourcing-redux/ReadModel/ReadModelAction';
+import { StoreRepository } from '@triviality/eventsourcing-redux/ReadModel/Repository/StoreRepository';
+import { StoreRepositoryInterface } from '@triviality/eventsourcing-redux/ReadModel/StoreRepositoryInterface';
+import { SimpleStoreFactory } from '@triviality/eventsourcing-redux/Redux/Store/SimpleStoreFactory';
+import { CommandHandler } from '@triviality/eventsourcing/CommandHandling/CommandHandler';
+import { EventListener } from '@triviality/eventsourcing/EventHandling/EventListener';
+import { InMemoryRepository } from '@triviality/eventsourcing/ReadModel/InMemoryRepository';
+import { chatReducer } from '../shared/Reducer/chatReducer';
+import { ChannelState } from '../shared/State/ChannelState';
+import { ChatChannelId } from '../shared/ValueObject/ChatChannelId';
 import { ChatChannelAggregateRepository } from './Aggregate/ChatChannelAggregateRepository';
 import { ChatChannelCommandHandler } from './CommandHandler/ChatChannelCommandHandler';
-import { SimpleStoreFactory } from 'eventsourcing-redux-bridge/Redux/Store/SimpleStoreFactory';
-import { ChannelState } from '../shared/State/ChannelState';
-import { ReadModelAction } from 'eventsourcing-redux-bridge/ReadModel/ReadModelAction';
-import { ChatChannelId } from '../shared/ValueObject/ChatChannelId';
-import { chatReducer } from '../shared/Reducer/chatReducer';
-import { StoreRepositoryInterface } from 'eventsourcing-redux-bridge/ReadModel/StoreRepositoryInterface';
-import { StoreRepository } from 'eventsourcing-redux-bridge/ReadModel/Repository/StoreRepository';
-import { InMemoryRepository } from 'ts-eventsourcing/ReadModel/InMemoryRepository';
-import { SimpleProjectorGateway } from 'eventsourcing-redux-bridge/ReadModel/Projector/SimpleProjectorGateway';
+import { EventSourcingFeature } from './EventSourcingFeature';
 import { ReduxChatProjector } from './Projector/ReduxChatProjector';
+import { WebFeature } from './WebFeature';
 
-export class ChatChannelModule implements Module {
+export class ChatChannelFeature implements Feature {
 
-  constructor(private container: Container<EventSourcingModule, WebModule>) {
+  constructor(private container: Container<EventSourcingFeature, WebFeature>) {
   }
 
   public registries() {

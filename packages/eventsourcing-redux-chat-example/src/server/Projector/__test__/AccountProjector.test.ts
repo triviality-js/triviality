@@ -1,10 +1,10 @@
-import { UserId } from "../../../shared/ValueObject/UserId";
-import { AccountProjector } from "../AccountProjector";
-import { AccountGatewayFactory } from "../Gateway/AccountGatewayFactory";
-import { UserHasRegistered } from "../../DomainEvent/UserHasRegistered";
-import { AccountState } from "../../../client/Account/AcountState";
-import { accountReducer } from "../../../client/Account/accountReducer";
-import { ReduxEventSourcingTestBench } from "eventsourcing-redux-bridge/Testing/ReduxEventSourcingTestBench";
+import { ReduxEventSourcingTestBench } from '@triviality/eventsourcing-redux/Testing/ReduxEventSourcingTestBench';
+import { accountReducer } from '../../../client/Account/accountReducer';
+import { AccountState } from '../../../client/Account/AcountState';
+import { UserId } from '../../../shared/ValueObject/UserId';
+import { UserHasRegistered } from '../../DomainEvent/UserHasRegistered';
+import { AccountProjector } from '../AccountProjector';
+import { AccountGatewayFactory } from '../Gateway/AccountGatewayFactory';
 
 it('Handle registration', async () => {
   const id = new UserId('cb8b715e-738b-49a1-9829-7f8d6ba54f9c');
@@ -13,8 +13,8 @@ it('Handle registration', async () => {
     .givenTestLogger();
 
   await tb.givenEventListener((testBench: ReduxEventSourcingTestBench) => {
-      return new AccountProjector(new AccountGatewayFactory(testBench.createActionGatewayFactory(new AccountState(), accountReducer)));
-    });
+    return new AccountProjector(new AccountGatewayFactory(testBench.createActionGatewayFactory(new AccountState(), accountReducer)));
+  });
 
   await tb.whenEventsHappened(id, [
     new UserHasRegistered('John doe', 'password hash'),
@@ -23,7 +23,7 @@ it('Handle registration', async () => {
   await tb.thenAssert(async (testBench) => {
     const action = testBench.createAction(id, id, 'Account', new UserHasRegistered('John doe', 'password hash'));
     await testBench.thenActionsShouldBeTransmitted([action]);
-  })
+  });
 });
 
 it('Cannot register same id twice', async () => {
@@ -38,5 +38,5 @@ it('Cannot register same id twice', async () => {
     .whenEventsHappened(id, [
       new UserHasRegistered('John doe', 'password hash'),
       new UserHasRegistered('John doe', 'password hash'),
-    ])
+    ]);
 });

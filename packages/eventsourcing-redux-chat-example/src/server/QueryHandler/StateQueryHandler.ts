@@ -1,11 +1,11 @@
-import { CommandHandler } from 'ts-eventsourcing/CommandHandling/CommandHandler';
-import { QueryStateResponse } from '../Query/QueryStateResponse';
+import { ActionRepositoryInterface } from '@triviality/eventsourcing-redux/ReadModel/ActionRepositoryInterface';
+import { CommandHandler } from '@triviality/eventsourcing/CommandHandling/CommandHandler';
+import { HandleQuery } from '@triviality/eventsourcing/QueryHandling/HandleQuery';
+import { QueryConstructor } from '@triviality/eventsourcing/QueryHandling/Query';
+import { Identity } from '@triviality/eventsourcing/ValueObject/Identity';
 import { toArray } from 'rxjs/operators';
-import { Identity } from 'ts-eventsourcing/ValueObject/Identity';
-import { ActionRepositoryInterface } from 'eventsourcing-redux-bridge/ReadModel/ActionRepositoryInterface';
 import { QueryState } from '../Query/QueryState';
-import { QueryConstructor } from 'ts-eventsourcing/QueryHandling/Query';
-import { HandleQuery } from 'ts-eventsourcing/QueryHandling/HandleQuery';
+import { QueryStateResponse } from '../Query/QueryStateResponse';
 
 export function createStateQueryHandler<T extends QueryState<Id>, S, Id extends Identity = Identity>(
   repository: ActionRepositoryInterface<S, Id>,
@@ -25,5 +25,6 @@ export function createStateQueryHandler<T extends QueryState<Id>, S, Id extends 
       return QueryStateResponse.actionsResponse(await stream.pipe(toArray()).toPromise());
     }
   }
+
   return new Handler();
 }

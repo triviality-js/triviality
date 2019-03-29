@@ -1,6 +1,6 @@
-import { ChatChannelId } from '../../shared/ValueObject/ChatChannelId';
+import { EventSourcedAggregateRoot } from '@triviality/eventsourcing/EventSourcing/EventSourcedAggregateRoot';
 import { Assert } from '../../shared/Assert';
-import { EventSourcedAggregateRoot } from 'ts-eventsourcing/EventSourcing/EventSourcedAggregateRoot';
+import { ChatChannelId } from '../../shared/ValueObject/ChatChannelId';
 
 export class ChatChannelAggregate extends EventSourcedAggregateRoot<ChatChannelId> {
 

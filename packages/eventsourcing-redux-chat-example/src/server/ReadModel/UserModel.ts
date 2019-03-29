@@ -1,4 +1,4 @@
-import { ReadModel } from 'ts-eventsourcing/ReadModel/ReadModel';
+import { ReadModel } from '@triviality/eventsourcing/ReadModel/ReadModel';
 import { UserId } from '../../shared/ValueObject/UserId';
 
 export class UserModel implements ReadModel {

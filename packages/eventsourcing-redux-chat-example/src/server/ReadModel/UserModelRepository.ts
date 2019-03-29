@@ -1,6 +1,6 @@
-import { InMemoryRepository } from 'ts-eventsourcing/ReadModel/InMemoryRepository';
-import { UserModel } from './UserModel';
+import { InMemoryRepository } from '@triviality/eventsourcing/ReadModel/InMemoryRepository';
 import { UserId } from '../../shared/ValueObject/UserId';
+import { UserModel } from './UserModel';
 
 export class UserModelRepository extends InMemoryRepository<UserModel, UserId> {
 

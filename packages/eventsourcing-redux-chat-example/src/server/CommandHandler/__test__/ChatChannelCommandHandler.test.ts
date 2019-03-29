@@ -1,12 +1,12 @@
-import { EventSourcingTestBench } from 'ts-eventsourcing/Testing';
-import { UserRegisterCommandHandler } from '../UserRegisterCommandHandler';
-import { UserAggregate } from '../../Aggregate/UserAggregate';
-import { UserId } from '../../../shared/ValueObject/UserId';
-import { UserRegisterCommand } from '../../Command/UserRegisterCommand';
-import { toArray } from 'rxjs/operators';
-import { UserHasRegistered } from '../../DomainEvent/UserHasRegistered';
+import { EventSourcingTestBench } from '@triviality/eventsourcing/Testing';
 import * as bcrypt from 'bcrypt';
+import { toArray } from 'rxjs/operators';
+import { UserId } from '../../../shared/ValueObject/UserId';
+import { UserAggregate } from '../../Aggregate/UserAggregate';
+import { UserRegisterCommand } from '../../Command/UserRegisterCommand';
+import { UserHasRegistered } from '../../DomainEvent/UserHasRegistered';
 import { UserModel } from '../../ReadModel/UserModel';
+import { UserRegisterCommandHandler } from '../UserRegisterCommandHandler';
 
 it('Should handle registration', () => {
 

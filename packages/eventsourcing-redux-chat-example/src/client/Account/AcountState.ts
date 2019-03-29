@@ -1,7 +1,7 @@
-import { UserId } from '../../shared/ValueObject/UserId';
-import { Nullable, RecordWithPlayhead } from 'eventsourcing-redux-bridge/ReadModel/PlayheadRecord';
+import { Nullable, RecordWithPlayhead } from '@triviality/eventsourcing-redux/ReadModel/PlayheadRecord';
+import { SerializableAction } from '@triviality/eventsourcing-redux/Redux/SerializableAction';
 import { QueryStateResponse } from '../../server/Query/QueryStateResponse';
-import { SerializableAction } from 'eventsourcing-redux-bridge/Redux/SerializableAction';
+import { UserId } from '../../shared/ValueObject/UserId';
 
 export interface AccountStateInterface {
   id: UserId;

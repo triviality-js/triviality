@@ -1,9 +1,9 @@
-import { UserId } from '../../shared/ValueObject/UserId';
-import { UserHasRegistered } from '../DomainEvent/UserHasRegistered';
+import { EventSourcedAggregateRoot } from '@triviality/eventsourcing/EventSourcing/EventSourcedAggregateRoot';
 import { Assert } from '../../shared/Assert';
-import { EventSourcedAggregateRoot } from 'ts-eventsourcing/EventSourcing/EventSourcedAggregateRoot';
-import { UserHasLoggedOut } from '../DomainEvent/UserHasLoggedOut';
+import { UserId } from '../../shared/ValueObject/UserId';
 import { UserHasLoggedIn } from '../DomainEvent/UserHasLoggedIn';
+import { UserHasLoggedOut } from '../DomainEvent/UserHasLoggedOut';
+import { UserHasRegistered } from '../DomainEvent/UserHasRegistered';
 
 export class UserAggregate extends EventSourcedAggregateRoot<UserId> {
 

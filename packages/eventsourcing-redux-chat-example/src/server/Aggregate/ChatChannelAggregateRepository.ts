@@ -1,13 +1,13 @@
-import { ChatChannelAggregate } from './ChatChannelAggregate';
+import { DomainEventStreamDecorator } from '@triviality/eventsourcing/Domain/DomainEventStreamDecorator';
+import { DomainEventBus } from '@triviality/eventsourcing/EventHandling/DomainEventBus';
+import { EventSourcingRepositoryInterface } from '@triviality/eventsourcing/EventSourcing/EventSourcingRepositoryInterface';
+import { SimpleEventSourcedAggregateFactory } from '@triviality/eventsourcing/EventSourcing/Factory/SimpleEventSourcedAggregateFactory';
+import { CachedEventSourcingRepositoryDecorator } from '@triviality/eventsourcing/EventSourcing/Repository/CachedEventSourcingRepositoryDecorator';
+import { EventSourcingRepository } from '@triviality/eventsourcing/EventSourcing/Repository/EventSourcingRepository';
+import { EventStore } from '@triviality/eventsourcing/EventStore/EventStore';
 import { ChatChannelId } from '../../shared/ValueObject/ChatChannelId';
 import { UserId } from '../../shared/ValueObject/UserId';
-import { EventStore } from 'ts-eventsourcing/EventStore/EventStore';
-import { DomainEventBus } from 'ts-eventsourcing/EventHandling/DomainEventBus';
-import { SimpleEventSourcedAggregateFactory } from 'ts-eventsourcing/EventSourcing/Factory/SimpleEventSourcedAggregateFactory';
-import { EventSourcingRepositoryInterface } from 'ts-eventsourcing/EventSourcing/EventSourcingRepositoryInterface';
-import { DomainEventStreamDecorator } from 'ts-eventsourcing/Domain/DomainEventStreamDecorator';
-import { CachedEventSourcingRepositoryDecorator } from 'ts-eventsourcing/EventSourcing/Repository/CachedEventSourcingRepositoryDecorator';
-import { EventSourcingRepository } from 'ts-eventsourcing/EventSourcing/Repository/EventSourcingRepository';
+import { ChatChannelAggregate } from './ChatChannelAggregate';
 
 export class ChatChannelAggregateRepository implements EventSourcingRepositoryInterface<ChatChannelAggregate, ChatChannelId> {
 

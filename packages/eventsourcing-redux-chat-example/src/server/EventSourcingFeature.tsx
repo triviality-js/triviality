@@ -1,24 +1,24 @@
-import { CommandBus } from 'ts-eventsourcing/CommandHandling/CommandBus';
-import { SimpleCommandBus } from 'ts-eventsourcing/CommandHandling/SimpleCommandBus';
-import { AsynchronousDomainEventBus } from 'ts-eventsourcing/EventHandling/DomainEventBus/AsynchronousDomainEventBus';
-import { QueryBus } from 'ts-eventsourcing/QueryHandling/QueryBus';
-import { SimpleQueryBus } from 'ts-eventsourcing/QueryHandling/SimpleQueryBus';
-import { Container, Module } from 'triviality';
-import { AggregateDomainEventStreamDecorator } from 'ts-eventsourcing/Domain/Decorator/AggregateDomainEventStreamDecorator';
-import { CommandHandler } from 'ts-eventsourcing/CommandHandling/CommandHandler';
-import { EventListener } from 'ts-eventsourcing/EventHandling/EventListener';
-import { LoggerModule } from 'triviality-logger/Module/LoggerModule';
-import { PrefixLogger } from 'triviality-logger/PrefixLogger';
-import { FileEventStore } from 'ts-eventsourcing/EventStore/FileEventStore';
-import { CommonModule } from '../shared/CommonModule';
-import { EventStore } from 'ts-eventsourcing/EventStore/EventStore';
-import { QueryHandler } from 'ts-eventsourcing/QueryHandling/QueryHandler';
-import { DomainEventStreamDecorator } from 'ts-eventsourcing/Domain/DomainEventStreamDecorator';
-import { ReplayService } from "ts-eventsourcing/ReplayService";
+import { Container, Feature } from '@triviality/core';
+import { CommandBus } from '@triviality/eventsourcing/CommandHandling/CommandBus';
+import { CommandHandler } from '@triviality/eventsourcing/CommandHandling/CommandHandler';
+import { SimpleCommandBus } from '@triviality/eventsourcing/CommandHandling/SimpleCommandBus';
+import { AggregateDomainEventStreamDecorator } from '@triviality/eventsourcing/Domain/Decorator/AggregateDomainEventStreamDecorator';
+import { DomainEventStreamDecorator } from '@triviality/eventsourcing/Domain/DomainEventStreamDecorator';
+import { AsynchronousDomainEventBus } from '@triviality/eventsourcing/EventHandling/DomainEventBus/AsynchronousDomainEventBus';
+import { EventListener } from '@triviality/eventsourcing/EventHandling/EventListener';
+import { EventStore } from '@triviality/eventsourcing/EventStore/EventStore';
+import { FileEventStore } from '@triviality/eventsourcing/EventStore/FileEventStore';
+import { QueryBus } from '@triviality/eventsourcing/QueryHandling/QueryBus';
+import { QueryHandler } from '@triviality/eventsourcing/QueryHandling/QueryHandler';
+import { SimpleQueryBus } from '@triviality/eventsourcing/QueryHandling/SimpleQueryBus';
+import { ReplayService } from '@triviality/eventsourcing/ReplayService';
+import { LoggerFeature } from '@triviality/logger';
+import { PrefixLogger } from '@triviality/logger/PrefixLogger';
+import { SerializerFeature } from '@triviality/serializer';
 
-export class EventSourcingModule implements Module {
+export class EventSourcingFeature implements Feature {
 
-  constructor(private container: Container<LoggerModule, CommonModule>) {
+  constructor(private container: Container<LoggerFeature, SerializerFeature>) {
   }
 
   public registries() {
