@@ -7,8 +7,8 @@
   "types": "index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "tsc --project src",
-    "watch": "tsc --project src --watch"
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
   "repository": {
     "type": "git",
@@ -30,7 +30,6 @@
   "homepage": "https://github.com/triviality-js/triviality#README",
   "devDependencies": {
     "@types/mockdate": "^2",
-    "jest": "^23",
     "mockdate": "^2",
     "rxjs-marbles": "^5",
     "ts-jest": "^23",
@@ -40,11 +39,14 @@
   "dependencies": {
     "@triviality/core": "^0.8.2",
     "@triviality/serializer": "^0.2.2",
+    "@triviality/storage": "^0.0.2",
     "@types/extsprintf": "^1",
     "@types/uuid": "^3",
     "@types/uuid-validate": "^0",
     "error-stack-parser": "^2",
     "immutable": "^4.0.0-rc.12",
+    "jest": "^23",
+    "ts-jest": "^23",
     "moment": "^2",
     "reflect-metadata": "^0",
     "rxjs": "^6",

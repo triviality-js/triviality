@@ -6,6 +6,7 @@ import { UserAggregate } from '../../Aggregate/UserAggregate';
 import { UserRegisterCommand } from '../../Command/UserRegisterCommand';
 import { UserHasRegistered } from '../../DomainEvent/UserHasRegistered';
 import { UserModel } from '../../ReadModel/UserModel';
+import { UserModelRepository } from '../../ReadModel/UserModelRepository';
 import { UserRegisterCommandHandler } from '../UserRegisterCommandHandler';
 
 it('Should handle registration', () => {
@@ -14,6 +15,9 @@ it('Should handle registration', () => {
 
   return EventSourcingTestBench
     .create()
+    .givenReadModelRepository(UserModel, () => {
+      return new UserModelRepository();
+    })
     .givenCommandHandler((testBench: EventSourcingTestBench) => {
       return new UserRegisterCommandHandler(
         testBench.getAggregateRepository(UserAggregate),

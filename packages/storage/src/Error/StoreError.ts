@@ -1,9 +1,8 @@
-import { Error } from 'tslint/lib/error';
 
 export class StoreError extends Error {
 
   public static fromError(error: Error) {
-    if (error instanceof this) {
+    if (error && error instanceof StoreError) {
       return error;
     }
     return new StoreError(error.message, error);

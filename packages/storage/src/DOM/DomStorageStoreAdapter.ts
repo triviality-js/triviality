@@ -7,15 +7,20 @@ export class DomStorageStoreAdapter implements KeyValueStoreInterface<string, st
 
   }
 
-  public clear(): void {
+  public clear(): this {
     this.storage.clear();
+    return this;
   }
 
-  public delete(key: string): void {
+  public delete(key: string): this {
     this.storage.removeItem(key);
+    return this;
   }
 
-  public find(key: string): string | null {
+  public find(key: string, defaultValue: string | null = null): string | null {
+    if (this.has(key)) {
+      return defaultValue;
+    }
     return this.storage.getItem(key);
   }
 
@@ -30,8 +35,9 @@ export class DomStorageStoreAdapter implements KeyValueStoreInterface<string, st
     return this.storage.getItem(key) !== null;
   }
 
-  public set(key: string, value: string): void {
+  public set(key: string, value: string): this {
     this.storage.setItem(key, value);
+    return this;
   }
 
 }

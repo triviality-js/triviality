@@ -7,8 +7,8 @@
   "types": "index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "tsc --project src",
-    "watch": "tsc --project src --watch",
+    "build": "tsc",
+    "watch": "tsc --watch",
     "create-types": "ts-node src/cli/createTypes.ts"
   },
   "repository": {
@@ -37,7 +37,6 @@
   },
   "devDependencies": {
     "@types/react-test-renderer": "^16.8.1",
-    "jest": "^23",
     "react-test-renderer": "^16.8.4",
     "ts-jest": "^23",
     "ts-node": "^7"

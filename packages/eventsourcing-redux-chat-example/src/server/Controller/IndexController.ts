@@ -9,12 +9,11 @@ export class IndexController {
       <head>
           <meta charset="utf-8">
           <title>Chat app</title>
-          <link rel="stylesheet" href="/semantic-ui-css/semantic.min.css"/>
+          <link rel="stylesheet" href="/client.css"/>
       </head>
 
       <body>
           <div id="app">Moment please..</div>
-          <script src="/vendors.js"></script>
           <script src="/runtime.js"></script>
           <script src="/client.js"></script>
       </body>

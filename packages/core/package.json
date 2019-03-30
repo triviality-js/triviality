@@ -7,8 +7,8 @@
   "types": "index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "tsc --project src",
-    "watch": "tsc --project src --watch",
+    "build": "tsc",
+    "watch": "tsc --watch",
     "create-types": "ts-node src/cli/createTypes.ts"
   },
   "repository": {
@@ -31,9 +31,9 @@
     "access": "public"
   },
   "devDependencies": {
-    "jest": "^23",
     "ts-jest": "^23",
     "ts-node": "^7"
   },
-  "gitHead": "d22f69a2477db96ea0eb9401301a35f4ba58a64e"
+  "gitHead": "d22f69a2477db96ea0eb9401301a35f4ba58a64e",
+  "dependencies": {}
 }

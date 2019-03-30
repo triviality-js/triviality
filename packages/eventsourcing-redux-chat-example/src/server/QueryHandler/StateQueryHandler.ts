@@ -11,7 +11,7 @@ export function createStateQueryHandler<T extends QueryState<Id>, S, Id extends 
   repository: ActionRepositoryInterface<S, Id>,
   queryClass: QueryConstructor<T>,
   playheadLimit = 1000,
-) {
+): CommandHandler {
   class Handler implements CommandHandler {
     @HandleQuery(queryClass)
     public async execute(query: T) {

@@ -39,7 +39,6 @@ export class WebFeature implements Feature {
     const app = this.expressApp();
     app.use(express.static(publicPath));
     app.use('/src', express.static(srcPath));
-    app.use('/semantic-ui-css', express.static(path.join(process.cwd(), 'node_modules', 'semantic-ui-css')));
     app.get('*', this.indexController().action.bind(this.indexController()));
   }
 

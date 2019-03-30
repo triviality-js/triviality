@@ -1,7 +1,6 @@
-
 export interface KeyValueStoreInterface<T, K = string> {
 
-  find(key: K): T | null;
+  find(key: K, defaultValue?: T | null): T | null;
 
   /**
    * Throws exception when there is no value.
@@ -10,9 +9,9 @@ export interface KeyValueStoreInterface<T, K = string> {
 
   has(key: K): boolean;
 
-  set(key: K, value: T): void;
+  set(key: K, value: T): this;
 
-  clear(): void;
+  clear(): this;
 
-  delete(key: K): void;
+  delete(key: K): this;
 }

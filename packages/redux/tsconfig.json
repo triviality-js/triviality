@@ -1,11 +1,7 @@
 {
   "extends": "../../base-tsconfig",
   "compilerOptions": {
-    "jsx": "react",
-    "outDir": "./dist",
-    "lib": [
-      "dom"
-    ]
+    "outDir": "./"
   },
   "include": [
     "src"

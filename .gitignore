@@ -7,6 +7,7 @@ packages/*/example/**/*.md
 example/*.md
 packages/*/**/*.d.ts
 packages/*/**/*.js
+!jest.config.js
 packages/*/**/*.js.map
 .jscpd
 lerna-debug.log

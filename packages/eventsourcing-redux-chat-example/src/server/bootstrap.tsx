@@ -2,7 +2,6 @@ import { CommanderFeature, CommanderPackageVersionFeature } from '@triviality/co
 import { ContainerFactory } from '@triviality/core';
 import { DefaultLoggerFeature } from '@triviality/logger';
 import { TransitJsSerializerFeature } from '@triviality/serializer/transit-js';
-import 'source-map-support/register';
 import { CommonFeature } from '../shared/CommonFeature';
 import { ChatChannelFeature } from './ChatChannelFeature';
 import { EventSourcingFeature } from './EventSourcingFeature';

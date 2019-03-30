@@ -11,20 +11,22 @@ export class ValueStore<T> implements ValueStoreInterface<T> {
     return this.store.get(this.key);
   }
 
-  public set(value: T): void {
-    return this.store.set(this.key, value);
+  public set(value: T): this {
+    this.store.set(this.key, value);
+    return this;
   }
 
-  public delete(): void {
+  public delete(): this {
     this.store.delete(this.key);
+    return this;
   }
 
   public has(): boolean {
     return this.store.has(this.key);
   }
 
-  public tap(): T | null {
-    return this.store.find(this.key);
+  public tap(defaultValue: T | null = null): T | null {
+    return this.store.find(this.key, defaultValue);
   }
 
 }

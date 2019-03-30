@@ -7,8 +7,8 @@
   "types": "index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "tsc --project src",
-    "watch": "tsc --project src --watch"
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,6 @@
     "rxjs": "^6"
   },
   "devDependencies": {
-    "jest": "^23",
     "ts-jest": "^23",
     "ts-node": "^7"
   },
