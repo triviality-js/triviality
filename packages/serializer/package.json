@@ -1,7 +1,7 @@
 {
   "name": "@triviality/serializer",
   "private": false,
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Typescript serializer with an interface",
   "main": "index.js",
   "types": "index.d.ts",
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/triviality-js/triviality#README",
   "dependencies": {
-    "@triviality/core": "^0.8.2",
+    "@triviality/core": "^0.8.3",
     "immutable": "^4.0.0-rc.12",
     "transit-immutable-js": "^0.7.0",
     "transit-js": "^0.8.861"

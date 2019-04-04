@@ -1,7 +1,7 @@
 {
   "name": "@triviality/eventsourcing-redux",
   "private": false,
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Bridge between event sourcing and redux",
   "main": "index.js",
   "types": "index.d.ts",
@@ -35,9 +35,9 @@
     "ts-node": "^7"
   },
   "dependencies": {
-    "@triviality/eventsourcing": "^1.2.2",
-    "@triviality/serializer": "^0.2.2",
-    "@triviality/storage": "^0.0.2",
+    "@triviality/eventsourcing": "^1.2.3",
+    "@triviality/serializer": "^0.2.3",
+    "@triviality/storage": "^0.0.3",
     "@types/socket.io": "^1.4.38",
     "@types/socket.io-client": "^1.4.32",
     "immutable": "4.0.0-rc.10",

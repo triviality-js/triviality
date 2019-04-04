@@ -1,7 +1,7 @@
 {
   "name": "@triviality/core",
   "private": false,
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Purely typed service container",
   "main": "index.js",
   "types": "index.d.ts",
@@ -34,6 +34,5 @@
     "ts-jest": "^23",
     "ts-node": "^7"
   },
-  "gitHead": "d22f69a2477db96ea0eb9401301a35f4ba58a64e",
-  "dependencies": {}
+  "gitHead": "d22f69a2477db96ea0eb9401301a35f4ba58a64e"
 }
