@@ -1,4 +1,4 @@
-import { KeyValueStoreInterface } from '../KeyValueStoreInterface';
+import { KeyValueStoreInterface } from './KeyValueStoreInterface';
 
 export class DefaultKeyValueStoreAdapter<T, K = string> implements KeyValueStoreInterface<T, K> {
 
@@ -6,12 +6,14 @@ export class DefaultKeyValueStoreAdapter<T, K = string> implements KeyValueStore
 
   }
 
-  public clear(): void {
+  public clear(): this {
     this.storage.clear();
+    return this;
   }
 
-  public delete(key: K): void {
+  public delete(key: K): this {
     this.storage.delete(key);
+    return this;
   }
 
   public find(key: K): T {
@@ -29,8 +31,9 @@ export class DefaultKeyValueStoreAdapter<T, K = string> implements KeyValueStore
     return this.storage.has(key);
   }
 
-  public set(key: K, value: T): void {
+  public set(key: K, value: T): this {
     this.storage.set(key, value);
+    return this;
   }
 
 }
