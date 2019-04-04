@@ -39,5 +39,6 @@
     "@types/sanitize-filename": "^1.1.28",
     "fs-extra": "^7.0.1",
     "sanitize-filename": "^1.6.1"
-  }
+  },
+  "gitHead": "b1d66132bb4f54b57bc411846c4fa44d6556a520"
 }

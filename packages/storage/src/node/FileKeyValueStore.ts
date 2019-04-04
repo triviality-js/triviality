@@ -1,8 +1,8 @@
-import { KeyValueStoreInterface } from '@triviality/storage';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import sanitize from 'sanitize-filename';
 import { StoreError } from '../Error/StoreError';
+import { KeyValueStoreInterface } from '../KeyValueStoreInterface';
 
 export class FileKeyValueStore implements KeyValueStoreInterface<string, string> {
 
