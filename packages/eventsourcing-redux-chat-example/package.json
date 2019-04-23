@@ -56,6 +56,6 @@
     "jest": "^23",
     "ts-jest": "^23",
     "tslint-immutable": "^5.0.1",
-    "tslint-react": "^3.6.0"
+    "tslint-react": "^4.0.0"
   }
 }
