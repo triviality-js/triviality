@@ -1319,11 +1319,12 @@
     exenv "^1.2.2"
     prop-types "^15.6.2"
 
-"@stryker-mutator/api@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@stryker-mutator/api/-/api-1.1.1.tgz#8b982471212b9f4d74345a8db11d742aa29f6fc3"
-  integrity sha512-uyWfKwBaM/XgE694Kmq6+0xW8R45vx8n07yLuXVh86EN/CBgSnsitA5XFN90To90QIaMH9EwzvnNvWDT73NXQw==
+"@stryker-mutator/api@^1.1.1", "@stryker-mutator/api@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@stryker-mutator/api/-/api-1.2.0.tgz#7a740b1ad92e0359615b83cc2059a61acfb9e7df"
+  integrity sha512-/4tx8cbnVe/fdl2WPcG89HZNK3CG1grG3ex2V1RYmMx7dhb5JclOq/oAhhsxLvZtpgL1ai9ui1rRFMWFdQR2Yg==
   dependencies:
+    mutation-testing-report-schema "^1.0.0"
     tslib "~1.9.3"
 
 "@stryker-mutator/core@^1.1.0":
@@ -1368,12 +1369,12 @@
     typed-html "~1.0.0"
 
 "@stryker-mutator/jest-runner@^1.1.0":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@stryker-mutator/jest-runner/-/jest-runner-1.1.1.tgz#f06aec5fa9dee0a8e8cc0e0dcb0f43901a20fbba"
-  integrity sha512-2EfhgyKtQknKqxHYcyHg7n7ecLGqc3fDGJ+XGnPHHm1UIe9yggIEHlLzeUijLyI3/qwFu0DHbRQe2OFYcHcEeA==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@stryker-mutator/jest-runner/-/jest-runner-1.2.0.tgz#1d01fc5844fe34c9fe45d203cf250ffaae42de97"
+  integrity sha512-zGxV2HbXB0wwySiQHxQAaM+JilI0yCnAT2JU+CGEK69V8Cg6S4wKIbryrxw8zMfUgDL+6dGSSCBBpgeNkark0w==
   dependencies:
-    "@stryker-mutator/api" "^1.1.1"
-    semver "~5.6.0"
+    "@stryker-mutator/api" "^1.2.0"
+    semver "~6.0.0"
 
 "@stryker-mutator/typescript@^1.1.0":
   version "1.1.1"
@@ -8422,6 +8423,11 @@ multimatch@^2.1.0:
     arrify "^1.0.0"
     minimatch "^3.0.0"
 
+mutation-testing-report-schema@^1.0.0:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/mutation-testing-report-schema/-/mutation-testing-report-schema-1.0.5.tgz#8fc535dcf33714c06625d1824a3a7c100fa92b21"
+  integrity sha512-Vy0Z2RBO2YiFviZUzzipGfbyPkHmL+Wz4BxUUvmeSGcFSDLtLCxib5FEHlJKjjxqCwnhirs3agAW8zngWQx4zw==
+
 mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
@@ -10223,11 +10229,6 @@ quick-lru@^1.0.0:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-1.1.0.tgz#4360b17c61136ad38078397ff11416e186dcfbb8"
   integrity sha1-Q2CxfGETatOAeDl/8RQW4Ybc+7g=
 
-ramda@^0.26.1:
-  version "0.26.1"
-  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.26.1.tgz#8d41351eb8111c55353617fc3bbffad8e4d35d06"
-  integrity sha512-hLWjpy7EnsDBb0p+Z3B7rPi3GDeRG5ZtiI33kJhTt+ORCd38AbAIjB/9zRIUoeTbE/AVX5ZkU7m6bznsvrf8eQ==
-
 random-bytes@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/random-bytes/-/random-bytes-1.0.0.tgz#4f68a1dc0ae58bd3fb95848c30324db75d64360b"
@@ -11115,6 +11116,11 @@ semver@~5.6.0:
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.6.0.tgz#7e74256fbaa49c75aa7c7a205cc22799cac80004"
   integrity sha512-RS9R6R35NYgQn++fkDWaOmqGoj4Ek9gGs+DPxNUZKuwE183xjJroKvyo1IzVFeXvUrvmALy6FWD5xrdJT25gMg==
+
+semver@~6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-6.0.0.tgz#05e359ee571e5ad7ed641a6eec1e547ba52dea65"
+  integrity sha512-0UewU+9rFapKFnlbirLi3byoOuhrSsli/z/ihNnvM24vgF+8sNBiI1LZPBSH9wJKUwaUbw+s3hToDLCXkrghrQ==
 
 send@0.16.2:
   version "0.16.2"
