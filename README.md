@@ -17,8 +17,15 @@
 ```
 npm install --global lerna yarn
 lerna bootstrap
+yarn build 
 yarn watch
 ``` 
+
+It uses Lerna to manage multiple packages at once, you can scope the commands for only certain packages.
+
+```
+yarn watch --scope=@traviality/core 
+```
 
 ### How is the repo structured?
 

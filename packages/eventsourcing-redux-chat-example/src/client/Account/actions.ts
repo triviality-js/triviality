@@ -3,7 +3,7 @@ import {
   sendCommandAndListenToHandler,
 } from '@triviality/eventsourcing-redux/CommandHandling/actions';
 import { queryHandelingActionTypes, sendQuery } from '@triviality/eventsourcing-redux/QueryHandling/actions';
-import { WithPlayheadInterface } from '@triviality/eventsourcing-redux/ReadModel/PlayheadRecord';
+import { ProjectionRecordInterface } from '@triviality/eventsourcing-redux/ReadModel/ProjectionRecordInterface';
 import { actionTypeWithEntity } from '@triviality/eventsourcing-redux/Redux/EntityMetadata';
 import { EntityName } from '@triviality/eventsourcing-redux/ValueObject/EntityName';
 import { INITIAL_PLAYHEAD } from '@triviality/eventsourcing-redux/ValueObject/Playhead';
@@ -53,7 +53,7 @@ export function logoutAccount() {
   );
 }
 
-export function queryAccountState(id: UserId, record: WithPlayheadInterface | null) {
+export function queryAccountState(id: UserId, record: ProjectionRecordInterface | null) {
   return sendQuery(
     new QueryAccountState(id, record ? record.playhead : INITIAL_PLAYHEAD),
     ACCOUNT,

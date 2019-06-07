@@ -8,3 +8,4 @@ reports
 docs/*.md
 docs/build.js
 src/cli
+tsconfig.tsbuildinfo

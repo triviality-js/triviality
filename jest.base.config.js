@@ -35,4 +35,9 @@ module.exports = {
         "\\.(ts|tsx)$": "ts-jest",
     },
     testRegex: ".*\\.test\\.tsx?$",
+    globals: {
+        'ts-jest': {
+            diagnostics: false
+        }
+    }
 };

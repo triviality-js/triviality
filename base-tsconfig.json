@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "incremental": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "removeComments": false,
@@ -10,9 +11,10 @@
     "target": "es5",
     "esModuleInterop": true,
     /* Basic Options */
-    "skipLibCheck": false,                    /* Skip type checking of declaration files.  */
+    "skipLibCheck": true,                     /* Skip type checking of declaration files.  */
     "sourceMap": true,                        /* Generates corresponding '.map' file. */
     "declaration": true,
+    "inlineSources": true,
     /* Strict Type-Checking Options */
     "strict": true,                           /* Enable all strict type-checking options. */
     "noImplicitAny": true,                    /* Raise error on expressions and declarations with an implied 'any' type. */

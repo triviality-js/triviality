@@ -4,14 +4,14 @@ import { Route, Switch } from 'react-router-dom';
 import { LoginForm } from '../../Account/Component/LoginForm';
 import { LogoutForm } from '../../Account/Component/LogoutForm';
 import { RegisterForm } from '../../Account/Component/RegisterForm';
-import { App } from './App';
+import { Index } from './Index';
 
 export function LoggedInRoutes() {
   return (
     <Switch>
-      <Route path="/" exact={true} component={App} />
+      <Route path="/" exact={true} component={Index} />
       <Route path="/logout" component={LogoutForm} />
-      <Route component={App} />
+      <Route component={Index} />
     </Switch>
   );
 }

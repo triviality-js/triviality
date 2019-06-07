@@ -10,7 +10,7 @@ export async function compileTs(directory: string, ts: string): Promise<string> 
   }
   fs.writeFileSync(tmp, ts);
   try {
-    const result = await exec(`node_modules/.bin/ts-node --no-cache ${tmp}`);
+    const result = await exec(`yarn ts-node --no-cache ${tmp}`);
     fs.unlinkSync(tmp);
     return result.stdout.toString();
   } catch (e) {
@@ -26,7 +26,7 @@ export async function declarationOfTs(directory: string, ts: string): Promise<st
   }
   fs.writeFileSync(tmp, ts);
   try {
-    await exec('node_modules/.bin/tsc');
+    await exec('yarn tsc');
     fs.unlinkSync(tmp);
     const featureFile = tmp
       .replace('src', 'build/src')

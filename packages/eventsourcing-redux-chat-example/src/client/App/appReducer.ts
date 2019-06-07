@@ -7,7 +7,6 @@ export function appReducer(state: AppState = new AppState(), action: Serializabl
 
     case ACCOUNT_STATE_RECEIVED:
       return state.set('loggedIn', true);
-
   }
 
   return state;

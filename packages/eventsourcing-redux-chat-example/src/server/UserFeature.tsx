@@ -1,7 +1,9 @@
-import { Container, Feature } from '@triviality/core';
+import { Container, Feature, OptionalRegistries } from '@triviality/core';
+import { EventsourcingReduxServerFeature } from '@triviality/eventsourcing-redux/EventsourcingReduxServerFeature';
 import { combineClientChain } from '@triviality/eventsourcing-redux/Gateway/ClientConnectionChain';
 import { SocketIoGatewayFactory } from '@triviality/eventsourcing-redux/Gateway/socket.io/SocketIoGatewayFactory';
 import { SocketConnection } from '@triviality/eventsourcing-redux/Gateway/socket.io/ValueObject/SocketConnection';
+import { createStateQueryHandler } from '@triviality/eventsourcing-redux/QueryHandling/createStateQueryHandler';
 import { ReadModelAction } from '@triviality/eventsourcing-redux/ReadModel/ReadModelAction';
 import { ActionWithSnapshotRepository } from '@triviality/eventsourcing-redux/ReadModel/Repository/ActionWithSnapshotRepository';
 import { InMemoryActionRepository } from '@triviality/eventsourcing-redux/ReadModel/Repository/InMemoryActionRepository';
@@ -9,6 +11,7 @@ import { StoreRepository } from '@triviality/eventsourcing-redux/ReadModel/Repos
 import { SimpleStoreFactory } from '@triviality/eventsourcing-redux/Redux/Store/SimpleStoreFactory';
 import { CommandHandler } from '@triviality/eventsourcing/CommandHandling/CommandHandler';
 import { EventListener } from '@triviality/eventsourcing/EventHandling/EventListener';
+import { EventSourcingFeature } from '@triviality/eventsourcing/EventSourcingFeature';
 import { QueryHandler } from '@triviality/eventsourcing/QueryHandling/QueryHandler';
 import { InMemoryRepository } from '@triviality/eventsourcing/ReadModel/InMemoryRepository';
 import { SerializerFeature } from '@triviality/serializer';
@@ -19,21 +22,19 @@ import { UserAggregateRepository } from './Aggregate/UserAggregateRepository';
 import { UserLoginCommandHandler } from './CommandHandler/UserLoginCommandHandler';
 import { UserLogoutCommandHandler } from './CommandHandler/UserLogoutCommandHandler';
 import { UserRegisterCommandHandler } from './CommandHandler/UserRegisterCommandHandler';
-import { EventSourcingFeature } from './EventSourcingFeature';
 import { AccountProjector } from './Projector/AccountProjector';
 import { AccountGatewayFactory } from './Projector/Gateway/AccountGatewayFactory';
 import { UserProjector } from './Projector/UserProjector';
 import { QueryAccountState } from './Query/QueryAccountState';
-import { createStateQueryHandler } from './QueryHandler/StateQueryHandler';
 import { UserModelRepository } from './ReadModel/UserModelRepository';
 import { WebFeature } from './WebFeature';
 
 export class UserFeature implements Feature {
 
-  constructor(private container: Container<EventSourcingFeature, WebFeature, SerializerFeature>) {
+  constructor(private container: Container<EventSourcingFeature, EventsourcingReduxServerFeature, WebFeature, SerializerFeature>) {
   }
 
-  public registries() {
+  public registries(): OptionalRegistries<EventSourcingFeature> {
     return {
       commandHandlers: (): CommandHandler[] => {
         return [
@@ -67,6 +68,7 @@ export class UserFeature implements Feature {
     return new UserAggregateRepository(
       this.container.eventStore(),
       this.container.domainEventBus(),
+      this.container.domainEventStreamDecorator(),
     );
   }
 
@@ -82,7 +84,7 @@ export class UserFeature implements Feature {
 
   }
 
-  public userGateway() {
+  public userGatewayFactory() {
     return new SocketIoGatewayFactory<AccountState, UserId>(
       this.container.socketServer(),
       this.container.serializer(),
@@ -100,7 +102,7 @@ export class UserFeature implements Feature {
   }
 
   public userReduxProjector() {
-    return new AccountProjector(new AccountGatewayFactory(this.userGateway()));
+    return new AccountProjector(new AccountGatewayFactory(this.userGatewayFactory()));
   }
 
   public userModelRepository() {

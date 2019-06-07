@@ -9,7 +9,16 @@
     "prepublish": "yarn build",
     "build": "tsc",
     "watch": "tsc --watch",
-    "create-types": "ts-node src/cli/createTypes.ts"
+    "create-types": "ts-node src/cli/createTypes.ts",
+    "test": "npm-run-all clean-build build lint unit-test copy-past-detection",
+    "clean-build": "git clean -fdX --exclude node_modules",
+    "lint": "tslint --project ./",
+    "lint-fix": "tslint  --project ./ --fix",
+    "security-audit": "yarn audit",
+    "create-readme": "ts-node ../../scripts/build_readme.ts",
+    "unit-test": "jest",
+    "unit-test-update": "jest -u",
+    "copy-past-detection": "jscpd"
   },
   "repository": {
     "type": "git",

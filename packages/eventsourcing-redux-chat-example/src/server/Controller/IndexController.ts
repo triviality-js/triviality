@@ -9,7 +9,7 @@ export class IndexController {
       <head>
           <meta charset="utf-8">
           <title>Chat app</title>
-          <link rel="stylesheet" href="/client.css"/>
+          <link rel="stylesheet" href="/style.css"/>
       </head>
 
       <body>

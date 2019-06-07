@@ -1,3 +1,4 @@
+import { QueryStateResponse } from '@triviality/eventsourcing-redux/QueryHandling/QueryStateResponse';
 import { asDomainEventAction } from '@triviality/eventsourcing-redux/ReadModel/DomainEventAction';
 import { SerializableAction } from '@triviality/eventsourcing-redux/Redux/SerializableAction';
 import { UserHasRegistered } from '../../server/DomainEvent/UserHasRegistered';
@@ -16,7 +17,8 @@ export function accountReducer(state: AccountState = new AccountState(), action:
       });
 
     case ACCOUNT_STATE_RECEIVED:
-      return state.handleQueryStateResponse(action.response, accountReducer);
+      const accountResponse: QueryStateResponse<AccountState> = action.response;
+      return state.applyStateResponse(accountResponse, accountReducer);
   }
 
   return state;

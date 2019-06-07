@@ -1,5 +1,5 @@
+import { QueryState } from '@triviality/eventsourcing-redux/QueryHandling/QueryState';
 import { UserId } from '../../shared/ValueObject/UserId';
-import { QueryState } from './QueryState';
 
 export class QueryAccountState extends QueryState<UserId> {
 

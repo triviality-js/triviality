@@ -10,9 +10,7 @@ export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /**
  * Make all properties in T optional
  */
-export type Optional<T> = {
-  [P in keyof T]?: T[P];
-};
+export type Optional<T> = Partial<T>;
 
 /**
  * Should not define these properties for this type.

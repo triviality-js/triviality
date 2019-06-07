@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Logging Logs messages 1`] = `
+Array [
+  "Testing/__test__/EventSourcingTestBench.test.ts:715:8        Object.<anonymous>.EventSourcingTestBench.givenReadModelRepository",
+  "Testing/__test__/EventSourcingTestBench.test.ts:718:8        Object.<anonymous>.EventSourcingTestBench.thenAssert",
+  "Testing/EventSourcingTestBench.ts:664:18                     Object.<anonymous>.EventSourcingTestBench.thenWaitUntilProcessed",
+  "Testing/__test__/EventSourcingTestBench.test.ts:719:25       Object.<anonymous>.EventSourcingTestBench.thenModelsShouldMatch",
+  "Testing/EventSourcingTestBench.ts:545:18                     Object.<anonymous>.EventSourcingTestBench.thenWaitUntilProcessed",
+]
+`;
+
+exports[`Logging The repository class arguments should be seen in the logs 1`] = `
+Array [
+  "Testing/__test__/EventSourcingTestBench.test.ts:766:8        Object.<anonymous>.EventSourcingTestBench.givenReadModelRepository",
+  "Testing/__test__/EventSourcingTestBench.test.ts:767:8        Object.<anonymous>.EventSourcingTestBench.givenQueryHandler",
+  "   Created class TestQueryHandlerWithRepository with arguments:",
+  "          ProductAggregate --> EventSourcingRepository",
+  "             UserAggregate --> EventSourcingRepository",
+  "             UserReadModel --> InMemoryRepository",
+  "              MyRepository --> MyRepository",
+]
+`;
+
+exports[`Logging defaults Default logs to process 1`] = `
+Array [
+  "Testing/__test__/EventSourcingTestBench.test.ts:785:10       Object.<anonymous>.EventSourcingTestBench.givenReadModelRepository
+",
+  "Testing/__test__/EventSourcingTestBench.test.ts:788:10       Object.<anonymous>.EventSourcingTestBench.thenAssert
+",
+  "Testing/EventSourcingTestBench.ts:664:18                     Object.<anonymous>.EventSourcingTestBench.thenWaitUntilProcessed
+",
+  "Testing/__test__/EventSourcingTestBench.test.ts:789:27       Object.<anonymous>.EventSourcingTestBench.thenModelsShouldMatch
+",
+  "Testing/EventSourcingTestBench.ts:545:18                     Object.<anonymous>.EventSourcingTestBench.thenWaitUntilProcessed
+",
+]
+`;
+
+exports[`givenCommandHandler should be able to give own repository by default constructor interface 1`] = `
+TestRepository {
+  "aggregateFactory": SimpleEventSourcedAggregateFactory {
+    "aggregate": [Function],
+  },
+  "eventBus": RecordDomainEventBusDecorator {
+    "bus": AsynchronousEventBus {
+      "activeStreamSubscription": null,
+      "errorHandler": [Function],
+      "eventHandlersMappedByEvent": Object {},
+      "isProcessing": false,
+      "isProcessingSubject": Subject {
+        "_isScalar": false,
+        "closed": false,
+        "hasError": false,
+        "isStopped": false,
+        "observers": Array [],
+        "thrownError": null,
+      },
+      "onComplete": [Function],
+      "queue": Array [],
+    },
+    "messages": Array [],
+  },
+  "eventStore": InMemoryEventStore {
+    "events": Object {},
+  },
+  "streamDecorator": AggregateDomainEventStreamDecorator {
+    "decorators": Array [
+      OverrideDateDomainEventStreamDecorator {
+        "getDate": [Function],
+      },
+    ],
+  },
+}
+`;

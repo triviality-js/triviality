@@ -8,7 +8,16 @@
   "scripts": {
     "prepublish": "yarn build",
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "test": "npm-run-all clean-build build lint unit-test copy-past-detection",
+    "clean-build": "git clean -fdX --exclude node_modules",
+    "lint": "tslint --project ./",
+    "lint-fix": "tslint  --project ./ --fix",
+    "security-audit": "yarn audit",
+    "create-readme": "ts-node ../../scripts/build_readme.ts",
+    "unit-test": "jest",
+    "unit-test-update": "jest -u",
+    "copy-past-detection": "jscpd"
   },
   "repository": {
     "type": "git",
@@ -38,10 +47,14 @@
     "@triviality/eventsourcing": "^1.2.3",
     "@triviality/serializer": "^0.2.3",
     "@triviality/storage": "^0.0.3",
+    "@types/ramda": "^0.26.6",
     "@types/socket.io": "^1.4.38",
     "@types/socket.io-client": "^1.4.32",
+    "immer": "^3.1.1",
     "immutable": "4.0.0-rc.10",
+    "jest-marbles": "^2.3.1",
     "moment": "^2.22.2",
+    "ramda": "^0.26.1",
     "redux": "^4.0.0",
     "rxjs": "^6.3.3",
     "socket.io": "^2.1.1",

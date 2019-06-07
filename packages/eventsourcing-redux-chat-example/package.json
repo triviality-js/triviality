@@ -4,7 +4,16 @@
   "version": "1.0.1",
   "description": "Chat example app with redux eventsourcing",
   "scripts": {
-    "server": "ts-node-dev src/server/bootstrap.tsx server"
+    "server": "ts-node-dev src/server/bootstrap.tsx server",
+    "test": "npm-run-all clean-build lint unit-test copy-past-detection",
+    "clean-build": "git clean -fdX --exclude node_modules",
+    "lint": "tslint --project ./",
+    "lint-fix": "tslint  --project ./ --fix",
+    "security-audit": "yarn audit",
+    "create-readme": "ts-node ../../scripts/build_readme.ts",
+    "unit-test": "jest",
+    "unit-test-update": "jest -u",
+    "copy-past-detection": "jscpd"
   },
   "author": "Eric Pinxteren",
   "license": "MIT",
@@ -23,6 +32,8 @@
     "@triviality/serializer": "^0.2.3",
     "@types/bcrypt": "^3.0.0",
     "@types/express": "^4.16.0",
+    "@types/express-session": "^1.15.12",
+    "@types/express-socket.io-session": "^1.3.1",
     "@types/lodash": "^4.14.117",
     "@types/react-dom": "^16.0.11",
     "@types/react-redux": "^6.0.9",

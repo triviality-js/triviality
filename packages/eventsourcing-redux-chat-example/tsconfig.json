@@ -7,6 +7,7 @@
       "dom"
     ]
   },
+  "outFiles": [ "${workspaceRoot}/node_modules/**/*.js" ],
   "include": [
     "src"
   ]

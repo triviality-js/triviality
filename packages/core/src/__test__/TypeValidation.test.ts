@@ -1,6 +1,6 @@
 import { compileTs, declarationOfTs } from './util/compileTs';
 
-describe('TypeValidation',  () => {
+describe.skip('TypeValidation',  () => {
 
   describe('triviality', () => {
 

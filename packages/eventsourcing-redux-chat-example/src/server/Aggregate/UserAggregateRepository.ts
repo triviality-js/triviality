@@ -1,5 +1,5 @@
 import { DomainEventStreamDecorator } from '@triviality/eventsourcing/Domain/DomainEventStreamDecorator';
-import { DomainEventBus } from '@triviality/eventsourcing/EventHandling/DomainEventBus';
+import { EventBus } from '@triviality/eventsourcing/EventHandling/EventBus';
 import { EventSourcingRepositoryInterface } from '@triviality/eventsourcing/EventSourcing/EventSourcingRepositoryInterface';
 import { SimpleEventSourcedAggregateFactory } from '@triviality/eventsourcing/EventSourcing/Factory/SimpleEventSourcedAggregateFactory';
 import { CachedEventSourcingRepositoryDecorator } from '@triviality/eventsourcing/EventSourcing/Repository/CachedEventSourcingRepositoryDecorator';
@@ -13,8 +13,8 @@ export class UserAggregateRepository implements EventSourcingRepositoryInterface
   private readonly repository: EventSourcingRepositoryInterface<UserAggregate>;
 
   constructor(eventStore: EventStore,
-              eventBus: DomainEventBus,
-              streamDecorator?: DomainEventStreamDecorator) {
+              eventBus: EventBus,
+              streamDecorator: DomainEventStreamDecorator) {
     // Used competition instead of inheritance here, pick your thing.
     const factory = new SimpleEventSourcedAggregateFactory(UserAggregate);
     this.repository = new EventSourcingRepository(eventStore, eventBus, factory, streamDecorator);

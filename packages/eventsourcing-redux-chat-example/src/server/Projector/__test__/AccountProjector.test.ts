@@ -9,8 +9,7 @@ import { AccountGatewayFactory } from '../Gateway/AccountGatewayFactory';
 it('Handle registration', async () => {
   const id = new UserId('cb8b715e-738b-49a1-9829-7f8d6ba54f9c');
   const tb = await ReduxEventSourcingTestBench
-    .create()
-    .givenTestLogger();
+    .create();
 
   await tb.givenEventListener((testBench: ReduxEventSourcingTestBench) => {
     return new AccountProjector(new AccountGatewayFactory(testBench.createActionGatewayFactory(new AccountState(), accountReducer)));
@@ -30,7 +29,6 @@ it('Cannot register same id twice', async () => {
   const id = new UserId('cb8b715e-738b-49a1-9829-7f8d6ba54f9c');
   await ReduxEventSourcingTestBench
     .create()
-    .givenTestLogger()
     .givenEventListener((testBench: ReduxEventSourcingTestBench) => {
       return new AccountProjector(new AccountGatewayFactory(testBench.createActionGatewayFactory(new AccountState(), accountReducer)));
     })

@@ -5,3 +5,5 @@ export interface StoreState {
   app: AppState;
   account: AccountState;
 }
+
+export type StoredState = Pick<StoreState, 'account'>;
