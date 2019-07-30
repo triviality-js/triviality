@@ -1,10 +1,6 @@
 
 export class ContainerError extends Error {
 
-  public static throwIsLockedDuringBuild(): never {
-    throw ContainerError.containerIsLockedDuringBuild();
-  }
-
   public static throwIsLocked(): never {
     throw ContainerError.containerIsLocked();
   }
@@ -13,12 +9,12 @@ export class ContainerError extends Error {
     return new this('Container is locked. Cannot get or set services during build time.');
   }
 
-  public static propertyOrServiceAlreadyDefined(name: string) {
-    return new this(`Containers service or property already defined "${name}"`);
+  public static serviceAlreadyDefined(name: string) {
+    return new this(`service already defined "${name}"`);
   }
 
-  public static cannotAddExtraService(name: string) {
-    return new this(`Cannot add extra service "${name}" with serviceOverrides`);
+  public static cannotDynamicallyOverrideExtraService(name: string) {
+    return new this(`Cannot dynamically override services "${name}"`);
   }
 
   public static containerIsLocked() {
@@ -33,7 +29,11 @@ export class ContainerError extends Error {
     return new this('Register return type should be an array or object');
   }
 
-  public static shouldReturnNewObjectWithServices() {
-    return new this('serviceOverrides should return new object with services');
+  public static serviceNotAFunction(name: string) {
+    return new this(`Feature factory Key ${name} is not a service function`);
+  }
+
+  public static registriesShouldBeAnObject() {
+    return new this('Registries should be a object');
   }
 }

@@ -1,22 +1,22 @@
 import 'jest';
-import { Container, triviality, Feature } from '../index';
 import { ContainerError } from '../Error/ContainerError';
+import { triviality } from '../index';
 
-class TestFeature implements Feature {
+export const TestFeature = () => ({
+  services: {
+    testService() {
+      return ['Test service'];
+    },
 
-  public testService() {
-    return ['Test service'];
-  }
+    halloService(...names: string[]) {
+      return { hallo: () => `Hallo ${names.join(' ')}` };
+    },
 
-  public halloService(...names: string[]) {
-    return { hallo: () => `Hallo ${names.join(' ')}` };
-  }
-
-  public changeMyself() {
-    this.testService = () => ['Changed!?'];
-  }
-
-}
+    changeMyself() {
+      this.testService = () => ['Changed!?'];
+    },
+  },
+});
 
 it('Container is locked and cannot be changed', async () => {
   const container = await triviality()
@@ -24,7 +24,7 @@ it('Container is locked and cannot be changed', async () => {
     .build();
   expect(() => {
     (container as any).testService = 1;
-  }).toThrow('Container is locked and cannot be altered.');
+  }).toThrow(ContainerError.containerIsLocked().message);
 });
 
 it('Feature is locked and cannot be changed', async () => {
@@ -33,29 +33,23 @@ it('Feature is locked and cannot be changed', async () => {
     .build();
   expect(() => {
     container.changeMyself();
-  }).toThrow('Container is locked and cannot be altered.');
+  }).toThrow(ContainerError.containerIsLocked().message);
 });
 
 it('Cannot fetched properties during build time', async () => {
   const serviceContainer = triviality()
     .add(TestFeature)
-    .add(class {
-      constructor(container: Container<TestFeature>) {
-        container.testService();
-      }
-    });
-  await expect(serviceContainer.build()).rejects.toEqual(
-    new ContainerError('Container is locked. Cannot get or set services during build time.'));
+    .add(({ halloService }) => halloService() as any);
+  await expect(serviceContainer.build()).rejects.toEqual(ContainerError.containerIsLockedDuringBuild());
 });
 
 it('Cannot have name coalitions', async () => {
-  const container = triviality()
-    .add(TestFeature)
-    .add(class {
-      public halloService() {
-        return 'hallo world';
-      }
-    } as any);
-  await expect(container.build()).rejects.toThrow(
-    ContainerError.propertyOrServiceAlreadyDefined('halloService').message);
+  await expect(
+    triviality()
+      .add(TestFeature)
+      .add(TestFeature)
+      .build(),
+  ).rejects.toThrow(
+    ContainerError.serviceAlreadyDefined('testService').message,
+  );
 });

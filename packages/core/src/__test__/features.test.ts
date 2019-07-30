@@ -1,78 +1,43 @@
 import 'jest';
-import { Container, triviality, Feature } from '../index';
+import { triviality } from '../index';
 import { MyFeature } from './Features/MyFeature';
 import { MyOtherFeature } from './Features/MyOtherFeature';
 
-class TestFeature implements Feature {
-
-  public testService1() {
-    return ['Test service'];
-  }
-
-}
+const TestFeature = () => ({
+  services: {
+    testService1: () => 'Test service 1',
+  },
+});
 
 it('Can merge feature', async () => {
-  class TestFeature2 implements Feature {
 
-    constructor(private container: Container<TestFeature>) {
-    }
+  const TestFeature2 = ({ testService1 }: { testService1: () => string }) => ({
+    services: {
+      testService3() {
+        return 'Test service 3';
+      },
 
-    public testService3() {
-      return 'Test service 3';
-    }
-
-    public testService4() {
-      return `test service 4 ${this.container.testService1()}`;
-    }
-
-  }
+      testService4() {
+        return `test service 4 ${testService1()}`;
+      },
+    },
+  });
 
   const dependencyContainer = await triviality()
     .add(TestFeature)
     .add(TestFeature2)
     .build();
-  expect(dependencyContainer.testService1()).toEqual(['Test service']);
+  expect(dependencyContainer.testService1()).toEqual('Test service 1');
   expect(dependencyContainer.testService3()).toEqual('Test service 3');
-  expect(dependencyContainer.testService4()).toEqual('test service 4 Test service');
-});
-
-it('Can handle circular references to other feature', async () => {
-  const container = await triviality()
-    .add(MyFeature, MyOtherFeature)
-    .build();
-  expect(container.myFeature()).toEqual('MyFeature');
-  expect(container.myOtherFeature()).toEqual('MyOtherFeature');
-  expect(container.referenceToMyFeature()).toEqual('MyFeature');
-  expect(container.referenceToMyOtherFeature()).toEqual('MyOtherFeature');
+  expect(dependencyContainer.testService4()).toEqual('test service 4 Test service 1');
 });
 
 it('Feature can have different dependencies', async () => {
-  class TestFeature1 implements Feature {
-
-    constructor(private container: Container<MyFeature>) {
-    }
-
-    public testService1(): string {
-      return this.container.myFeature();
-    }
-  }
-
-  class TestFeature2 implements Feature {
-
-    constructor(private container: Container<MyOtherFeature>) {
-    }
-
-    public testService2(): string {
-      return this.container.myOtherFeature();
-    }
-
-  }
-
   const dependencyContainer = await triviality()
-    .add(MyFeature, MyOtherFeature)
-    .add(TestFeature1)
-    .add(TestFeature2)
+    .add(MyFeature)
+    .add(MyOtherFeature)
     .build();
-  expect(dependencyContainer.testService1()).toEqual('MyFeature');
-  expect(dependencyContainer.testService2()).toEqual('MyOtherFeature');
+  expect(dependencyContainer.myFeature()).toEqual('MyFeature');
+  expect(dependencyContainer.referenceToMyFeature()).toEqual('MyFeature');
+  expect(dependencyContainer.myOtherFeature()).toEqual('MyOtherFeature');
 });

@@ -1,0 +1,10 @@
+import { triviality } from '../../src';
+import { HalloFeature } from './HalloFeature';
+
+triviality()
+  .merge(HalloFeature)
+  .build()
+  .then((container) => {
+    const service = container.halloService('John');
+    service.speak();
+  });

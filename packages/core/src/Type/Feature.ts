@@ -1,7 +1,11 @@
+import { ServiceContainer } from '../types';
 import { Optional, PromiseOrValue } from '../util/Types';
-import { ServiceContainer } from './Container';
 
+/**
+ * @deprecated
+ */
 export interface Feature<ContainerServices = {}, ContainerRegistries = {}> {
+  [key: string]: any;
 
   toString(): string;
 
@@ -44,5 +48,5 @@ export interface Feature<ContainerServices = {}, ContainerRegistries = {}> {
    *    };
    *   }
    */
-  serviceOverrides?(container: ServiceContainer<ContainerServices, ContainerRegistries>): PromiseOrValue<Optional<ContainerServices>>;
+  serviceOverrides?(container: ServiceContainer<ContainerServices, ContainerRegistries, {}>): PromiseOrValue<Optional<ContainerServices>>;
 }

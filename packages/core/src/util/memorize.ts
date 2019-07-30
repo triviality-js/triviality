@@ -9,6 +9,9 @@ interface CacheMap {
  * memorize with support for multiple arguments.
  */
 export function memorize<T extends (...args: any[]) => any>(func: T): T {
+  if (typeof func !== 'function') {
+    throw new Error('Not a function');
+  }
   const cache: CacheMap = {
     args: [],
     maps: [],

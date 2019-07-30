@@ -51,7 +51,7 @@ describe.skip('TypeValidation',  () => {
         .toMatch("Property 'userService' is missing in type");
     });
 
-    it.skip('The build container should have the correct service declarations', async () => {
+    it('The build container should have the correct service declarations', async () => {
       // language=TypeScript
       return expect(declarationOfTs(__dirname, `
         import { triviality } from '../index';

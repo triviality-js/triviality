@@ -22,3 +22,7 @@ export type NoDuplicates<T> = {
 export type PromiseType<T> = T extends Promise<infer U> ? U : T extends (...args: any[]) => Promise<infer J> ? J : T;
 
 export type PromiseOrValue<T> = T | Promise<T>;
+
+export type PromiseProps<T> = {
+  [P in keyof T]: PromiseOrValue<T[P]>;
+};
