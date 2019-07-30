@@ -1,14 +1,11 @@
-import { Feature } from '../../src';
+import { FF, RegistryList } from '../../src';
+import { SF } from '../../src';
 import { ConsoleCommand } from './ConsoleCommand';
 
-export class ConsoleFeature implements Feature {
-
-  public registries() {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [];
-      },
-    };
-  }
-
+export interface ConsoleFeatureServices {
+  consoleCommands: SF<RegistryList<ConsoleCommand>>;
 }
+
+export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ registerList }) => ({
+  consoleCommands: registerList(),
+});

@@ -2,9 +2,11 @@
   "extends": "../../base-tsconfig",
   "compilerOptions": {
     "outDir": "./",
-    "noEmit": false
+    "noEmit": false,
+    "downlevelIteration": true
   },
   "include": [
-    "src"
+    "src",
+    "example"
   ]
 }

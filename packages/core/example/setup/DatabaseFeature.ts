@@ -1,16 +1,16 @@
-import { Feature } from '../../src';
+import { FF } from '../../src';
 import { Database } from './Database';
+import { SetupFeatureServices } from '../../src/Features/SetupFeature';
 
-export class DatabaseFeature implements Feature {
+export interface DatabaseFeatureServices {
+  database: () => Database;
+}
 
-  public setup() {
-    if (!this.database().isConnected()) {
+export const DatabaseFeature: FF<DatabaseFeatureServices, SetupFeatureServices> = ({ registers: { setup }, services, construct }) => ({
+  ...setup(() => () => {
+    if (!services('database').database().isConnected()) {
       throw new Error('Database is not connected!');
     }
-  }
-
-  public database(): Database {
-    return new Database();
-  }
-
-}
+  }),
+  database: construct(Database),
+});

@@ -1,87 +1,26 @@
-import { triviality } from '../index';
-import { Feature } from '../Type/Feature';
+import { FF, triviality } from '../index';
+import { SetupFeatureServices } from '../Features/SetupFeature';
 
-describe('triviality', () => {
+it('Execute setup step', async () => {
+  const spySetup = jest.fn().mockResolvedValue(void 0);
 
-  it('Execute setup step', async () => {
-    const spyConstructor = jest.fn();
-    const spySetup = jest.fn();
-    const container = await triviality()
-      .add(class implements Feature {
-        constructor(private constructor: {}) {
-          spyConstructor(constructor);
-        }
+  const MyService: FF<void, SetupFeatureServices> = ({ registers: { setup } }) => setup(() => spySetup);
 
-        public setup() {
-          spySetup(this.constructor);
-          return Promise.resolve();
-        }
-      }).build();
+  await triviality()
+    .add(MyService)
+    .build();
+  expect(spySetup).toBeCalled();
+});
 
-    expect(spyConstructor).toBeCalledWith(container);
-    expect(spySetup).toBeCalledWith(container);
-  });
+it('Catches setup step error', async () => {
+  const spySetup = jest.fn().mockRejectedValue('Some error');
+  const MyService: FF<void, SetupFeatureServices> = ({ registers: { setup } }) => setup(() => spySetup);
 
-  it('Execute non-async setup step', async () => {
-    const spyConstructor = jest.fn();
-    const spySetup = jest.fn();
-    const container = await triviality()
-      .add(class implements Feature {
-        constructor(private constructor: {}) {
-          spyConstructor(constructor);
-        }
+  const promise = triviality()
+    .add(MyService)
+    .build();
+  expect(spySetup).toBeCalled();
 
-        public setup() {
-          spySetup(this.constructor);
-        }
-      }).build();
-
-    expect(spyConstructor).toBeCalledWith(container);
-    expect(spySetup).toBeCalledWith(container);
-  });
-
-  it('Catches async setup step error', async () => {
-    const spyConstructor = jest.fn();
-    const spySetup = jest.fn();
-    const container = triviality()
-      .add(class implements Feature {
-        constructor(private constructor: {}) {
-          spyConstructor(constructor);
-        }
-
-        public setup() {
-          spySetup(this.constructor);
-
-          return Promise.reject('Some error');
-        }
-      }).build();
-
-    await expect(container).rejects.toEqual('Some error');
-
-    expect(spyConstructor).toBeCalled();
-    expect(spySetup).toBeCalled();
-  });
-
-  it('Catches non-async setup step error', async () => {
-    const spyConstructor = jest.fn();
-    const spySetup = jest.fn();
-    const container = triviality()
-      .add(class implements Feature {
-        constructor(private constructor: {}) {
-          spyConstructor(constructor);
-        }
-
-        public setup() {
-          spySetup(this.constructor);
-
-          throw new Error('Some error');
-        }
-      }).build();
-
-    await expect(container).rejects.toThrowError('Some error');
-
-    expect(spyConstructor).toBeCalled();
-    expect(spySetup).toBeCalled();
-  });
-
+  await expect(promise).rejects.toEqual('Some error');
+  expect(spySetup).toBeCalled();
 });

@@ -1,20 +1,13 @@
-import { Feature, OptionalRegistries } from '../../../src';
+import { FF, SF } from '../../../src';
 import { ConsoleCommand } from '../ConsoleCommand';
 import { ByeConsoleCommand } from './ByeConsoleCommand';
-import { ConsoleFeature } from '../ConsoleFeature';
+import { ConsoleFeatureServices } from '../ConsoleFeature';
 
-export class ByeConsoleFeature implements Feature {
-
-  public registries(): OptionalRegistries<ConsoleFeature> {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [this.byeConsoleCommand()];
-      },
-    };
-  }
-
-  private byeConsoleCommand() {
-    return new ByeConsoleCommand();
-  }
-
+interface ByeConsoleServices {
+  byeConsoleCommand: SF<ConsoleCommand>;
 }
+
+export const ByeConsoleFeature: FF<ByeConsoleServices, ConsoleFeatureServices> = ({ registers: { consoleCommands }, construct, service }) => ({
+  ...consoleCommands(service('byeConsoleCommand')),
+  byeConsoleCommand: construct(ByeConsoleCommand),
+});
