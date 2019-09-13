@@ -39,7 +39,7 @@
     "@triviality/core": "^0.8.3",
     "@triviality/logger": "^0.2.4",
     "@types/find-up": "^2.1.1",
-    "commander": "^2",
+    "commander": "^3",
     "find-up": "^3"
   },
   "devDependencies": {
