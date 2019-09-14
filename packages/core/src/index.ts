@@ -1,15 +1,10 @@
 import { ContainerFactory } from './ContainerFactory';
-import { FeatureInstance, ServiceContainer } from './types';
 
 export * from './util/Types';
+export * from './FeatureFactory';
 export * from './ContainerFactory';
 export * from './Error/ContainerError';
 
-export const triviality = () => ({
-  add: <S>(feature: (container: ServiceContainer<S>) => FeatureInstance<S>): ContainerFactory<S> => {
-    const factory = new ContainerFactory<S>();
-    return factory.add(feature as any);
-  },
-});
+export const triviality = <T>() => new ContainerFactory<T>();
 
 export default triviality;

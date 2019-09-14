@@ -1,27 +1,14 @@
-import { Feature } from '../../src';
-import { ConsoleCommand } from './ConsoleCommand';
-import { ConsoleService } from './ConsoleService';
+import { FeatureFactory, RegistryService } from '../../src';
+import { ConsoleCommand } from '../registries/ConsoleCommand';
+import { ConsoleService } from '../registries/ConsoleService';
 
-export class ConsoleFeature implements Feature {
-
-  /**
-   * The strict interface, all other feature needs to follow.
-   */
-  public registries() {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [];
-      },
-    };
-  }
-
-  /**
-   * Triviality will combine the result consoleCommands and return it as single array.
-   */
-  public consoleService() {
-    return new ConsoleService(
-      this.registries().consoleCommands(),
-    );
-  }
-
+export interface ConsoleFeatureServices {
+  consoleService: () => ConsoleService;
+  consoleCommand: RegistryService<() => ConsoleCommand[]>;
 }
+
+export const ConsoleFeature: FeatureFactory<ConsoleFeatureServices> = ({ createRegister, construct }) =>
+  ({
+    consoleCommand: createRegister(() => []),
+    consoleService: construct('consoleCommand', ConsoleService),
+  });

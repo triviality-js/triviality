@@ -1,7 +1,7 @@
 import { triviality } from '../../src';
+import { ByeConsoleFeature } from '../registries/Command/ByeConsoleFeature';
+import { HalloConsoleFeature } from '../registries/Command/HalloConsoleFeature';
 import { ConsoleFeature } from './ConsoleFeature';
-import { HalloConsoleFeature } from './Command/HalloConsoleFeature';
-import { ByeConsoleFeature } from './Command/ByeConsoleFeature';
 
 triviality()
   .add(ConsoleFeature)

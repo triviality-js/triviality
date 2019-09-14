@@ -1,18 +1,10 @@
-import { compose, nth, toPairs, chain, filter } from 'ramda';
+import { defineOverridableServiceReference } from './container/defineOverridableServiceReference';
+import { lockOverridableServiceReferences } from './container/lockOverridableServiceReferences';
 import { ContainerError } from './Error/ContainerError';
-import {
-  defineOverridableServiceReference,
-  defineOverridableServiceRegistryReference,
-  lockOverridableServiceReferences,
-} from './Function/Container';
-import { isRegistryService, mergeRegistryValues } from './Function/Registries';
+import { FeatureFactory } from './FeatureFactory';
+import { ServiceContainer } from './ServiceContainer';
+import { SF } from './ServiceFactory';
 import { createBuildContext } from './Type/BuildContext';
-import { FeatureFactory, REGISTER_SYMBOL, Registry, RegistryService, ServiceContainer } from './types';
-
-export const register = <T extends Registry>(r: T): T & RegistryService => {
-  (r as any)[REGISTER_SYMBOL] = true;
-  return r as any;
-};
 
 /**
  * Container factory.
@@ -25,54 +17,38 @@ export class ContainerFactory<S> {
   /**
    * Merge functional service factory.
    */
-  public add<FS>(f1: FeatureFactory<S, FS>): ContainerFactory<S & FS> {
+  public add<FS>(f1: FeatureFactory<FS, S>): ContainerFactory<S & FS> {
     return new ContainerFactory([...this.serviceFactories, f1] as any) as any;
   }
 
   public async build(): Promise<ServiceContainer<S>> {
     const context = createBuildContext();
     const container = context.container;
-    const defineService = defineOverridableServiceReference(context);
-    const defineRegistryReference = defineOverridableServiceRegistryReference(context);
-    const defineRegistryReferences = chain(([k, v]) => defineRegistryReference(k, v));
-    // const instances: Array<FeatureInstance<unknown, unknown>> =
+    const defineService: (name: string, service: SF) => void = defineOverridableServiceReference(context);
     this.serviceFactories.map((factory) => {
-      const instance = factory(container as any);
-      if (instance) {
-        Object.entries(instance).forEach(([name, service]) => {
-          if (isRegistryService(service)) {
-            return;
+      const instance = factory(container);
+      Object.entries(instance).forEach(([name, service]) => {
+        if (isServiceOverride(service)) {
+          if (!context.services.has(name)) {
+            throw ContainerError.cannotOverrideNonExistingService(name);
           }
-          if (typeof service !== 'function') {
-            throw ContainerError.serviceNotAFunction(name);
-          }
-          if (context.services.has(name)) {
-            throw ContainerError.serviceAlreadyDefined(name);
-          }
-          defineService(name, service);
-        });
-      }
-      const registries = filter(compose(isRegistryService, nth(1) as any), toPairs(instance));
-      defineRegistryReferences(registries);
-
-      // if (instance.serviceOverrides) {
-      //   const referenceContainer = shallowReferenceContainer(context);
-      //   referenceContainer.overrides = instance.serviceOverrides(referenceContainer as any) as any;
-      //   Object.entries(referenceContainer.overrides).forEach(defineService);
-      // }
+          defineService(name, service(context.services.get(name)!));
+          return;
+        }
+        if (typeof service !== 'function') {
+          throw ContainerError.isNotAServiceFunction(name);
+        }
+        if (context.services.has(name)) {
+          throw ContainerError.serviceAlreadyDefined(name);
+        }
+        defineService(name, service);
+      });
       return instance;
     });
     context.locked = false;
-    for (const [name, services] of context.registriesFunction.entries()) {
-      defineService(name, () => {
-        return mergeRegistryValues(services.map((service: any) => service()));
-      });
+    for (const instance of container.setup()) {
+      await instance.call(context.container);
     }
-    // for (const instance of instances) {
-    //   if (instance.setup) {
-    //     await instance.setup();
-    //   }
-    // }
     lockOverridableServiceReferences(context.container);
     return container as any;
   }

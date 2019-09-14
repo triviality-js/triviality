@@ -1,11 +1,9 @@
 export const MyOtherFeature = ({ myFeature }: { myFeature: () => string }) => ({
-  services: {
-    myOtherFeature(): string {
-      return 'MyOtherFeature';
-    },
+  myOtherFeature(): string {
+    return 'MyOtherFeature';
+  },
 
-    referenceToMyFeature(): string {
-      return myFeature();
-    },
+  referenceToMyFeature(): string {
+    return myFeature();
   },
 });

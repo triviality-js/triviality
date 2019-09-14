@@ -5,9 +5,9 @@ triviality()
   .add(LogFeature)
   .build()
   .then((container) => {
-    const johnLogger = container.prefixedLogger('John:');
+    const johnLogger = container.prefixedLogger()('John:');
     johnLogger.info('Hallo Jane!');
-    const janeLogger = container.prefixedLogger('Jane:');
+    const janeLogger = container.prefixedLogger()('Jane:');
     janeLogger.info('Hi John!');
 
   });

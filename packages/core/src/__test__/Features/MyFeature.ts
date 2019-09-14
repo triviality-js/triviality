@@ -1,9 +1,6 @@
-import { FeatureInstance } from '../..';
 
-export const MyFeature = (): FeatureInstance => ({
-  services: {
-    myFeature(): string {
-      return 'MyFeature';
-    },
+export const MyFeature = () => ({
+  myFeature(): string {
+    return 'MyFeature';
   },
 });

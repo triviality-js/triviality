@@ -1,17 +1,15 @@
-import { Feature, OptionalContainer } from '../../src';
-import { GreetingsFeature } from './GreetingsFeature';
+import { FF, SF } from '../../src';
 import { FormalGreetingsService } from './services/FormalGreetingsService';
 import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 
-export class FormalGreetingsFeature implements Feature {
-  public serviceOverrides(): OptionalContainer<GreetingsFeature> {
-    return {
-      greetingService: () => this.formalGreetingsService(),
-    };
-  }
-
-  public formalGreetingsService(): GreetingsServiceInterface {
-    return new FormalGreetingsService();
-  }
-
+interface FormalGreetingsFeatureServices {
+  greetingService: SF<GreetingsServiceInterface>;
+  formalGreetingsService: SF<GreetingsServiceInterface>;
 }
+
+export const FormalGreetingsFeature: FF<FormalGreetingsFeatureServices, {}> = ({ overrideWith, construct }) => ({
+
+  greetingService: overrideWith('formalGreetingsService'),
+
+  formalGreetingsService: construct(FormalGreetingsService),
+});

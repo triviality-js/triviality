@@ -3,18 +3,16 @@ import { ContainerError } from '../Error/ContainerError';
 import { triviality } from '../index';
 
 export const TestFeature = () => ({
-  services: {
-    testService() {
-      return ['Test service'];
-    },
+  testService() {
+    return ['Test service'];
+  },
 
-    halloService(...names: string[]) {
-      return { hallo: () => `Hallo ${names.join(' ')}` };
-    },
+  halloService(...names: string[]) {
+    return { hallo: () => `Hallo ${names.join(' ')}` };
+  },
 
-    changeMyself() {
-      this.testService = () => ['Changed!?'];
-    },
+  changeMyself() {
+    this.testService = () => ['Changed!?'];
   },
 });
 

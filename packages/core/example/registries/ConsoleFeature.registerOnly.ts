@@ -1,14 +1,10 @@
-import { Feature } from '../../src';
-import { ConsoleCommand } from './ConsoleCommand';
+import { FF, RSF } from '../../src';
+import { ConsoleCommand } from '../registries/ConsoleCommand';
 
-export class ConsoleFeature implements Feature {
-
-  public registries() {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [];
-      },
-    };
-  }
-
+export interface ConsoleFeatureServices {
+  consoleCommand: RSF<ConsoleCommand[]>;
 }
+
+export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ createRegister }) => ({
+  consoleCommand: createRegister(() => []),
+});
