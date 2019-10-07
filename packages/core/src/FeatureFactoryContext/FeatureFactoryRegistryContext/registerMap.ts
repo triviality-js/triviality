@@ -1,5 +1,5 @@
 import { always, is, isEmpty } from 'ramda';
-import { ServiceFactory, ServiceTag, SF } from '../types';
+import { ServiceFactory, ServiceTag, SF } from '../../ServiceFactory';
 
 export type RegistryTag = string;
 
@@ -23,23 +23,6 @@ export interface RegistryMap<T> extends Iterable<[ServiceTag, T]> {
    * register(services, {tag1: 'service1'})
    */
   register<Tags>(services: (tags: Tags) => [ServiceFactory<T>], toRegister: { [tags: string]: Tags }): this;
-}
-
-function makeRegisterMap<Type>(services: Array<[ServiceTag, SF<Type>]> = []): RegistryMap<Type> {
-  const items: Map<ServiceTag, Type> = new Map(services.map(([tag, sf]) => [tag, sf()]));
-  const instance: RegistryMap<Type> = (() => items) as any;
-
-  instance[Symbol.iterator] = () => {
-    return items.entries();
-  };
-
-  instance.register = (...args: any[]) => {
-    for (const [tag, service] of (registerMap as any)(...args)) {
-      items.set(tag, service);
-    }
-    return instance;
-  };
-  return instance as any;
 }
 
 export function registerMap<T>(): RegistryMap<T>;
@@ -84,6 +67,23 @@ export function registerMap<Type>(...args: any[]): RegistryMap<Type> {
     return makeRegisterMap<Type>(entries.map(([tag, key]) => [tag, servicesByTags(key)[0]]));
   }
   return makeRegisterMap(Object.entries(args[0]));
+}
+
+function makeRegisterMap<Type>(services: Array<[ServiceTag, SF<Type>]> = []): RegistryMap<Type> {
+  const items: Map<ServiceTag, Type> = new Map(services.map(([tag, sf]) => [tag, sf()]));
+  const instance: RegistryMap<Type> = (() => items) as any;
+
+  instance[Symbol.iterator] = () => {
+    return items.entries();
+  };
+
+  instance.register = (...args: any[]) => {
+    for (const [tag, service] of (registerMap as any)(...args)) {
+      items.set(tag, service);
+    }
+    return instance;
+  };
+  return instance as any;
 }
 
 function isFeatureFactoryMap<Type>(args: any): args is [Map<ServiceTag, SF<Type>>] {

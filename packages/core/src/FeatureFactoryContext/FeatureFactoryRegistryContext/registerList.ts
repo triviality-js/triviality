@@ -1,5 +1,5 @@
 import { always, is, isEmpty } from 'ramda';
-import { ServiceFactory, SF } from '../types';
+import { ServiceFactory, SF } from '../../ServiceFactory';
 
 export interface RegistryList<T> extends Iterable<T> {
   (): T[];
@@ -10,6 +10,9 @@ export interface RegistryList<T> extends Iterable<T> {
 
   register(items: () => T[]): this;
 
+  /**
+   * TODO: split this type.
+   */
   register<Tags>(services: (tags: Tags) => [ServiceFactory<T>], ...tags: Tags[]): this;
 }
 

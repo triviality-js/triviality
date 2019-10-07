@@ -8,9 +8,9 @@ export interface RegistryPending extends Iterable<any> {
 /**
  * Only calls the SF when services are fetched or the iterator is called.
  */
-export function registerPending<T extends RegistryPending>(createRegistry: (...args: any[]) => T, ...factoryArgs: any[]): T {
-  let registry: T | null = null;
-  const pendingRegistrations: any[] = [];
+export function registerPending<T extends RegistryPending, A extends any[]>(createRegistry: (...args: A) => T, ...factoryArgs: A): T {
+  let registry: T | undefined;
+  const pendingRegistrations: A[] = [];
   const callRegistry = () => {
     if (registry) {
       return registry;
@@ -24,10 +24,8 @@ export function registerPending<T extends RegistryPending>(createRegistry: (...a
     return registry;
   };
   const instance: RegistryPending = (() => callRegistry()()) as any;
-  instance[Symbol.iterator] = () => {
-    return callRegistry()[Symbol.iterator]();
-  };
-  instance.register = (...args: any) => {
+  instance[Symbol.iterator] = () => callRegistry()[Symbol.iterator]();
+  instance.register = (...args: A) => {
     if (registry) {
       return registry.register(...args);
     }
