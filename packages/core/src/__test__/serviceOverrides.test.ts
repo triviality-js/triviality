@@ -1,4 +1,4 @@
-import { ContainerError, override, SF, triviality } from '../index';
+import { triviality } from '../index';
 
 interface SpeakServiceInterface {
   speak(name: string): string;

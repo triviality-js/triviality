@@ -1,6 +1,6 @@
 import 'jest';
-import { triviality } from '../index';
-import { FF, SF } from '../types';
+import { FF, triviality } from '../index';
+import { SF } from '../ServiceFactory';
 import { MyFeature } from './Features/MyFeature';
 import { MyOtherFeature } from './Features/MyOtherFeature';
 
@@ -58,8 +58,8 @@ it('Can inject with', async () => {
     return `[${test}]`;
   }
 
-  const SomeFeature: FF<{ test: SF<string> }, TestFeature1Services> = ({ inject }) => ({
-    test: inject('testService1', service),
+  const SomeFeature: FF<{ test: SF<string> }, TestFeature1Services> = ({ compose }) => ({
+    test: compose(service, 'testService1'),
   });
 
   const dependencyContainer = await triviality()
@@ -106,13 +106,13 @@ it('Can inject multiple', async () => {
     w6: SF<string>;
   }
 
-  const SomeFeature: FF<SomeFeatureInstances, ReturnType<typeof Multiple>> = ({ inject }) => ({
-    w1: inject('service1', service),
-    w2: inject('service1', 'service2', service),
-    w3: inject('service1', 'service2', 'service3', service),
-    w4: inject('service1', 'service2', 'service3', 'service4', service),
-    w5: inject('service1', 'service2', 'service3', 'service4', 'service5', service),
-    w6: inject('service1', 'service2', 'service3', 'service4', 'service5', 'service6', service),
+  const SomeFeature: FF<SomeFeatureInstances, ReturnType<typeof Multiple>> = ({ compose }) => ({
+    w1: compose(service, 'service1'),
+    w2: compose(service, 'service1', 'service2'),
+    w3: compose(service, 'service1', 'service2', 'service3'),
+    w4: compose(service, 'service1', 'service2', 'service3', 'service4'),
+    w5: compose(service, 'service1', 'service2', 'service3', 'service4', 'service5'),
+    w6: compose(service, 'service1', 'service2', 'service3', 'service4', 'service5', 'service6'),
   });
 
   const dependencyContainer = await triviality()

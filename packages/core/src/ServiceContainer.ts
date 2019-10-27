@@ -1,3 +1,3 @@
-import { Registries } from './FeatureFactoryContext/FeatureFactoryRegistryContext';
+import { InferRegistries } from './FeatureFactoryContext/FeatureFactoryRegistryContext';
 
-export type ServiceContainer<S> = S & { registries: () => Registries<S> } ;
+export type ServiceContainer<S> = S & { registries: () => InferRegistries<S> } ;

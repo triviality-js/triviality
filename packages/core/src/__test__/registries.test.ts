@@ -1,45 +1,45 @@
-import { FF, triviality } from '../index';
-import { RegistryList } from '../FeatureFactoryContext/FeatureFactoryRegistryContext/register';
-import { FeatureFactory } from '../types';
+import { FeatureFactory, FF, triviality } from '../index';
+import { SF } from '../ServiceFactory';
+import { RegistryList } from '../FeatureFactoryContext';
+import { always } from 'ramda';
 
 it('A feature can define a register', async () => {
 
   interface Feature1Services {
-    personListeners: RegistryList<number>;
+    personListeners: SF<RegistryList<number>>;
   }
 
   const Feature1: FF<Feature1Services> = ({ registerList }) => ({
-    personListeners: registerList([() => 1]),
+    personListeners: registerList(() => 1),
   });
 
   const container = await triviality()
     .add(Feature1)
     .build();
-  expect(container.personListeners()).toEqual([1]);
+  expect(container.personListeners().toArray()).toEqual([1]);
 });
 
 it('A feature can fetch it\s own registers services', async () => {
 
   interface Feature1Services {
-    featureVersions: RegistryList<number>;
+    featureVersions: SF<RegistryList<number>>;
 
     sum(): number;
 
     multiply(): number;
   }
 
-  const Feature1: FF<Feature1Services> = ({ registries, registerList }) => {
+  const Feature1: FF<Feature1Services> = ({ services, registerList }) => {
+    const [featureVersions] = services('featureVersions');
     return ({
-      featureVersions: registerList<number>((): number[] => {
-        return [1, 2, 4];
-      }),
+      featureVersions: registerList<number>(always(1), always(2), always(4)),
       sum: (): number => {
-        const numbers = registries().featureVersions();
+        const numbers = featureVersions().toArray();
         return numbers.reduce((i: number, n: number) => i + n, 0);
       },
 
       multiply(): number {
-        const numbers = registries().featureVersions();
+        const numbers = featureVersions().toArray();
         return numbers.reduce((i: number, n: number) => i * n, 1);
       },
     });
@@ -50,7 +50,7 @@ it('A feature can fetch it\s own registers services', async () => {
     .build();
   expect(serviceContainer.sum()).toEqual(7);
   expect(serviceContainer.multiply()).toEqual(8);
-  expect(serviceContainer.featureVersions()).toEqual([1, 2, 4]);
+  expect(serviceContainer.featureVersions().toArray()).toEqual([1, 2, 4]);
 });
 
 it('Multiple features can register to the same register', async () => {
@@ -60,29 +60,30 @@ it('Multiple features can register to the same register', async () => {
   }
 
   interface ShoppingMallServices {
-    personListeners: RegistryList<PersonEventListener>;
+    personListeners: SF<RegistryList<PersonEventListener>>;
 
     courtesies(): (person: string) => string[];
   }
 
-  const ShoppingMall: FF<ShoppingMallServices> = ({ registerList, registries }) => ({
+  const ShoppingMall: FF<ShoppingMallServices> = ({ registerList, service }) => ({
     personListeners: registerList(),
 
     courtesies(): (person: string) => string[] {
-      return (person) => registries().personListeners().map((listener) => listener.courtesy(person));
+      const listeners = service('personListeners').toArray();
+      return (person) => listeners.map((listener) => listener.courtesy(person));
     },
   });
 
-  const Feature1: FF<void, ShoppingMallServices> = ({ personListeners }) => {
-    personListeners.register([(): PersonEventListener => {
+  const Feature1: FF<void, ShoppingMallServices> = ({ registerToList }) => {
+    registerToList('personListeners', (): PersonEventListener => {
       return { courtesy: (name: string) => `Hallo ${name}` };
-    }]);
+    });
   };
 
-  const Feature2: FF<void, ShoppingMallServices> = ({ personListeners }) => {
-    personListeners.register([(): PersonEventListener => {
+  const Feature2: FF<void, ShoppingMallServices> = ({ registerToList }) => {
+    registerToList('personListeners', (): PersonEventListener => {
       return { courtesy: (name: string) => `Bye ${name}` };
-    }]);
+    });
   };
 
   const container = await triviality()
@@ -92,7 +93,7 @@ it('Multiple features can register to the same register', async () => {
     .build();
   expect(container.courtesies()('John')).toEqual(['Hallo John', 'Bye John']);
   expect(container.courtesies()('Jane')).toEqual(['Hallo Jane', 'Bye Jane']);
-  expect(container.registries().personListeners().length).toEqual(2);
+  expect(container.personListeners().toArray().length).toEqual(2);
 });
 
 it('registries are locked and cannot be changed', async () => {

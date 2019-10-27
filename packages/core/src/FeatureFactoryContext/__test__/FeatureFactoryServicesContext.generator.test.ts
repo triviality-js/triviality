@@ -30,7 +30,14 @@ export const parseNumber: (str: string) => number = curryN(2, parseInt)(__, 10);
  *
  * Generators need to be inside multi-doc block comment.
  */
-export const findFunctionGeneratorAnnotationsString: (document: string) => string[] = match(/^.*@typeGenerator\([\s\S.*]*?\).*[.\s\S]*?\*\/$/gm);
+export const findAnnotationsString: (annotation: string) => (document: string) => string[] = (annotation: string) => match(new RegExp(`^.*@${annotation}\\([\\s\\S.*]*?\\).*[.\\s\\S]*?\\*\\/$`, 'gm'));
+
+/**
+ * Return all generators of a single document.
+ *
+ * Generators need to be inside multi-doc block comment.
+ */
+export const findFunctionGeneratorAnnotationsString: (document: string) => string[] = findAnnotationsString('typeGenerator');
 
 interface GeneratorTemplate {
   length: number;
@@ -56,7 +63,7 @@ const GeneratorTemplateSchema = yup.object({
  *  *
  *  * /
  */
-const stripDocBlock = replace(/^ *(\/?\*+|\/\/)/gm, '');
+export const stripDocBlock = replace(/^ *(\/?\*+|\/\/)/gm, '');
 
 /**
  * Remove all ,< from empty generic functions.
