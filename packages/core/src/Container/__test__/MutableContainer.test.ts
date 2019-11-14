@@ -13,14 +13,6 @@ it('Can set a sf', () => {
   expect(container.getService('serviceName')).toBeInstanceOf(Function);
 });
 
-it('Cannot call a sf when container is unlocked', () => {
-  const container = createMutableContainer();
-  const sf = jest.fn();
-  container.setService('serviceName', sf);
-
-  expect(() => container.getService('serviceName')()).toThrowError();
-});
-
 it('service should be singleton', () => {
   const container = createMutableContainer();
   const service = { foo: 'bar' };
@@ -43,4 +35,27 @@ it('Can override a service', () => {
   expect(container.getService('serviceName')()).toBe(service2);
   expect(sf).toBeCalledTimes(0);
   expect(sf2).toBeCalledTimes(1);
+});
+
+it('Can get all current services', () => {
+  const container = createMutableContainer();
+  container.setService('foo', () => 'bar');
+  container.setService('John', () => 'Doe');
+  const services: any = container.currentServices();
+  container.setService('foo', () => 'Hallo');
+  expect(services.length).toEqual(2);
+  expect(services[0][0]).toEqual('foo');
+  expect(services[0][1]()).toEqual('bar');
+  expect(services[1][0]).toEqual('John');
+  expect(services[1][1]()).toEqual('Doe');
+});
+
+it('Service should exists', () => {
+  const container = createMutableContainer();
+  expect(() => container.getCurrentService('foobar')).toThrowError();
+});
+
+it('Service functions should not have arguments', () => {
+  const container = createMutableContainer();
+  expect(() => container.setService('bar', ((foo: string) => foo) as any)).toThrowError();
 });

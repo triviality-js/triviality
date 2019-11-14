@@ -1,6 +1,6 @@
 import { FF } from '../../FeatureFactory';
 import { SF } from '../../ServiceFactory';
-import { testFeatureFactory } from '../testFeatureFactory';
+import { testFeatureFactory } from '../../testFeatureFactory';
 
 describe('FeatureFactoryContext', () => {
   describe('Direct dependencies', () => {
@@ -38,8 +38,8 @@ describe('FeatureFactoryContext', () => {
 
   describe('Services', () => {
     it('Can fetch own and depended service factories', () => {
-      const MyFeature: FF<{ name: SF<string>, myFullNameWithAge: SF<string> }, {age: SF<number>}> = ({ services }) => {
-        const [age, name] = services('age', 'name');
+      const MyFeature: FF<{ name: SF<string>, myFullNameWithAge: SF<string> }, { age: SF<number> }> = ({ services }) => {
+        const { age, name } = services('age', 'name');
         return {
           name: () => 'Eric',
           myFullNameWithAge: () => `${name()} Pinxteren ${age()}`,
@@ -53,7 +53,7 @@ describe('FeatureFactoryContext', () => {
 
     it('Services should be memorized', () => {
       const MyFeature: FF<{ foo: SF<jest.Mock> }, { bar: SF<jest.Mock> }> = ({ services }) => {
-        const [bar] = services('bar');
+        const { bar } = services('bar');
         return {
           foo: () => bar(),
         };

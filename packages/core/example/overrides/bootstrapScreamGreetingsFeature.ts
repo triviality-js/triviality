@@ -8,8 +8,6 @@ triviality()
   .add(GreetingsFeature)
   .add(ScreamGreetingsFeature)
   .build()
-  .then((container) => {
-    const logger = container.logger();
-    const halloService = container.greetingService();
-    logger.info(halloService.greet('Triviality'));
+  .then(({ logger, greetingService }) => {
+    logger.info(greetingService.greet('Triviality'));
   });

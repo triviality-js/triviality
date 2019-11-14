@@ -1,10 +1,11 @@
-import { construct } from 'ramda';
-import { SF } from '../../src';
-import { ConsoleLogger } from './ConsoleLogger';
+import { FF, SF } from '../../src';
 import { LoggerInterface } from './LoggerInterface';
+import { ConsoleLogger } from './ConsoleLogger';
 
-const createLogger: SF<LoggerInterface> = construct(ConsoleLogger);
+export interface LogServices {
+  logger: SF<LoggerInterface>;
+}
 
-export const LogFeature = () => ({
-  logger: createLogger,
+export const LogFeature: FF<LogServices> = () => ({
+  logger: () => new ConsoleLogger(),
 });

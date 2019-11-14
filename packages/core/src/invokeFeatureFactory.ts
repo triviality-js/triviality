@@ -1,11 +1,10 @@
-import { forEach, includes, keys, toPairs } from 'ramda';
-import { createMutableLockableContainer, MutableContainer, setNewServices, setServices } from './container';
+import { forEach, toPairs } from 'ramda';
+import { MutableContainer, setNewServiceToContainer, setServices } from './Container';
 import { FF } from './FeatureFactory';
-import { createFeatureFactoryContext } from './FeatureFactoryContext';
+import { createFeatureFactoryContext, hasContextTag } from './FeatureFactoryContext';
 import { ServiceTag, SF } from './ServiceFactory';
-
-const FACTORY_CONTEXT_TAGS: string[] = keys(createFeatureFactoryContext(createMutableLockableContainer())) as any;
-const hasContextTag = (tag: ServiceTag) => includes(tag, FACTORY_CONTEXT_TAGS);
+import { postFeatureFactoryContext } from './FeatureFactoryContext/FeatureFactoryReferenceContext';
+import { withGlobalContext } from './FeatureFactoryContext/globalContext';
 
 export function invokeFeatureFactory<S, D, C extends MutableContainer>(container: C, sf: FF<S, D>): void;
 export function invokeFeatureFactory<S, D, C extends MutableContainer>(container: C): (sf: FF<S, D>) => void;
@@ -13,19 +12,23 @@ export function invokeFeatureFactory<S, D, C extends MutableContainer>(container
   if (!sf) {
     return (sfc) => invokeFeatureFactory(container, sfc);
   }
-  const setNewService = setNewServices(container);
+  const setNewService = setNewServiceToContainer(container);
   const factoryContext = createFeatureFactoryContext<D & S>(container);
-  const newServices: [[ServiceTag, SF]] = toPairs(sf(factoryContext) as any) as any;
-  newServices.forEach(([tag]) => {
-    if (hasContextTag(tag)) {
-      throw new Error(`Cannot use "${tag}" context name for service factories.`);
-    }
+
+  withGlobalContext(factoryContext, () => {
+    const newServices: [[ServiceTag, SF]] = toPairs(sf(factoryContext) as any) as any;
+    newServices.forEach(([tag]) => {
+      if (hasContextTag(tag)) {
+        throw new Error(`Cannot use "${tag}" context name for service factories`);
+      }
+      if (container.hasService(tag)) {
+        throw new Error(`Cannot redefine "${tag}" service`);
+      }
+    });
+    postFeatureFactoryContext(newServices,  container);
+    setServices(setNewService)(newServices);
   });
-  setServices(setNewService)(newServices);
 }
 
 export const invokeFeatureFactories: <T extends MutableContainer>(container: T) => (features: Array<FF<any, any>>) => void =
-  <T extends MutableContainer>(container: T) =>
-    forEach<FF<any, any>>(
-      (fs) => invokeFeatureFactory(container, fs),
-    );
+  <T extends MutableContainer>(container: T) => forEach<FF>(invokeFeatureFactory(container));

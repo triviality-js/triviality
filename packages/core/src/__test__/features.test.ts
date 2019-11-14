@@ -37,9 +37,9 @@ it('Can merge feature', async () => {
     .add(TestFeature)
     .add(TestFeature2)
     .build();
-  expect(dependencyContainer.testService1()).toEqual('Test service 1');
-  expect(dependencyContainer.testService3()).toEqual('Test service 3');
-  expect(dependencyContainer.testService4()).toEqual('test service 4 Test service 1');
+  expect(dependencyContainer.testService1).toEqual('Test service 1');
+  expect(dependencyContainer.testService3).toEqual('Test service 3');
+  expect(dependencyContainer.testService4).toEqual('test service 4 Test service 1');
 });
 
 it('Feature can have different dependencies', async () => {
@@ -47,9 +47,9 @@ it('Feature can have different dependencies', async () => {
     .add(MyFeature)
     .add(MyOtherFeature)
     .build();
-  expect(dependencyContainer.myFeature()).toEqual('MyFeature');
-  expect(dependencyContainer.referenceToMyFeature()).toEqual('MyFeature');
-  expect(dependencyContainer.myOtherFeature()).toEqual('MyOtherFeature');
+  expect(dependencyContainer.myFeature).toEqual('MyFeature');
+  expect(dependencyContainer.referenceToMyFeature).toEqual('MyFeature');
+  expect(dependencyContainer.myOtherFeature).toEqual('MyOtherFeature');
 });
 
 it('Can inject with', async () => {
@@ -67,7 +67,7 @@ it('Can inject with', async () => {
     .add(SomeFeature)
     .build();
 
-  expect(dependencyContainer.test()).toEqual('[Test service 1]');
+  expect(dependencyContainer.test).toEqual('[Test service 1]');
 });
 
 it('Can inject multiple', async () => {
@@ -120,10 +120,10 @@ it('Can inject multiple', async () => {
     .add(SomeFeature)
     .build();
 
-  expect(dependencyContainer.w1()).toEqual('1');
-  expect(dependencyContainer.w2()).toEqual('1,2');
-  expect(dependencyContainer.w3()).toEqual('1,2,3');
-  expect(dependencyContainer.w4()).toEqual('1,2,3,4');
-  expect(dependencyContainer.w5()).toEqual('1,2,3,4,5');
-  expect(dependencyContainer.w6()).toEqual('1,2,3,4,5,6');
+  expect(dependencyContainer.w1).toEqual('1');
+  expect(dependencyContainer.w2).toEqual('1,2');
+  expect(dependencyContainer.w3).toEqual('1,2,3');
+  expect(dependencyContainer.w4).toEqual('1,2,3,4');
+  expect(dependencyContainer.w5).toEqual('1,2,3,4,5');
+  expect(dependencyContainer.w6).toEqual('1,2,3,4,5,6');
 });

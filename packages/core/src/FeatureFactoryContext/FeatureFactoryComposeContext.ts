@@ -1,7 +1,8 @@
 import { curryN } from 'ramda';
-import { ImmutableContainer } from '../container';
-import { InferServiceTypeOfFactory as SFT, ServiceTag, SF } from '../ServiceFactory';
+import { ImmutableContainer } from '../Container';
+import { InferServiceType as SFT, ServiceTag, SF } from '../ServiceFactory';
 import { servicesByTags } from './FeatureFactoryServicesContext';
+import { wrapReturnAsReference } from './FeatureFactoryReferenceContext';
 
 /**
  * Context for creating new service factories.
@@ -47,5 +48,5 @@ export const composeServiceByTags = curryN(2, <Service>(
 });
 
 export const createFeatureFactoryComposeContext = (container: ImmutableContainer): FeatureFactoryComposeContext<any> => ({
-  compose: composeServiceByTags(container.getService),
+  compose: wrapReturnAsReference(composeServiceByTags(container.getService)),
 });

@@ -1,44 +1,86 @@
-import { MutableContainer } from '../container';
-import { ServiceFactory, ServiceTag, SF } from '../ServiceFactory';
+import { MutableContainer } from '../Container';
+import { ServiceFactory, ServiceTag, SF, InferServiceType as IST, InferServicesTypes } from '../ServiceFactory';
 
 /**
  * Context helper for retrieving services from context.
  */
 export interface FeatureFactoryServicesContext<T> {
-  service<K1 extends keyof T>(t1: K1): T[K1] extends SF ? ReturnType<T[K1]> : T[K1];
+  service<K1 extends keyof T>(t1: K1): T[K1];
 
   /**
-   * @typeGenerator({ templates: ["  services<{{K% extends keyof T}}>({{t%: K%}}): [{{T[K%]}}];\n"] })
+   * @typeGenerator({ templates: ["  services<{{K% extends keyof T}}>({{t%: K%}}): Pick<T, {{K% - | }}> & [{{T[K%]}}];\n"] })
    */
-  services<K1 extends keyof T>(t1: K1): [T[K1]];
+  services<K1 extends keyof T>(t1: K1): Pick<T, K1> & [T[K1]];
 
-  services<K1 extends keyof T, K2 extends keyof T>(t1: K1, t2: K2): [T[K1], T[K2]];
+  services<K1 extends keyof T, K2 extends keyof T>(t1: K1, t2: K2): Pick<T, K1 | K2> & [T[K1], T[K2]];
 
-  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T>(t1: K1, t2: K2, t3: K3): [T[K1], T[K2], T[K3]];
+  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T>(t1: K1, t2: K2, t3: K3): Pick<T, K1 | K2 | K3> & [T[K1], T[K2], T[K3]];
 
-  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4): [T[K1], T[K2], T[K3], T[K4]];
+  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4): Pick<T, K1 | K2 | K3 | K4> & [T[K1], T[K2], T[K3], T[K4]];
 
-  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5): [T[K1], T[K2], T[K3], T[K4], T[K5]];
+  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5): Pick<T, K1 | K2 | K3 | K4 | K5> & [T[K1], T[K2], T[K3], T[K4], T[K5]];
 
-  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6): [T[K1], T[K2], T[K3], T[K4], T[K5], T[K6]];
+  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6): Pick<T, K1 | K2 | K3 | K4 | K5 | K6> & [T[K1], T[K2], T[K3], T[K4], T[K5], T[K6]];
 
-  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7): [T[K1], T[K2], T[K3], T[K4], T[K5], T[K6], T[K7]];
+  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7): Pick<T, K1 | K2 | K3 | K4 | K5 | K6 | K7> & [T[K1], T[K2], T[K3], T[K4], T[K5], T[K6], T[K7]];
 
-  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T, K8 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7, t8: K8): [T[K1], T[K2], T[K3], T[K4], T[K5], T[K6], T[K7], T[K8]];
+  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T, K8 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7, t8: K8): Pick<T, K1 | K2 | K3 | K4 | K5 | K6 | K7 | K8> & [T[K1], T[K2], T[K3], T[K4], T[K5], T[K6], T[K7], T[K8]];
 
-  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T, K8 extends keyof T, K9 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7, t8: K8, t9: K9): [T[K1], T[K2], T[K3], T[K4], T[K5], T[K6], T[K7], T[K8], T[K9]];
+  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T, K8 extends keyof T, K9 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7, t8: K8, t9: K9): Pick<T, K1 | K2 | K3 | K4 | K5 | K6 | K7 | K8 | K9> & [T[K1], T[K2], T[K3], T[K4], T[K5], T[K6], T[K7], T[K8], T[K9]];
 
-  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T, K8 extends keyof T, K9 extends keyof T, K10 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7, t8: K8, t9: K9, t10: K10): [T[K1], T[K2], T[K3], T[K4], T[K5], T[K6], T[K7], T[K8], T[K9], T[K10]];
+  services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T, K8 extends keyof T, K9 extends keyof T, K10 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7, t8: K8, t9: K9, t10: K10): Pick<T, K1 | K2 | K3 | K4 | K5 | K6 | K7 | K8 | K9 | K10> & [T[K1], T[K2], T[K3], T[K4], T[K5], T[K6], T[K7], T[K8], T[K9], T[K10]];
+
+  /**
+   * @typeGenerator({ templates: ["  instances<{{K% extends keyof T}}>({{t%: K%}}): InferServicesTypes<Pick<T, {{K% - | }}>> & [{{IST<T[K%]>}}];\n"] })
+   */
+  instances<K1 extends keyof T>(t1: K1): InferServicesTypes<Pick<T, K1>> & [IST<T[K1]>];
+
+  instances<K1 extends keyof T, K2 extends keyof T>(t1: K1, t2: K2): InferServicesTypes<Pick<T, K1 | K2>> & [IST<T[K1]>, IST<T[K2]>];
+
+  instances<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T>(t1: K1, t2: K2, t3: K3): InferServicesTypes<Pick<T, K1 | K2 | K3>> & [IST<T[K1]>, IST<T[K2]>, IST<T[K3]>];
+
+  instances<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4): InferServicesTypes<Pick<T, K1 | K2 | K3 | K4>> & [IST<T[K1]>, IST<T[K2]>, IST<T[K3]>, IST<T[K4]>];
+
+  instances<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5): InferServicesTypes<Pick<T, K1 | K2 | K3 | K4 | K5>> & [IST<T[K1]>, IST<T[K2]>, IST<T[K3]>, IST<T[K4]>, IST<T[K5]>];
+
+  instances<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6): InferServicesTypes<Pick<T, K1 | K2 | K3 | K4 | K5 | K6>> & [IST<T[K1]>, IST<T[K2]>, IST<T[K3]>, IST<T[K4]>, IST<T[K5]>, IST<T[K6]>];
+
+  instances<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7): InferServicesTypes<Pick<T, K1 | K2 | K3 | K4 | K5 | K6 | K7>> & [IST<T[K1]>, IST<T[K2]>, IST<T[K3]>, IST<T[K4]>, IST<T[K5]>, IST<T[K6]>, IST<T[K7]>];
+
+  instances<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T, K8 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7, t8: K8): InferServicesTypes<Pick<T, K1 | K2 | K3 | K4 | K5 | K6 | K7 | K8>> & [IST<T[K1]>, IST<T[K2]>, IST<T[K3]>, IST<T[K4]>, IST<T[K5]>, IST<T[K6]>, IST<T[K7]>, IST<T[K8]>];
+
+  instances<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T, K8 extends keyof T, K9 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7, t8: K8, t9: K9): InferServicesTypes<Pick<T, K1 | K2 | K3 | K4 | K5 | K6 | K7 | K8 | K9>> & [IST<T[K1]>, IST<T[K2]>, IST<T[K3]>, IST<T[K4]>, IST<T[K5]>, IST<T[K6]>, IST<T[K7]>, IST<T[K8]>, IST<T[K9]>];
+
+  instances<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T, K8 extends keyof T, K9 extends keyof T, K10 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7, t8: K8, t9: K9, t10: K10): InferServicesTypes<Pick<T, K1 | K2 | K3 | K4 | K5 | K6 | K7 | K8 | K9 | K10>> & [IST<T[K1]>, IST<T[K2]>, IST<T[K3]>, IST<T[K4]>, IST<T[K5]>, IST<T[K6]>, IST<T[K7]>, IST<T[K8]>, IST<T[K9]>, IST<T[K10]>];
 
 }
 
 export const createFeatureFactoryServicesContext = ({ getService }: MutableContainer): FeatureFactoryServicesContext<any> => ({
-  service: ((tag: ServiceTag) => {
-    const service = getService(tag);
-    return typeof service === 'function' ? service() : service;
-  }) as any,
-  services: servicesByTags(getService) as any,
+  service: getService as any,
+  services: services(servicesByTags(getService)) as any,
+  instances: instancesByTags(servicesByTags(getService)) as any,
 });
+
+export function services(getServiceFactory: (...tags: ServiceTag[]) => SF[]): <T, K extends keyof T>(...keys: K[]) => Pick<T, K> & SF[] {
+  return (...keys) => {
+    const byIndex: any = getServiceFactory(...keys as any);
+    keys.forEach((key, index) => {
+      byIndex[key] = byIndex[index];
+    });
+    return byIndex;
+  };
+}
+
+export function instancesByTags(getServiceFactory: (...tags: ServiceTag[]) => SF[]): <T, K extends keyof T>(...keys: K[]) => Pick<T, K> & SF[] {
+  return (...keys) => {
+    const byIndex: any = getServiceFactory(...keys as any);
+    keys.forEach((key, index) => {
+      byIndex[index] = byIndex[index]();
+      byIndex[key] = byIndex[index];
+    });
+    return byIndex;
+  };
+}
 
 /**
  * @typeGenerator({

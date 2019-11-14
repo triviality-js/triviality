@@ -1,10 +1,18 @@
-import { triviality } from '../index';
+import { FF, triviality } from '../index';
 
 interface SpeakServiceInterface {
   speak(name: string): string;
 }
 
-const GreetingsFeature = () => ({
+interface GreetingsFeatureServices {
+  halloService(): SpeakServiceInterface;
+
+  byeService(): SpeakServiceInterface;
+
+  halloAndByeService(): SpeakServiceInterface;
+}
+
+const GreetingsFeature: FF<GreetingsFeatureServices> = () => ({
   halloService(): SpeakServiceInterface {
     return {
       speak: (name: string): string => {
@@ -32,76 +40,36 @@ const GreetingsFeature = () => ({
 
 it('Override service', async () => {
 
-  const MyHalloFeature = () => ({
-    halloService: override(() => () => ({
+  const MyHalloFeature: FF<void, GreetingsFeatureServices> = ({ override: { halloService } }) => {
+    halloService(() => ({
       speak: (_name: string): string => {
         return '@'; // tumbleweed
       },
-    })),
-  });
+    }));
+  };
 
   const container = await triviality()
     .add(GreetingsFeature)
     .add(MyHalloFeature)
     .build();
 
-  expect(container.halloService().speak('John')).toEqual('@');
-  expect(container.halloAndByeService().speak('John')).toEqual('@, Bye John');
-});
-
-it('Override service should be cached', async () => {
-
-  const MyHalloFeature = () => ({
-    halloService: override(() => () => ({
-      speak: (_name: string): string => {
-        return '@'; // tumbleweed
-      },
-    })),
-  });
-
-  const container = await triviality()
-    .add(GreetingsFeature)
-    .add(MyHalloFeature)
-    .build();
-
-  expect(container.halloService()).toBe(container.halloService());
-});
-
-it('Can decorate by function', async () => {
-
-  const MyHalloFeature = () => ({
-    halloService: override((original: () => SpeakServiceInterface) => () => ({
-      speak: (name: string): string => {
-        return `${original().speak(name)}!!!`;
-      },
-    })),
-  });
-
-  const container = await triviality()
-    .add(GreetingsFeature)
-    .add(MyHalloFeature)
-    .build();
-
-  expect(container.halloService().speak('John')).toEqual('Hallo John!!!');
-  expect(container.halloAndByeService().speak('John')).toEqual('Hallo John!!!, Bye John');
+  expect(container.halloService.speak('John')).toEqual('@');
+  expect(container.halloAndByeService.speak('John')).toEqual('@, Bye John');
 });
 
 const screamSpeakService = (service: SpeakServiceInterface): SpeakServiceInterface => ({
   speak: (name: string): string => `${service.speak(name)}!!!`,
 });
 
-const ScreamGreetingsFeature = () => ({
-  halloService: override<SF<SpeakServiceInterface>>((halloService) => () => screamSpeakService(halloService())),
-  byeService: override<SF<SpeakServiceInterface>>((byeService) => () => screamSpeakService(byeService())),
-});
+const ScreamGreetingsFeature: FF<void, GreetingsFeatureServices> = ({ override }) => {
+  override.halloService(screamSpeakService);
+  override.byeService(screamSpeakService);
+};
 
-const HiHalloFeature = () => ({
-  halloService: override((parent: SF<SpeakServiceInterface>) => () => ({
-    speak: (name: string): string => {
-      return parent().speak(name).replace('Hallo', 'Hi');
-    },
-  })),
-});
+const HiHalloFeature: FF<void, GreetingsFeatureServices> = ({ override: { halloService } }) =>
+  halloService((original) => ({
+    speak: (name: string): string => original.speak(name).replace('Hallo', 'Hi'),
+  }));
 
 it('Can be decorated multiple times', async () => {
   const container = await triviality()
@@ -110,9 +78,9 @@ it('Can be decorated multiple times', async () => {
     .add(HiHalloFeature)
     .build();
 
-  expect(container.halloService().speak('John')).toEqual('Hi John!!!');
+  expect(container.halloService.speak('John')).toEqual('Hi John!!!');
 
-  expect(container.halloAndByeService().speak('John')).toEqual('Hi John!!!, Bye John!!!');
+  expect(container.halloAndByeService.speak('John')).toEqual('Hi John!!!, Bye John!!!');
 });
 
 it('Can be decorated in a different order', async () => {
@@ -122,9 +90,9 @@ it('Can be decorated in a different order', async () => {
     .add(ScreamGreetingsFeature)
     .build();
 
-  expect(container.halloService().speak('John')).toEqual('Hi John!!!');
+  expect(container.halloService.speak('John')).toEqual('Hi John!!!');
 
-  expect(container.halloAndByeService().speak('John')).toEqual('Hi John!!!, Bye John!!!');
+  expect(container.halloAndByeService.speak('John')).toEqual('Hi John!!!, Bye John!!!');
 });
 
 it('Can alter multiple services', async () => {
@@ -134,22 +102,19 @@ it('Can alter multiple services', async () => {
     .add(ScreamGreetingsFeature)
     .build();
 
-  expect(container.byeService().speak('John')).toEqual('Bye John!!!');
+  expect(container.byeService.speak('John')).toEqual('Bye John!!!');
 
-  expect(container.halloAndByeService().speak('Jane')).toEqual('Hi Jane!!!, Bye Jane!!!');
+  expect(container.halloAndByeService.speak('Jane')).toEqual('Hi Jane!!!, Bye Jane!!!');
 });
 
 it('Cannot add extra services with overrides', async () => {
-  const MyHalloFeature = () => ({
-    halloServiceDope: override(() => () => ({
-      speak: (_name: string): string => {
-        return '@'; // tumbleweed
-      },
-    })),
-  });
+  const MyHalloFeature: FF = ({ override }: any) => {
+    override('foobar', () => void 0);
+  };
 
   const container = await triviality()
     .add(MyHalloFeature);
 
-  await expect(container.build()).rejects.toThrow(ContainerError.cannotOverrideNonExistingService('halloServiceDope'));
-});
+  await expect(container.build()).rejects.toThrow();
+})
+;

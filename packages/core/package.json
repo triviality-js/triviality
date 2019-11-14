@@ -10,7 +10,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "create-types": "ts-node src/cli/createTypes.ts",
-    "test": "npm-run-all clean-build build lint unit-test copy-past-detection",
+    "test": "npm-run-all clean-build build lint unit-test copy-past-detection create-readme",
     "clean-build": "git clean -fdX --exclude node_modules",
     "lint": "tslint --project ./",
     "lint-fix": "tslint  --project ./ --fix",
@@ -41,14 +41,12 @@
   },
   "devDependencies": {
     "ts-jest": "^23",
-    "ts-node": "^7"
+    "ts-node-dev": "latest",
+    "filehound": "^1.17.3"
   },
   "gitHead": "b1d66132bb4f54b57bc411846c4fa44d6556a520",
   "dependencies": {
     "@types/ramda": "^0.26.21",
-    "filehound": "^1.17.3",
-    "ramda": "^0.26.1",
-    "ts-node": "^8.4.1",
-    "yup": "^0.27.0"
+    "ramda": "^0.26.1"
   }
 }

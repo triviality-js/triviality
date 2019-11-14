@@ -1,12 +1,18 @@
-import { fromPairs } from 'ramda';
 import { FeatureFactory } from './FeatureFactory';
 import { invokeFeatureFactories } from './invokeFeatureFactory';
-import { ServiceContainer } from './ServiceContainer';
-import { createMutableLockableContainer } from './container';
+import { createMutableLockableContainer } from './Container';
+import { SetupFeature, SetupFeatureServices } from './Features/SetupFeature';
+import { InferServicesTypes } from './ServiceFactory';
+import { mapObjIndexed } from 'ramda';
+
 /**
  * Container factory.
  */
 export class ContainerFactory<S> {
+  public static create = (): ContainerFactory<SetupFeatureServices> => {
+    const container = new ContainerFactory<SetupFeatureServices>();
+    return container.add(SetupFeature);
+  };
 
   public constructor(private serviceFactories: Array<FeatureFactory<any>> = []) {
   }
@@ -18,10 +24,12 @@ export class ContainerFactory<S> {
     return new ContainerFactory([...this.serviceFactories, f1] as any) as any;
   }
 
-  public async build(): Promise<ServiceContainer<S>> {
+  public async build(): Promise<InferServicesTypes<S>> {
     const container = createMutableLockableContainer();
     invokeFeatureFactories(container)(this.serviceFactories as any);
-    return fromPairs(container.services()) as any;
+    const services: any = container.lock();
+    await services.callSetupServices()();
+    return mapObjIndexed((sf: any) => sf(), services) as any;
   }
 
 }

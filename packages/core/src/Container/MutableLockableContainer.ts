@@ -2,37 +2,37 @@ import { lockAble } from '../lib';
 import { ServiceTag, SF } from '../ServiceFactory';
 import { createImmutableContainer, ImmutableContainer } from './ImmutableContainer';
 import { MutableContainer } from './MutableContainer';
+import { fromPairs, once } from 'ramda';
 
 export interface MutableLockableContainer extends MutableContainer {
-  lock(): ImmutableContainer;
+  lock(): Record<string, SF<unknown>>;
 
   isLocked(): boolean;
 }
 
 export const createMutableLockableContainer = (container: ImmutableContainer = createImmutableContainer()): MutableLockableContainer => {
-  const { isLocked, lock: lockMutable } = lockAble(false);
+  const { isLocked, lock: lockMutable } = lockAble();
   let updatedContainer = container;
+  const reference: Record<string, SF> = {};
 
-  function lock(): ImmutableContainer {
+  function lock(): Record<string, SF<unknown>> {
     lockMutable();
-    return updatedContainer;
+    Object.assign(reference, fromPairs(services()));
+    return reference;
   }
 
   function getService(serviceTag: ServiceTag) {
-    if (!hasService(serviceTag)) {
-      throw new Error(`Service "${serviceTag}" does not exists`);
-    }
-    return () => getCurrentService(serviceTag)();
+    return once(() => getCurrentService(serviceTag)());
   }
 
   function getCurrentService(serviceTag: ServiceTag): SF {
     const service = updatedContainer.getService(serviceTag);
-    return () => {
+    return once(() => {
       if (!isLocked()) {
         throw new Error(`Cannot get "${serviceTag}" service when container is unlocked`);
       }
       return service();
-    };
+    });
   }
 
   function services(): [[ServiceTag, SF]] {
@@ -51,7 +51,9 @@ export const createMutableLockableContainer = (container: ImmutableContainer = c
     if (isLocked()) {
       throw new Error(`Cannot set "${tag}" service when container is locked`);
     }
-    updatedContainer = updatedContainer.setService(tag, sf);
+    updatedContainer = updatedContainer.setService(tag, sf.bind(reference));
+    /* istanbul ignore next */
+    reference[tag] = () => { throw new Error(`Cannot get "${tag}" service when container is unlocked`); };
     return createRecord();
   }
 

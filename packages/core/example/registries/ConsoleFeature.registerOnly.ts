@@ -1,10 +1,11 @@
-import { FF, RSF } from '../../src';
-import { ConsoleCommand } from '../registries/ConsoleCommand';
+import { FF, RegistryList } from '../../src';
+import { SF } from '../../src';
+import { ConsoleCommand } from './ConsoleCommand';
 
 export interface ConsoleFeatureServices {
-  consoleCommand: RSF<ConsoleCommand[]>;
+  consoleCommands: SF<RegistryList<ConsoleCommand>>;
 }
 
-export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ createRegister }) => ({
-  consoleCommand: createRegister(() => []),
+export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ registerList }) => ({
+  consoleCommands: registerList(),
 });

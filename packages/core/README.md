@@ -9,12 +9,6 @@
   * [Service overrides & decorators](#service-overrides-&-decorators)
     * [Overriding a service](#overriding-a-service)
     * [Decorating a service](#decorating-a-service)
-  * [Features](#features)
-  * [Service registries](#service-registries)
-  * [Setup](#setup)
-  * [Service overrides & decorators](#service-overrides-&-decorators)
-    * [Overriding a service](#overriding-a-service)
-    * [Decorating a service](#decorating-a-service)
 * [Existing triviality features](#existing-triviality-features)
 * [Installation](#installation)
 * [Facts](#facts)
@@ -68,23 +62,25 @@ is connected properly before your application code even has executed.
 
 Triviality by its core is split into features. Each feature has his own services definitions
 so it can serve it's unique and there separate logic.
-A feature is defined as a class.
+A feature is defined as a function.
 
 
 ```typescript
-import { Feature } from '@triviality/core';
+import { FF, SF } from '@triviality/core';
 import { LoggerInterface } from './LoggerInterface';
 import { ConsoleLogger } from './ConsoleLogger';
 
-export class LogFeature implements Feature {
-  public logger(): LoggerInterface {
-    return new ConsoleLogger();
-  }
+export interface LogServices {
+  logger: SF<LoggerInterface>;
 }
+
+export const LogFeature: FF<LogServices> = () => ({
+  logger: () => new ConsoleLogger(),
+});
 ```
         
 
-As you can see a feature class has functions. The function name is the service name.
+As you can see a feature return factory functions. The function name is the service name.
 The function implementation is the service definition. Before we can use the service from the service container
 we need to build it:   
 
@@ -96,8 +92,7 @@ import { LogFeature } from './LogFeature';
 triviality()
   .add(LogFeature)
   .build()
-  .then((container) => {
-    const logger = container.logger();
+  .then(({ logger }) => {
     logger.info('Hallo word');
   });
 ```
@@ -108,21 +103,24 @@ singleton based on the service factory arguments. For example, create a service 
 
 
 ```typescript
-import { Feature } from '@triviality/core';
 import { LoggerInterface } from '../features/LoggerInterface';
 import { PrefixedLogger } from './PrefixedLogger';
+import { FF, SF } from '@triviality/core';
+import { ConsoleLogger } from '../features/ConsoleLogger';
 
-export class LogFeature implements Feature {
+export const createPrefixedLogger = (logger: LoggerInterface) => (prefix: string): LoggerInterface => {
+  return new PrefixedLogger(logger, prefix);
+};
 
-  public logger(): LoggerInterface {
-    return console;
-  }
-
-  public prefixedLogger(prefix: string): LoggerInterface {
-    return new PrefixedLogger(this.logger(), prefix);
-  }
-
+export interface LogFeatureInstance {
+  logger: SF<LoggerInterface>;
+  prefixedLogger: SF<(name: string) => LoggerInterface>;
 }
+
+export const LogFeature: FF<LogFeatureInstance> = ({ services }) => ({
+  logger: () => new ConsoleLogger(),
+  prefixedLogger: () => createPrefixedLogger(services('logger').logger()),
+});
 ```
         
 
@@ -146,7 +144,13 @@ triviality()
 ```
         
 
-######ts-node "example/singleton/LogFeatureContainer.ts"
+
+```bash
+./node_modules/.bin/ts-node example/singleton/LogFeatureContainer.ts 
+John: Hallo Jane!
+Jane: Hi John!
+```
+        
 
 ___
 
@@ -160,19 +164,21 @@ Let's put the type checking to the test, we create a nice feature that dependenc
 
 
 ```typescript
+import { FF, SF } from '@triviality/core';
+import { LoggerInterface } from '../features/LoggerInterface';
 import { HalloService } from './HalloService';
-import { Container, Feature } from '@triviality/core';
-import { LogFeature } from '../features/LogFeature';
 
-export class HalloFeature implements Feature {
-
-  constructor(private container: Container<LogFeature>) {
-  }
-
-  public halloService(name: string): HalloService {
-    return new HalloService(this.container.logger(), name);
-  }
+export interface HalloFeatureServices {
+  halloServiceFactory: SF<(name: string) => HalloService>;
 }
+
+export interface HalloFeatureDependencies {
+  logger: SF<LoggerInterface>;
+}
+
+export const HalloFeature: FF<HalloFeatureServices, HalloFeatureDependencies> = ({ logger }) => ({
+  halloServiceFactory: () => (name: string) => new HalloService(logger(), name),
+});
 ```
         
 
@@ -212,12 +218,17 @@ triviality()
   .add(HalloFeature)
   .build()
   .then((container) => {
-    const service = container.halloService('John');
+    const service = container.halloServiceFactory('John');
     service.speak();
   });
 ```
         
-######ts-node "example/featureDependency/HalloFeatureContainer.ts"
+
+```bash
+./node_modules/.bin/ts-node example/featureDependency/HalloFeatureContainer.ts 
+Hallo John
+```
+        
 
 ## Service registries
 
@@ -252,20 +263,17 @@ To define a registry inside a feature it needs to implement the 'registries' fun
 
 
 ```typescript
-import { Feature } from '@triviality/core';
+import { FF, RegistryList } from '@triviality/core';
+import { SF } from '@triviality/core';
 import { ConsoleCommand } from './ConsoleCommand';
 
-export class ConsoleFeature implements Feature {
-
-  public registries() {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [];
-      },
-    };
-  }
-
+export interface ConsoleFeatureServices {
+  consoleCommands: SF<RegistryList<ConsoleCommand>>;
 }
+
+export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ registerList }) => ({
+  consoleCommands: registerList(),
+});
 ```
         
 
@@ -275,51 +283,31 @@ It's possible to add a registry to multiple feature. In the next examples, both 
  
 
 ```typescript
-import { Feature, Registries } from '@triviality/core';
-import { ConsoleCommand } from '../ConsoleCommand';
+import { FF } from '@triviality/core';
+import { ConsoleFeatureServices } from '../ConsoleFeature';
 import { HalloConsoleCommand } from './HalloConsoleCommand';
-import { ConsoleFeature } from '../ConsoleFeature';
 
-export class HalloConsoleFeature implements Feature {
-
-  public registries(): Registries<ConsoleFeature> {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [this.halloConsoleCommand()];
-      },
-    };
-  }
-
-  private halloConsoleCommand() {
-    return new HalloConsoleCommand();
-  }
-
-}
+export const HalloConsoleFeature: FF<{}, ConsoleFeatureServices> = ({ registers: { consoleCommands }, construct }) => ({
+  ...consoleCommands(construct(HalloConsoleCommand)),
+});
 ```
         
 
 
 ```typescript
-import { Feature, OptionalRegistries } from '@triviality/core';
+import { FF, SF } from '@triviality/core';
 import { ConsoleCommand } from '../ConsoleCommand';
 import { ByeConsoleCommand } from './ByeConsoleCommand';
-import { ConsoleFeature } from '../ConsoleFeature';
+import { ConsoleFeatureServices } from '../ConsoleFeature';
 
-export class ByeConsoleFeature implements Feature {
-
-  public registries(): OptionalRegistries<ConsoleFeature> {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [this.byeConsoleCommand()];
-      },
-    };
-  }
-
-  private byeConsoleCommand() {
-    return new ByeConsoleCommand();
-  }
-
+interface ByeConsoleServices {
+  byeConsoleCommand: SF<ConsoleCommand>;
 }
+
+export const ByeConsoleFeature: FF<ByeConsoleServices, ConsoleFeatureServices> = ({ registers: { consoleCommands }, construct, service }) => ({
+  ...consoleCommands(service('byeConsoleCommand')),
+  byeConsoleCommand: construct(ByeConsoleCommand),
+});
 ```
         
 
@@ -328,33 +316,22 @@ During the service container build phase, the registries will be combined, so al
 
 
 ```typescript
-import { Feature } from '@triviality/core';
-import { ConsoleCommand } from './ConsoleCommand';
 import { ConsoleService } from './ConsoleService';
+import { FF, RegistryList, SF } from '@triviality/core';
+import { ConsoleCommand } from './ConsoleCommand';
 
-export class ConsoleFeature implements Feature {
-
-  /**
-   * The strict interface, all other feature needs to follow.
-   */
-  public registries() {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [];
-      },
-    };
-  }
-
-  /**
-   * Triviality will combine the result consoleCommands and return it as single array.
-   */
-  public consoleService() {
-    return new ConsoleService(
-      this.registries().consoleCommands(),
-    );
-  }
-
+export interface ConsoleFeatureServices {
+  consoleCommands: SF<RegistryList<ConsoleCommand>>;
+  consoleService: SF<ConsoleService>;
 }
+
+export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ registerList }) => {
+  const consoleCommands = registerList<ConsoleCommand>();
+  return ({
+    consoleCommands,
+    consoleService: () => new ConsoleService(consoleCommands().toArray()),
+  });
+};
 ```
         
 
@@ -363,9 +340,9 @@ Now we can combine the different command feature and build the service container
 
 ```typescript
 import { triviality } from '@triviality/core';
-import { ConsoleFeature } from './ConsoleFeature';
-import { HalloConsoleFeature } from './Command/HalloConsoleFeature';
 import { ByeConsoleFeature } from './Command/ByeConsoleFeature';
+import { HalloConsoleFeature } from './Command/HalloConsoleFeature';
+import { ConsoleFeature } from './ConsoleFeature';
 
 triviality()
   .add(ConsoleFeature)
@@ -373,13 +350,23 @@ triviality()
   .add(ByeConsoleFeature)
   .build()
   .then((container) => {
-    return container.consoleService().handle();
+    return container.consoleService.handle();
   });
 ```
         
 
-######ts-node "example/registries/console.ts"(hallo john)
-######ts-node "example/registries/console.ts"(bye john)
+
+```bash
+./node_modules/.bin/ts-node example/registries/console.ts hallo john
+Hallo john
+```
+        
+
+```bash
+./node_modules/.bin/ts-node example/registries/console.ts bye john
+Bye john !!!
+```
+        
 
 Registries can be fetched from the service container.
 
@@ -395,22 +382,22 @@ task. The feature can check if everything is configured properly or connect to e
 
 
 ```typescript
-import { Feature } from '@triviality/core';
+import { FF } from '@triviality/core';
 import { Database } from './Database';
+import { SetupFeatureServices } from '@triviality/core';
 
-export class DatabaseFeature implements Feature {
+export interface DatabaseFeatureServices {
+  database: () => Database;
+}
 
-  public setup() {
-    if (!this.database().isConnected()) {
+export const DatabaseFeature: FF<DatabaseFeatureServices, SetupFeatureServices> = ({ registers: { setup }, services, construct }) => ({
+  ...setup(() => () => {
+    if (!services('database').database().isConnected()) {
       throw new Error('Database is not connected!');
     }
-  }
-
-  public database(): Database {
-    return new Database();
-  }
-
-}
+  }),
+  database: construct(Database),
+});
 ```
         
 
@@ -425,7 +412,7 @@ triviality()
   .add(DatabaseFeature)
   .build()
   .then((container) => {
-    container.database().someFancyQuery();
+    container.database.someFancyQuery();
   })
   .catch((error) => {
     process.stdout.write(`${error}
@@ -434,7 +421,12 @@ triviality()
 ```
         
 
-######ts-node "example/setup/bootstrap.ts"
+
+```bash
+./node_modules/.bin/ts-node example/setup/bootstrap.ts 
+Error: Database is not connected!
+```
+        
 
 ## Service overrides & decorators
 
@@ -442,17 +434,21 @@ If you use an external feature, maybe you want to override some services. For ex
 
 
 ```typescript
-import { Feature } from '@triviality/core';
-import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 import { CasualGreetingService } from './services/CasualGreetingService';
+import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
+import { FF, SF } from '@triviality/core';
 
-export class GreetingsFeature implements Feature {
-
-  public greetingService(): GreetingsServiceInterface {
-    return new CasualGreetingService();
-  }
-
+export function greetingService() {
+  return new CasualGreetingService();
 }
+
+export interface GreetingsFeatureServices {
+  greetingService: SF<GreetingsServiceInterface>;
+}
+
+export const GreetingsFeature: FF<GreetingsFeatureServices> = () => ({
+  greetingService,
+});
 ```
         
 
@@ -468,17 +464,23 @@ triviality()
   .add(LogFeature)
   .add(GreetingsFeature)
   .build()
-  .then((container) => {
-    const logger = container.logger();
-    const halloService = container.greetingService();
-    logger.info(halloService.greet('Triviality'));
+  .then(({
+           logger,
+           greetingService,
+         }) => {
+    logger.info(greetingService.greet('Triviality'));
   });
 ```
         
 
 We get:
 
-######ts-node "example/overrides/bootstrapGreetingsFeature.ts"
+
+```bash
+./node_modules/.bin/ts-node example/overrides/bootstrapGreetingsFeature.ts 
+Hallo Triviality
+```
+        
 
 ### Overriding a service
 
@@ -486,23 +488,21 @@ If we want to use a different way to greet we need to override the 'greetingServ
 
 
 ```typescript
-import { Feature, OptionalContainer } from '@triviality/core';
-import { GreetingsFeature } from './GreetingsFeature';
+import { FF, SF } from '@triviality/core';
 import { FormalGreetingsService } from './services/FormalGreetingsService';
 import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
+import { GreetingsFeatureServices } from './GreetingsFeature';
 
-export class FormalGreetingsFeature implements Feature {
-  public serviceOverrides(): OptionalContainer<GreetingsFeature> {
-    return {
-      greetingService: () => this.formalGreetingsService(),
-    };
-  }
-
-  public formalGreetingsService(): GreetingsServiceInterface {
-    return new FormalGreetingsService();
-  }
-
+interface FormalGreetingsFeatureServices {
+  formalGreetingsService: SF<GreetingsServiceInterface>;
 }
+
+export const FormalGreetingsFeature: FF<FormalGreetingsFeatureServices, GreetingsFeatureServices> = ({ override: { greetingService }, service, construct }) => ({
+
+  ...greetingService(service('formalGreetingsService')),
+
+  formalGreetingsService: construct(FormalGreetingsService),
+});
 ```
         
 
@@ -517,17 +517,23 @@ triviality()
   .add(GreetingsFeature)
   .add(FormalGreetingsFeature)
   .build()
-  .then((container) => {
-    const logger = container.logger();
-    const halloService = container.greetingService();
-    logger.info(halloService.greet('Triviality'));
+  .then(({
+           logger,
+           greetingService,
+         }) => {
+    logger.info(greetingService.greet('Triviality'));
   });
 ```
         
 
 Now the original 'greetingService' service is overridden for the hole application. If we now run the example we get the following result: 
 
-######ts-node "example/overrides/bootstrapFormalGreetingsFeature.ts"
+
+```bash
+./node_modules/.bin/ts-node example/overrides/bootstrapFormalGreetingsFeature.ts 
+Pleased to meet you Triviality
+```
+        
 
 ### Decorating a service
 
@@ -554,18 +560,18 @@ export class ScreamGreetingsService implements GreetingsServiceInterface {
         
 
 ```typescript
-import { Container, Feature, OptionalContainer } from '@triviality/core';
+import { FF } from '@triviality/core';
+import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 import { ScreamGreetingsService } from './services/ScreamGreetingsService';
-import { GreetingsFeature } from './GreetingsFeature';
+import { GreetingsFeatureServices } from './GreetingsFeature';
 
-export class ScreamGreetingsFeature implements Feature {
-  public serviceOverrides(container: Container<GreetingsFeature>): OptionalContainer<GreetingsFeature> {
-    return {
-      greetingService: () => new ScreamGreetingsService(container.greetingService()),
-    };
-  }
-
+function decorateWithScreams(greeter: GreetingsServiceInterface): GreetingsServiceInterface {
+  return new ScreamGreetingsService(greeter);
 }
+
+export const ScreamGreetingsFeature: FF<unknown, GreetingsFeatureServices> = ({ override: { greetingService } }) => ({
+  ...greetingService(decorateWithScreams),
+});
 ```
         
 
@@ -580,528 +586,21 @@ triviality()
   .add(GreetingsFeature)
   .add(ScreamGreetingsFeature)
   .build()
-  .then((container) => {
-    const logger = container.logger();
-    const halloService = container.greetingService();
-    logger.info(halloService.greet('Triviality'));
+  .then(({ logger, greetingService }) => {
+    logger.info(greetingService.greet('Triviality'));
   });
 ```
         
 
 Now the original 'greetingService' service is overridden and we get:
 
-######ts-node "example/overrides/bootstrapScreamGreetingsFeature.ts"
 
-
-# Functional
-
-## Features
-
-Triviality by its core is split into features. Each feature has his own services definitions
-so it can serve it's unique and there separate logic.
-A feature is defined as a class or service factory.
-
-
-```typescript
-import { ConsoleLogger } from '../features/ConsoleLogger';
-import { LoggerInterface } from '../features/LoggerInterface';
-
-function createLogger(): LoggerInterface {
-  return new ConsoleLogger();
-}
-
-export const LogFeature = () => ({
-  logger: createLogger,
-});
+```bash
+./node_modules/.bin/ts-node example/overrides/bootstrapScreamGreetingsFeature.ts 
+HALLO TRIVIALITY!!!!!!
 ```
         
 
-As you can see a feature class has functions. The function name is the service name.
-The function implementation is the service definition. Before we can use the service from the service container
-we need to build it:   
-
-
-```typescript
-import { triviality } from '@triviality/core';
-import { LogFeature } from './LogFeature';
-
-triviality()
-  .merge(LogFeature)
-  .build()
-  .then((container) => {
-    const logger = container.logger();
-    logger.info('Hallo word');
-  });
-```
-        
-
-Now we can fetch the 'logger' service from the service container and start using it. In the build step of the container, function results will be memorized and can be threaded as a
-singleton based on the service factory arguments. For example, create a service with a single service factory argument:
-
-
-```typescript
-import { LoggerInterface } from '../features/LoggerInterface';
-import { PrefixedLogger } from '../singleton/PrefixedLogger';
-
-export const createConsoleLogger = (): LoggerInterface => {
-  return console;
-};
-
-export const createPrefixedLogger = (logger: () => LoggerInterface) => (prefix: string): LoggerInterface => {
-  return new PrefixedLogger(logger(), prefix);
-};
-
-export const LogFeature = ({ logger }: { logger: () => LoggerInterface }) => ({
-  logger: createConsoleLogger,
-  prefixedLogger: createPrefixedLogger(logger),
-});
-```
-        
-
-The logger service function and the 'prefixedLogger' functions will always return the same instance for the same arguments. 
-
-
-```typescript
-import { triviality } from '@triviality/core';
-import { LogFeature } from './LogFeature';
-
-triviality()
-  .merge(LogFeature)
-  .build()
-  .then((container) => {
-    const johnLogger = container.prefixedLogger('John:');
-    johnLogger.info('Hallo Jane!');
-    const janeLogger = container.prefixedLogger('Jane:');
-    janeLogger.info('Hi John!');
-
-  });
-```
-        
-___
-
-The service container inherited the service types from all added features.
-This gives typescript the option to **strictly type check** if everything is connected properly. 
-And you the benefits of **code completion** and the option to quickly traverse the service chain.
-___
-
-We can inject the Feature with a Container that has multiple Feature dependencies ```Container<...Feature>```.
-Let's put the type checking to the test, we create a nice feature that dependence on the 'LogFeature'.
-
-
-```typescript
-import { ServiceFunction } from '@triviality/core';
-import { HalloService } from '../featureDependency/HalloService';
-import { LoggerInterface } from '../features/LoggerInterface';
-
-export const createHalloService = (logger: ServiceFunction<LoggerInterface>) => (name: string): HalloService => {
-  return new HalloService(logger(), name);
-};
-
-export const HalloFeature = ({ logger }: { logger: ServiceFunction<LoggerInterface> }) => ({
-  halloService: createHalloService(logger),
-});
-```
-        
-
-Build the service container with missing 'LogFeature' dependency:
-
-
-```typescript
-import { triviality } from '@triviality/core';
-import { HalloFeature } from './HalloFeature';
-
-triviality()
-  .merge(HalloFeature)
-  .build()
-  .then((container) => {
-    const service = container.halloService('John');
-    service.speak();
-  });
-```
-        
-
-If you forget a feature you see a nice error of typescript in your IDE.
-
-    Error:(6, 8) TS2345: Argument of type 'typeof HalloFeature' is not assignable to parameter of type 'FeatureConstructor<HalloFeature, {}>'.
-      Types of parameters 'container' and 'container' are incompatible.
-        Property 'logger' is missing in type '{}' but required in type 'Readonly<Pick<LogFeature, "logger">>'.
-
-Let's fix the service container by adding the LogFeature:
-
-
-```typescript
-import { triviality } from '@triviality/core';
-import { LogFeature } from '../singleton-functional/LogFeature';
-import { HalloFeature } from './HalloFeature';
-
-triviality()
-  .merge(LogFeature)
-  .merge(HalloFeature)
-  .build()
-  .then((container) => {
-    const service = container.halloService('John');
-    service.speak();
-  });
-```
-        
-######ts-node "example/featureDependency-functional/HalloFeatureContainer.ts"
-
-## Service registries
-
-For triviality a service registry is a collection of services that share a common interface.
-Multiple Features can *register* services to the service registry without knowing
-anything about the other features.
-
-For example let's create a service register for 'console commands' the services that are registered
-should match the common interface 'ConsoleCommand':
-
-
-```typescript
-import { ConsoleInput } from './ConsoleInput';
-import { ConsoleOutput } from './ConsoleOutput';
-
-export interface ConsoleCommand {
-
-  name(): string;
-
-  execute(input: ConsoleInput, output: ConsoleOutput): void | Promise<void>;
-}
-```
-        
-
-For triviality a service registry is defined as a function
-
-```typescript
-() => ConsoleCommand[];
-```
-
-To define a registry inside a feature it needs to implement the 'registries' function.
-
-
-```typescript
-import { ConsoleCommand } from '../registries/ConsoleCommand';
-
-export const registerConsoleCommands = (commands: ConsoleCommand[]) => ({
-  consoleCommands: () => commands,
-});
-
-export const ConsoleFeature = () => ({
-  /**
-   * The strict interface, all other feature needs to follow.
-   */
-  registries: () => ({
-    ...registerConsoleCommands([]),
-  }),
-});
-```
-        
-
-The 'registries' returns an associative-map, the key represents the name of the registry and the value the service registry.
-
-It's possible to add a registry to multiple feature. In the next examples, both feature return one command service inside the registry function.
- 
-
-```typescript
-import { HalloConsoleCommand } from '../../registries/Command/HalloConsoleCommand';
-import { registerConsoleCommands } from '../ConsoleFeature';
-
-export function createHalloConsoleCommand() {
-  return new HalloConsoleCommand();
-}
-
-export const HalloConsoleFeature = ({ halloConsoleCommand }: { halloConsoleCommand: typeof createHalloConsoleCommand }) => ({
-  registries: () => ({
-    ...registerConsoleCommands([halloConsoleCommand()]),
-  }),
-
-  halloConsoleCommand: createHalloConsoleCommand,
-});
-```
-        
-
-
-```typescript
-import { ByeConsoleCommand } from '../../registries/Command/ByeConsoleCommand';
-import { registerConsoleCommands } from '../ConsoleFeature';
-
-export function createByeConsoleCommand() {
-  return new ByeConsoleCommand();
-}
-
-export const ByeConsoleFeature = ({ byeConsoleCommand }: { byeConsoleCommand: typeof createByeConsoleCommand }) => ({
-  registries: () => ({
-    ...registerConsoleCommands([byeConsoleCommand()]),
-  }),
-
-  byeConsoleCommand: createByeConsoleCommand,
-});
-```
-        
-
-Multiple feature can define the registry. The implementation needs to match between features otherwise typescript will assist you with strict type checking errors.
-During the service container build phase, the registries will be combined, so all registry functions will return the complete combined result.
-
-
-```typescript
-import { ServiceFunction } from '@triviality/core';
-import { ConsoleCommand } from '../registries/ConsoleCommand';
-import { ConsoleService } from '../registries/ConsoleService';
-
-export const createConsoleService = (commands: ServiceFunction<ConsoleCommand[]>) => () => new ConsoleService(commands());
-
-export const registerConsoleCommands = (commands: ConsoleCommand[]) => ({
-  consoleCommands: () => commands,
-});
-
-// TODO: convert registries as services.
-export const ConsoleFeature = ({ registries }: { registries: () => { consoleCommands: () => ConsoleCommand[] } }) => ({
-  /**
-   * The strict interface, all other feature needs to follow.
-   */
-  registries: () => ({
-    ...registerConsoleCommands([]),
-  }),
-
-  /**
-   * Triviality will combine the result consoleCommands and return it as single array.
-   */
-  consoleService: createConsoleService(registries().consoleCommands),
-});
-```
-        
-
-Now we can combine the different command feature and build the service container.
-
-
-```typescript
-import { triviality } from '@triviality/core';
-import { ByeConsoleFeature } from './Command/ByeConsoleFeature';
-import { HalloConsoleFeature } from './Command/HalloConsoleFeature';
-import { ConsoleFeature } from './ConsoleFeature';
-
-triviality()
-  .merge(ConsoleFeature)
-  .merge(HalloConsoleFeature)
-  .merge(ByeConsoleFeature)
-  .build()
-  .then((container) => {
-    return container.consoleService().handle();
-  });
-```
-        
-
-######ts-node "example/registries-functional/console.ts"(hallo john)
-######ts-node "example/registries-functional/console.ts"(bye john)
-
-Registries can be fetched from the service container.
-
-!["containerRegistries"](./example/registries-functional/containerRegistries.png)
-
-Typescript will verify if registers interface matches over multiple Features. You can add an extra verify by adding
-response type to the feature registry function.
-
-## Setup
-
-The build step returns a single promise, Each feature can have its own specific setup
-task. The feature can check if everything is configured properly or connect to external service like a database.
-
-
-```typescript
-import { Database } from '../setup/Database';
-
-export const createDatabaseConnection = (): Database => {
-  return new Database();
-};
-
-export const DatabaseFeature = () => ({
-
-  setup() {
-    if (!this.database().isConnected()) {
-      throw new Error('Database is not connected!');
-    }
-  },
-
-  database: createDatabaseConnection,
-});
-```
-        
-
-Add a catch function to gracefully handle errors
-
-
-```typescript
-import { triviality } from '@triviality/core';
-import { DatabaseFeature } from './DatabaseFeature';
-
-triviality()
-  .merge(DatabaseFeature)
-  .build()
-  .then((container) => {
-    container.database().someFancyQuery();
-  })
-  .catch((error) => {
-    process.stdout.write(`${error}
-`);
-  });
-```
-        
-
-######ts-node "example/setup-functional/bootstrap.ts"
-
-## Service overrides & decorators
-
-If you use an external feature, maybe you want to override some services. For example, we start with the following greetings feature:
-
-
-```typescript
-import { CasualGreetingService } from '../overrides/services/CasualGreetingService';
-
-export function greetingService() {
-  return new CasualGreetingService();
-}
-
-export const GreetingsFeature = () => ({
-  greetingService,
-});
-```
-        
-
-When we run 
-
-
-```typescript
-import { triviality } from '@triviality/core';
-import { GreetingsFeature } from './GreetingsFeature';
-import { LogFeature } from '../features-functional/LogFeature';
-
-triviality()
-  .merge(LogFeature)
-  .merge(GreetingsFeature)
-  .build()
-  .then((container) => {
-    const logger = container.logger();
-    const halloService = container.greetingService();
-    logger.info(halloService.greet('Triviality'));
-  });
-```
-        
-
-We get:
-
-######ts-node "example/overrides-functional/bootstrapGreetingsFeature.ts"
-
-### Overriding a service
-
-If we want to use a different way to greet we need to override the 'greetingService'
-
-
-```typescript
-import { Feature } from '@triviality/core';
-import { FormalGreetingsService } from '../overrides/services/FormalGreetingsService';
-import { GreetingsServiceInterface } from '../overrides/services/GreetingsServiceInterface';
-
-export const FormalGreetingsFeature = (): Feature => ({
-  serviceOverrides(): { greetingService(): GreetingsServiceInterface } {
-    return {
-      greetingService: () => this.formalGreetingsService(),
-    };
-  },
-
-  formalGreetingsService(): GreetingsServiceInterface {
-    return new FormalGreetingsService();
-  },
-});
-```
-        
-
-```typescript
-import { triviality } from '@triviality/core';
-import { GreetingsFeature } from './GreetingsFeature';
-import { LogFeature } from '../features-functional/LogFeature';
-import { FormalGreetingsFeature } from './FormalGreetingsFeature';
-
-triviality()
-  .merge(LogFeature)
-  .merge(GreetingsFeature)
-  .merge(FormalGreetingsFeature)
-  .build()
-  .then((container) => {
-    const logger = container.logger();
-    const halloService = container.greetingService();
-    logger.info(halloService.greet('Triviality'));
-  });
-```
-        
-
-Now the original 'greetingService' service is overridden for the hole application. If we now run the example we get the following result: 
-
-######ts-node "example/overrides-functional/bootstrapFormalGreetingsFeature.ts"
-
-### Decorating a service
-
-If we still we to use the original service from the service container. We can fetch the original service from the 'serviceOverrides' container argument.
- 
-Let's be less formal by screaming the sentence: 
-
-
-```typescript
-import { GreetingsServiceInterface } from './GreetingsServiceInterface';
-
-export class ScreamGreetingsService implements GreetingsServiceInterface {
-
-  constructor(private speakService: GreetingsServiceInterface) {
-
-  }
-
-  public greet(name: string): string {
-    return `${this.speakService.greet(name).toUpperCase()}!!!!!!`;
-  }
-
-}
-```
-        
-
-```typescript
-import { ServiceFunction } from '@triviality/core';
-import { GreetingsServiceInterface } from '../overrides/services/GreetingsServiceInterface';
-import { ScreamGreetingsService } from '../overrides/services/ScreamGreetingsService';
-
-function decorateWithScreams(greeter: GreetingsServiceInterface): GreetingsServiceInterface {
-  return new ScreamGreetingsService(greeter);
-}
-
-export const ScreamGreetingsFeature = () => ({
-  serviceOverrides(container: { greetingService: ServiceFunction<GreetingsServiceInterface> }) {
-    return {
-      greetingService: () => decorateWithScreams(container.greetingService()),
-    };
-  },
-});
-```
-        
-
-```typescript
-import { triviality } from '@triviality/core';
-import { GreetingsFeature } from './GreetingsFeature';
-import { LogFeature } from '../features-functional/LogFeature';
-import { ScreamGreetingsFeature } from './ScreamGreetingsFeature';
-
-triviality()
-  .merge(LogFeature)
-  .merge(GreetingsFeature)
-  .merge(ScreamGreetingsFeature)
-  .build()
-  .then((container) => {
-    const logger = container.logger();
-    const halloService = container.greetingService();
-    logger.info(halloService.greet('Triviality'));
-  });
-```
-        
-
-Now the original 'greetingService' service is overridden and we get:
-
-######ts-node "example/overrides-functional/bootstrapScreamGreetingsFeature.ts"
 
 
 # Existing triviality features

@@ -1,14 +1,16 @@
-import { FeatureFactory, RegistryService } from '../../src';
-import { ConsoleCommand } from '../registries/ConsoleCommand';
-import { ConsoleService } from '../registries/ConsoleService';
+import { ConsoleService } from './ConsoleService';
+import { FF, RegistryList, SF } from '../../src';
+import { ConsoleCommand } from './ConsoleCommand';
 
 export interface ConsoleFeatureServices {
-  consoleService: () => ConsoleService;
-  consoleCommand: RegistryService<() => ConsoleCommand[]>;
+  consoleCommands: SF<RegistryList<ConsoleCommand>>;
+  consoleService: SF<ConsoleService>;
 }
 
-export const ConsoleFeature: FeatureFactory<ConsoleFeatureServices> = ({ createRegister, construct }) =>
-  ({
-    consoleCommand: createRegister(() => []),
-    consoleService: construct('consoleCommand', ConsoleService),
+export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ registerList }) => {
+  const consoleCommands = registerList<ConsoleCommand>();
+  return ({
+    consoleCommands,
+    consoleService: () => new ConsoleService(consoleCommands().toArray()),
   });
+};

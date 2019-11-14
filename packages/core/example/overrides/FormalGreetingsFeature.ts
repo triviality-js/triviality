@@ -1,15 +1,15 @@
 import { FF, SF } from '../../src';
 import { FormalGreetingsService } from './services/FormalGreetingsService';
 import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
+import { GreetingsFeatureServices } from './GreetingsFeature';
 
 interface FormalGreetingsFeatureServices {
-  greetingService: SF<GreetingsServiceInterface>;
   formalGreetingsService: SF<GreetingsServiceInterface>;
 }
 
-export const FormalGreetingsFeature: FF<FormalGreetingsFeatureServices, {}> = ({ overrideWith, construct }) => ({
+export const FormalGreetingsFeature: FF<FormalGreetingsFeatureServices, GreetingsFeatureServices> = ({ override: { greetingService }, service, construct }) => ({
 
-  greetingService: overrideWith('formalGreetingsService'),
+  ...greetingService(service('formalGreetingsService')),
 
   formalGreetingsService: construct(FormalGreetingsService),
 });

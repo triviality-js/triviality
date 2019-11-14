@@ -1,15 +1,13 @@
-import { FF } from '../../../src';
-import { RegistryList } from '../../../src/FeatureFactoryContext/FeatureFactoryRegistryContext/registerList';
+import { FF, SF } from '../../../src';
 import { ConsoleCommand } from '../ConsoleCommand';
 import { ByeConsoleCommand } from './ByeConsoleCommand';
+import { ConsoleFeatureServices } from '../ConsoleFeature';
 
 interface ByeConsoleServices {
-  byeConsoleCommand: () => ConsoleCommand;
-  consoleCommand: RegistryList<ConsoleCommand[]>;
+  byeConsoleCommand: SF<ConsoleCommand>;
 }
 
-export const ByeConsoleFeature: FF<ByeConsoleServices> = ({ registerList, construct, services }) => ({
-  consoleCommand: registerList(services, 'byeConsoleCommand'),
-
+export const ByeConsoleFeature: FF<ByeConsoleServices, ConsoleFeatureServices> = ({ registers: { consoleCommands }, construct, service }) => ({
+  ...consoleCommands(service('byeConsoleCommand')),
   byeConsoleCommand: construct(ByeConsoleCommand),
 });

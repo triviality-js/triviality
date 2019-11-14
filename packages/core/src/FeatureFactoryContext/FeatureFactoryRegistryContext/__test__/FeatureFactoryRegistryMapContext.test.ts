@@ -1,5 +1,5 @@
 import { createFeatureFactoryRegistryContext } from '../FeatureFactoryRegistryContext';
-import { createMutableContainer } from '../../../container';
+import { createMutableContainer } from '../../../Container';
 import { always } from 'ramda';
 import { SF } from '../../../ServiceFactory';
 

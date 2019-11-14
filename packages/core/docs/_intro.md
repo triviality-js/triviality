@@ -4,11 +4,11 @@
 
 Triviality by its core is split into features. Each feature has his own services definitions
 so it can serve it's unique and there separate logic.
-A feature is defined as a class.
+A feature is defined as a function.
 
 ######typescript "example/features/LogFeature.ts"
 
-As you can see a feature class has functions. The function name is the service name.
+As you can see a feature return factory functions. The function name is the service name.
 The function implementation is the service definition. Before we can use the service from the service container
 we need to build it:   
 

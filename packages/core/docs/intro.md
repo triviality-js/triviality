@@ -36,6 +36,5 @@ is connected properly before your application code even has executed.
 
 > It's not required to use Typescript when using Triviality, but it's highly recommended.
 
-#include "docs/_intro_class.md"
+#include "docs/_intro.md"
 
-#include "docs/_intro_functional.md"

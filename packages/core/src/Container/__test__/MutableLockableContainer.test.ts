@@ -32,6 +32,12 @@ it('Cannot call a sf when container is unlocked', () => {
   expect(() => container.getService('serviceName')()).toThrowError();
 });
 
+it('Cannot set a sf when container is locked', () => {
+  const container = createMutableLockableContainer();
+  container.lock();
+  expect(() => container.setService('serviceName', jest.fn())).toThrowError();
+});
+
 it('Can call a sf when container is locked', () => {
   const container = createMutableLockableContainer();
   const sf = jest.fn().mockReturnValue({ foo: 'bar' });
@@ -64,4 +70,18 @@ it('Can override a service', () => {
   expect(container.getService('serviceName')()).toBe(service2);
   expect(sf).toBeCalledTimes(0);
   expect(sf2).toBeCalledTimes(1);
+});
+
+it('Can get all current services', () => {
+  const container = createMutableLockableContainer();
+  container.setService('foo', () => 'bar');
+  container.setService('John', () => 'Doe');
+  const services: any = container.currentServices();
+  container.setService('foo', () => 'Hallo');
+  container.lock();
+  expect(services.length).toEqual(2);
+  expect(services[0][0]).toEqual('foo');
+  expect(services[0][1]()).toEqual('bar');
+  expect(services[1][0]).toEqual('John');
+  expect(services[1][1]()).toEqual('Doe');
 });

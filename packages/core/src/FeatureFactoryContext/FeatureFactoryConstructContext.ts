@@ -1,6 +1,6 @@
 import { construct, curryN } from 'ramda';
-import { ImmutableContainer } from '../container';
-import { ServiceFactory, InferServiceTypeOfFactory as SFT, ServiceTag, SF } from '../ServiceFactory';
+import { ImmutableContainer } from '../Container';
+import { ServiceFactory, InferServiceType as SFT, ServiceTag, SF } from '../ServiceFactory';
 import { servicesByTags } from './FeatureFactoryServicesContext';
 
 /**

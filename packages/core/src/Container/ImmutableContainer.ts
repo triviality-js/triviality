@@ -11,11 +11,6 @@ export interface ImmutableContainer {
   hasService(k: ServiceTag): boolean;
 }
 
-export const hasService = (container: Map<string, SF>) => (k: string): boolean => container.has(k);
-
-export const getServices = (getService: (k: ServiceTag) => SF) => (tags: ServiceTag[]): [[ServiceTag, SF<unknown>]] =>
-  (tags.map<[ServiceTag, SF]>((tag) => [tag, getService(tag)]) as any);
-
 export const getServiceFromContainer = (container: Map<string, SF>) => (k: string): SF => {
   const service = container.get(k);
   if (!service) {
@@ -33,14 +28,12 @@ export const setServiceToContainer = (container: Map<string, SF>) => (k: string,
   return createImmutableContainer(copy);
 };
 
-export const createImmutableContainer = (container = new Map<string, SF<unknown>>()): ImmutableContainer => {
-  const copy = new Map<string, SF<unknown>>(container.entries());
-  const getService = getServiceFromContainer(copy);
-  const services = getServices(getService);
+export const createImmutableContainer = (container = new Map<string, SF>()): ImmutableContainer => {
+  const copy = new Map<ServiceTag, SF>(container.entries());
   return {
-    getService,
+    getService: getServiceFromContainer(copy),
     setService: setServiceToContainer(copy),
-    hasService: hasService(copy),
-    services: () => services(Array.from(copy.keys())),
+    hasService: copy.has.bind(copy),
+    services: () => Array.from(copy.entries()) as any,
   };
 };

@@ -1,5 +1,5 @@
-export const lockAble = (initial: boolean = false) => {
-  let locked = initial;
+export const lockAble = () => {
+  let locked = false;
   return {
     lock() {
       locked = true;

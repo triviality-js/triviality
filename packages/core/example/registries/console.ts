@@ -1,6 +1,6 @@
 import { triviality } from '../../src';
-import { ByeConsoleFeature } from '../registries/Command/ByeConsoleFeature';
-import { HalloConsoleFeature } from '../registries/Command/HalloConsoleFeature';
+import { ByeConsoleFeature } from './Command/ByeConsoleFeature';
+import { HalloConsoleFeature } from './Command/HalloConsoleFeature';
 import { ConsoleFeature } from './ConsoleFeature';
 
 triviality()
@@ -9,5 +9,5 @@ triviality()
   .add(ByeConsoleFeature)
   .build()
   .then((container) => {
-    return container.consoleService().handle();
+    return container.consoleService.handle();
   });
