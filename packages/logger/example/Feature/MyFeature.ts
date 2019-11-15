@@ -1,15 +1,11 @@
-import { Container, Feature } from '@triviality/core';
-import { LoggerFeature } from '../../src/Feature/LoggerFeature';
+import { FF } from '@triviality/core';
+import { LoggerFeatureServices } from '../../src';
 import { HalloService } from './HalloService';
 
-export class MyFeature implements Feature {
-
-  constructor(private container: Container<LoggerFeature>) {
-
-  }
-
-  public halloService() {
-    return new HalloService(this.container.logger());
-  }
-
+interface MyFeatureServices {
+  halloService: HalloService;
 }
+
+export const MyFeature: FF<MyFeatureServices, LoggerFeatureServices> = ({ construct }) => ({
+  halloService: construct(HalloService, 'logger'),
+});

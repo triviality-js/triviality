@@ -1,5 +1,4 @@
-import { ConsoleLogger } from '../src/ConsoleLogger';
-import { PrefixLogger } from '../src/PrefixLogger';
+import { ConsoleLogger, PrefixLogger } from '../src';
 
 const logger = new ConsoleLogger(console);
 const withPrefix = new PrefixLogger(logger, 'Hallo: ');

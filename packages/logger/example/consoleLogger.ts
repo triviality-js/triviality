@@ -1,4 +1,4 @@
-import { ConsoleLogger } from '../src/ConsoleLogger';
+import { ConsoleLogger } from '../src';
 
 const logger = new ConsoleLogger(console);
 logger.info('Hallo', 'World');
