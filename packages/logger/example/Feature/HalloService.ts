@@ -1,4 +1,4 @@
-import { LoggerInterface } from '../../src/LoggerInterface';
+import { LoggerInterface } from '../../src';
 
 export class HalloService {
   constructor(private logger: LoggerInterface) {

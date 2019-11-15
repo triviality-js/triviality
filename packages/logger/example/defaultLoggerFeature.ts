@@ -1,6 +1,6 @@
 import { ContainerFactory } from '@triviality/core';
-import { DefaultLoggerFeature } from '../src/Feature/DefaultLoggerFeature';
 import { MyFeature } from './Feature/MyFeature';
+import { DefaultLoggerFeature } from '../src';
 
 ContainerFactory
   .create()
@@ -8,5 +8,5 @@ ContainerFactory
   .add(MyFeature)
   .build()
   .then((container) => {
-    container.halloService().printHallo('Jane');
+    container.halloService.printHallo('Jane');
   });
