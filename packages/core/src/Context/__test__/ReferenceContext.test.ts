@@ -1,4 +1,4 @@
-import { asReference, getCurrentReference } from '../FeatureFactoryReferenceContext';
+import { asReference, getCurrentReference } from '../ReferenceContext';
 import triviality from '../../index';
 
 it('Can create reference service function', async () => {

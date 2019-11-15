@@ -1,9 +1,8 @@
-import { FF } from '../../src';
+import { FF, SetupFeatureServices } from '../../src';
 import { Database } from './Database';
-import { SetupFeatureServices } from '../../src/Features/SetupFeature';
 
 export interface DatabaseFeatureServices {
-  database: () => Database;
+  database: Database;
 }
 
 export const DatabaseFeature: FF<DatabaseFeatureServices, SetupFeatureServices> = ({ registers: { setup }, services, construct }) => ({

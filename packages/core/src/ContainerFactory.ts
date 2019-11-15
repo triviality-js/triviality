@@ -1,8 +1,7 @@
 import { FeatureFactory } from './FeatureFactory';
 import { invokeFeatureFactories } from './invokeFeatureFactory';
 import { createMutableLockableContainer } from './Container';
-import { SetupFeature, SetupFeatureServices } from './Features/SetupFeature';
-import { InferServicesTypes } from './ServiceFactory';
+import { SetupFeature, SetupFeatureServices } from './Features';
 import { mapObjIndexed } from 'ramda';
 
 /**
@@ -24,7 +23,7 @@ export class ContainerFactory<S> {
     return new ContainerFactory([...this.serviceFactories, f1] as any) as any;
   }
 
-  public async build(): Promise<InferServicesTypes<S>> {
+  public async build(): Promise<S> {
     const container = createMutableLockableContainer();
     invokeFeatureFactories(container)(this.serviceFactories as any);
     const services: any = container.lock();

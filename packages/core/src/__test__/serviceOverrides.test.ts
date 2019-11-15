@@ -5,11 +5,11 @@ interface SpeakServiceInterface {
 }
 
 interface GreetingsFeatureServices {
-  halloService(): SpeakServiceInterface;
+  halloService: SpeakServiceInterface;
 
-  byeService(): SpeakServiceInterface;
+  byeService: SpeakServiceInterface;
 
-  halloAndByeService(): SpeakServiceInterface;
+  halloAndByeService: SpeakServiceInterface;
 }
 
 const GreetingsFeature: FF<GreetingsFeatureServices> = () => ({
@@ -108,9 +108,7 @@ it('Can alter multiple services', async () => {
 });
 
 it('Cannot add extra services with overrides', async () => {
-  const MyHalloFeature: FF = ({ override }: any) => {
-    override('foobar', () => void 0);
-  };
+  const MyHalloFeature: FF = ({ override }: any) => override('foobar', () => void 0);
 
   const container = await triviality()
     .add(MyHalloFeature);

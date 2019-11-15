@@ -1,5 +1,5 @@
 import { always } from 'ramda';
-import { composeServiceByTags } from '../FeatureFactoryComposeContext';
+import { composeServiceByTags } from '../ComposeContext';
 
 it('Can inject services', () => {
   const fetchService = jest.fn().mockReturnValueOnce(always(1)).mockReturnValueOnce(always('test'));

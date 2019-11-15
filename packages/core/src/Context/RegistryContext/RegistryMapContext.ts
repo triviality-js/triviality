@@ -1,19 +1,19 @@
-import { InferServiceType, ServiceFactoryByTag, ServiceFactoryKeysOfType, ServiceTag, SF } from '../../ServiceFactory';
+import { ServiceFactoryByTag, ServiceKeysOfType, ServiceTag, SF } from '../../ServiceFactory';
 import { ImmutableRegistryMap, makeImmutableRegistryMap, RegistryMap, RegistryTag } from './ImmutableRegistryMap';
 import { MutableContainer } from '../../Container';
 import { toPairs } from 'ramda';
-import { wrapReturnAsReference } from '../FeatureFactoryReferenceContext';
+import { wrapReturnAsReference } from '../ReferenceContext';
 
 export type RegisterMapArgument<Services, TType> =
-  [RegistryTag, ServiceFactoryKeysOfType<Services, TType> | SF<TType>]
-  | Record<RegistryTag, SF<TType> | ServiceFactoryKeysOfType<Services, TType>>;
+  [RegistryTag, ServiceKeysOfType<Services, TType> | SF<TType>]
+  | Record<RegistryTag, SF<TType> | ServiceKeysOfType<Services, TType>>;
 export type RegisterMapArguments<Services, TType> = Array<RegisterMapArgument<Services, TType>>;
 
-export interface FeatureFactoryRegistryMapContext<Services> {
+export interface RegistryMapContext<Services> {
   registerMap<TType>(...items: RegisterMapArguments<Services, TType>): SF<ImmutableRegistryMap<TType>>;
 }
 
-export const createFeatureFactoryRegistryMapContext = <Services>(container: MutableContainer): FeatureFactoryRegistryMapContext<Services> => {
+export const createFeatureFactoryRegistryMapContext = <Services>(container: MutableContainer): RegistryMapContext<Services> => {
   return {
     registerMap: wrapReturnAsReference(registerMap<Services>(container.getService)),
   };
@@ -22,7 +22,7 @@ export const createFeatureFactoryRegistryMapContext = <Services>(container: Muta
 export type registerToMap<Services, TType> = (...items: RegisterMapArguments<Services, TType>) => {};
 
 export type InferMapRegisters<T> = {
-  [K in keyof T]: InferServiceType<T[K]> extends ImmutableRegistryMap<infer TType> ? registerToMap<T, TType> : unknown;
+  [K in keyof T]: T[K] extends ImmutableRegistryMap<infer TType> ? registerToMap<T, TType> : unknown;
 };
 
 const getServices = <Services, T>(getService: ServiceFactoryByTag<T>, items: RegisterMapArguments<Services, T>): Array<[string, SF<T>]> => {

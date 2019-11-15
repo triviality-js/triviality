@@ -6,10 +6,6 @@ export interface ImmutableRegistryList<T> extends Registry<T> {
 
 export type RegistryList<T> = ImmutableRegistryList<T>;
 
-export type ListRegistries<Services, TType> = {
-  [K in keyof Services]: Services[K] extends () => RegistryList<TType> ? Services[K] : never;
-};
-
 export function makeImmutableRegistryList<Type>(...services: Type[]): RegistryList<Type> {
   const items: Type[] = [...services];
   const instance: RegistryList<Type> = (() => instance.toArray()) as any;

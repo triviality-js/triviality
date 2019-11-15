@@ -1,9 +1,9 @@
-import { FF, SF } from '../../src';
+import { FF } from '../../src';
 import { LoggerInterface } from './LoggerInterface';
 import { ConsoleLogger } from './ConsoleLogger';
 
 export interface LogServices {
-  logger: SF<LoggerInterface>;
+  logger: LoggerInterface;
 }
 
 export const LogFeature: FF<LogServices> = () => ({

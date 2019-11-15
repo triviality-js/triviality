@@ -1,12 +1,11 @@
-import { SF } from '../ServiceFactory';
-import { RegistryList } from '../FeatureFactoryContext/FeatureFactoryRegistryContext';
+import { RegistryList } from '../Context';
 import { FF } from '../FeatureFactory';
 
 export type SetupCallback = () => Promise<void> | void;
 
 export interface SetupFeatureServices {
-  setup: SF<RegistryList<SetupCallback>>;
-  callSetupServices: SF<SetupCallback>;
+  setup: RegistryList<SetupCallback>;
+  callSetupServices: SetupCallback;
 }
 
 const callSetupServices = (setups: Iterable<SetupCallback>) =>

@@ -1,11 +1,10 @@
 import 'jest';
 import { FF, triviality } from '../index';
-import { SF } from '../ServiceFactory';
 import { MyFeature } from './Features/MyFeature';
 import { MyOtherFeature } from './Features/MyOtherFeature';
 
 interface TestFeature1Services {
-  testService1: SF<string>;
+  testService1: string;
 }
 
 const TestFeature: FF<TestFeature1Services> = () => ({
@@ -15,15 +14,15 @@ const TestFeature: FF<TestFeature1Services> = () => ({
 it('Can merge feature', async () => {
 
   interface TestFeature2Dependencies {
-    testService1: SF<string>;
+    testService1: string;
   }
 
   interface TestFeature2Services {
-    testService3: SF<string>;
-    testService4: SF<string>;
+    testService3: string;
+    testService4: string;
   }
 
-  const TestFeature2: FF<TestFeature2Services, TestFeature2Dependencies> = ({ testService1 }: { testService1: () => string }) => ({
+  const TestFeature2: FF<TestFeature2Services, TestFeature2Dependencies> = ({ testService1 }) => ({
     testService3() {
       return 'Test service 3';
     },
@@ -58,7 +57,7 @@ it('Can inject with', async () => {
     return `[${test}]`;
   }
 
-  const SomeFeature: FF<{ test: SF<string> }, TestFeature1Services> = ({ compose }) => ({
+  const SomeFeature: FF<{ test: string }, TestFeature1Services> = ({ compose }) => ({
     test: compose(service, 'testService1'),
   });
 
@@ -98,15 +97,24 @@ it('Can inject multiple', async () => {
   }
 
   interface SomeFeatureInstances {
-    w1: SF<string>;
-    w2: SF<string>;
-    w3: SF<string>;
-    w4: SF<string>;
-    w5: SF<string>;
-    w6: SF<string>;
+    w1: string;
+    w2: string;
+    w3: string;
+    w4: string;
+    w5: string;
+    w6: string;
   }
 
-  const SomeFeature: FF<SomeFeatureInstances, ReturnType<typeof Multiple>> = ({ compose }) => ({
+  interface SomeFeatureDependencies {
+    service1: string;
+    service2: string;
+    service3: string;
+    service4: string;
+    service5: string;
+    service6: string;
+  }
+
+  const SomeFeature: FF<SomeFeatureInstances, SomeFeatureDependencies> = ({ compose }) => ({
     w1: compose(service, 'service1'),
     w2: compose(service, 'service1', 'service2'),
     w3: compose(service, 'service1', 'service2', 'service3'),
