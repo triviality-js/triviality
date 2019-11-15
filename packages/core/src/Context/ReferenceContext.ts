@@ -4,9 +4,9 @@
 import { ServiceFactory, ServiceTag, SF } from '../ServiceFactory';
 import { MutableContainer } from '../Container';
 import { once } from 'ramda';
-import { getCurrentContext, inCurrentContext } from './globalContext';
+import { getCurrentContext, inCurrentContext } from './GlobalContext';
 
-export interface FeatureFactoryReferenceContext {
+export interface ReferenceContext {
   /**
    * Makes services reference so they can be overridden or decorated.
    */
@@ -67,7 +67,7 @@ export const getCurrentReference = <S>(sf: ServiceFactory<S>): ServiceFactory<S>
 export const wrapReturnAsReference: <T extends ((...args: any[]) => ServiceFactory<any>)>(toWrap: T) => T =
   ((toWrap: any) => (...args: any[]): ServiceFactory<any> => asReference(toWrap(...args))) as any;
 
-export const createServiceFactoryReferenceContext = (_container: MutableContainer): FeatureFactoryReferenceContext & PrivateFeatureFactoryReferenceContext => ({
+export const createServiceFactoryReferenceContext = (_container: MutableContainer): ReferenceContext & PrivateFeatureFactoryReferenceContext => ({
   reference: asReference,
   [SF_REFERENCES]: new Map(),
 });

@@ -1,36 +1,31 @@
 import {
-  InferServiceType,
   isServiceFactory,
   isServiceTag,
   ServiceFactoryByTag,
-  ServiceFactoryKeysOfType,
+  ServiceKeysOfType,
   serviceOfServiceFactories,
   ServiceTag,
   SF,
 } from '../../ServiceFactory';
-import {
-  ImmutableRegistryList,
-  makeImmutableRegistryList,
-  RegistryList,
-} from './ImmutableRegistryList';
+import { ImmutableRegistryList, makeImmutableRegistryList, RegistryList } from './ImmutableRegistryList';
 import { ImmutableContainer, MutableContainer } from '../../Container';
 import { cond, identity, map, once } from 'ramda';
-import { wrapReturnAsReference } from '../FeatureFactoryReferenceContext';
+import { wrapReturnAsReference } from '../ReferenceContext';
 
-export type RegisterListArgument<Services, TType> = ServiceFactoryKeysOfType<Services, TType> | SF<TType>;
+export type RegisterListArgument<Services, TType> = ServiceKeysOfType<Services, TType> | SF<TType>;
 export type RegisterListArguments<Services, TType> = Array<RegisterListArgument<Services, TType>>;
 
-export interface FeatureFactoryRegistryListContext<T> {
+export interface RegistryListContext<T> {
   registerList<TType>(...items: RegisterListArguments<T, TType>): SF<RegistryList<TType>>;
 }
 
 export type RegisterToList<T, TType> = (...items: RegisterListArguments<T, TType>) => {};
 
 export type InferListRegisters<T> = {
-  [K in keyof T]: InferServiceType<T[K]> extends ImmutableRegistryList<infer TType> ? RegisterToList<T, TType> : unknown;
+  [K in keyof T]: T[K] extends ImmutableRegistryList<infer TType> ? RegisterToList<T, TType> : unknown;
 };
 
-export const createFeatureFactoryRegistryListContext = <T>(container: MutableContainer): FeatureFactoryRegistryListContext<T> => ({
+export const createFeatureFactoryRegistryListContext = <T>(container: MutableContainer): RegistryListContext<T> => ({
   registerList: wrapReturnAsReference(registerList<T, any>(container)),
 });
 

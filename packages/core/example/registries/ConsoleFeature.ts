@@ -1,10 +1,10 @@
 import { ConsoleService } from './ConsoleService';
-import { FF, RegistryList, SF } from '../../src';
+import { FF, RegistryList } from '../../src';
 import { ConsoleCommand } from './ConsoleCommand';
 
 export interface ConsoleFeatureServices {
-  consoleCommands: SF<RegistryList<ConsoleCommand>>;
-  consoleService: SF<ConsoleService>;
+  consoleCommands: RegistryList<ConsoleCommand>;
+  consoleService: ConsoleService;
 }
 
 export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ registerList }) => {

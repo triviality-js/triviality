@@ -1,12 +1,11 @@
 import { FeatureFactory, FF, triviality } from '../index';
-import { SF } from '../ServiceFactory';
-import { RegistryList } from '../FeatureFactoryContext';
+import { RegistryList } from '../Context';
 import { always } from 'ramda';
 
 it('A feature can define a register', async () => {
 
   interface Feature1Services {
-    personListeners: SF<RegistryList<number>>;
+    personListeners: RegistryList<number>;
   }
 
   const Feature1: FF<Feature1Services> = ({ registerList }) => ({
@@ -22,11 +21,11 @@ it('A feature can define a register', async () => {
 it('A feature can fetch it\s own registers services', async () => {
 
   interface Feature1Services {
-    featureVersions: SF<RegistryList<number>>;
+    featureVersions: RegistryList<number>;
 
-    sum(): number;
+    sum: number;
 
-    multiply(): number;
+    multiply: number;
   }
 
   const Feature1: FF<Feature1Services> = ({ services, registerList }) => {
@@ -60,9 +59,9 @@ it('Multiple features can register to the same register', async () => {
   }
 
   interface ShoppingMallServices {
-    personListeners: SF<RegistryList<PersonEventListener>>;
+    personListeners: RegistryList<PersonEventListener>;
 
-    courtesies(): (person: string) => string[];
+    courtesies: (person: string) => string[];
   }
 
   const ShoppingMall: FF<ShoppingMallServices> = ({ registerList, service }) => ({
@@ -93,7 +92,7 @@ it('Multiple features can register to the same register', async () => {
 it('Feature can add registry to the existing ones', async () => {
 
   interface PersonFeatureServices {
-    persons: SF<RegistryList<string>>;
+    persons: RegistryList<string>;
   }
 
   const PersonFeature: FF<PersonFeatureServices> = ({ registerList }) => ({
@@ -101,7 +100,7 @@ it('Feature can add registry to the existing ones', async () => {
   });
 
   interface ShopFeatureServices {
-    shops: SF<RegistryList<string>>;
+    shops: RegistryList<string>;
   }
 
   const ShopsFeature: FF<ShopFeatureServices> = ({ registerList }) => ({
@@ -126,8 +125,8 @@ it('Feature can add registry to the existing ones', async () => {
 it('Can create listeners', async () => {
 
   interface SayGoodByListenerFeatureServices {
-    teardown: SF<RegistryList<(name: string) => string>>;
-    sayBye: () => (name: string) => string;
+    teardown: RegistryList<(name: string) => string>;
+    sayBye: (name: string) => string;
   }
 
   const sayGoodByListenerFeature: FF<SayGoodByListenerFeatureServices> = ({ registerList }) => {
@@ -138,7 +137,7 @@ it('Can create listeners', async () => {
   };
 
   interface PleaseComeBackFeatureServices {
-    pleaseComeBack: () => (name: string) => string;
+    pleaseComeBack: (name: string) => string;
   }
 
   const pleaseComeBackFeature: FeatureFactory<PleaseComeBackFeatureServices, SayGoodByListenerFeatureServices> =

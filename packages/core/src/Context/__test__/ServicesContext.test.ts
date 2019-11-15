@@ -1,5 +1,5 @@
 import { SF } from '../../ServiceFactory';
-import { FeatureFactoryServicesContext, instancesByTags, servicesByTags } from '../FeatureFactoryServicesContext';
+import { ServicesContext, instancesByTags, servicesByTags } from '../ServicesContext';
 
 type FetchA = (tag: 'foo') => SF<number>;
 type FetchB = (tag: 'bar') => SF<string>;
@@ -23,7 +23,7 @@ it('Can fetch services FeatureFactoryServicesContext', () => {
     return () => tag === 'foo' ? 1 : 'test';
   });
   const withServices = servicesByTags<'foo', SF<number>, 'bar', SF<string>>(fetchService);
-  const context: FeatureFactoryServicesContext<{ foo: SF<number>, bar: SF<string> }> = {
+  const context: ServicesContext<{ foo: SF<number>, bar: SF<string> }> = {
     service: null as any,
     services: withServices as any,
     instances: null as any,
@@ -39,7 +39,7 @@ it('Can fetch service instances FeatureFactoryServicesContext', () => {
     return [() => 1, () => 2];
   });
   const withServices = instancesByTags(fetchServices as any);
-  const context: FeatureFactoryServicesContext<{ foo: SF<number>, bar: SF<string> }> = {
+  const context: ServicesContext<{ foo: SF<number>, bar: SF<string> }> = {
     service: null as any,
     services: null as any,
     instances: withServices as any,

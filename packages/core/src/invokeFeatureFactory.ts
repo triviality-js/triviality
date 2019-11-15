@@ -1,10 +1,8 @@
 import { forEach, toPairs } from 'ramda';
 import { MutableContainer, setNewServiceToContainer, setServices } from './Container';
 import { FF } from './FeatureFactory';
-import { createFeatureFactoryContext, hasContextTag } from './FeatureFactoryContext';
+import { createFeatureFactoryContext, hasContextTag, withGlobalContext, postFeatureFactoryContext } from './Context';
 import { ServiceTag, SF } from './ServiceFactory';
-import { postFeatureFactoryContext } from './FeatureFactoryContext/FeatureFactoryReferenceContext';
-import { withGlobalContext } from './FeatureFactoryContext/globalContext';
 
 export function invokeFeatureFactory<S, D, C extends MutableContainer>(container: C, sf: FF<S, D>): void;
 export function invokeFeatureFactory<S, D, C extends MutableContainer>(container: C): (sf: FF<S, D>) => void;
@@ -13,7 +11,7 @@ export function invokeFeatureFactory<S, D, C extends MutableContainer>(container
     return (sfc) => invokeFeatureFactory(container, sfc);
   }
   const setNewService = setNewServiceToContainer(container);
-  const factoryContext = createFeatureFactoryContext<D & S>(container);
+  const factoryContext = createFeatureFactoryContext<S, D>(container);
 
   withGlobalContext(factoryContext, () => {
     const newServices: [[ServiceTag, SF]] = toPairs(sf(factoryContext) as any) as any;

@@ -7,10 +7,6 @@ export interface ImmutableRegistryMap<T> extends Registry<[ServiceTag, T]> {
   register(...items: Array<[RegistryTag, T]>): this;
 }
 
-export type MapRegistries<Services, TType> = {
-  [K in keyof Services]: Services[K] extends () => ImmutableRegistryMap<TType> ? Services[K] : never;
-};
-
 export type RegistryMap<T> = ImmutableRegistryMap<T>;
 
 export function makeImmutableRegistryMap<Type>(...services: Array<[ServiceTag, Type]>): ImmutableRegistryMap<Type> {

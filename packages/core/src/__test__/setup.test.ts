@@ -1,5 +1,5 @@
 import { FF, triviality } from '../index';
-import { SetupFeatureServices } from '../Features/SetupFeature';
+import { SetupFeatureServices } from '../Features';
 
 it('Execute setup step', async () => {
   const spySetup = jest.fn().mockResolvedValue(void 0);

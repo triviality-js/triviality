@@ -1,25 +1,25 @@
 import { MutableContainer } from '../../Container';
 import {
   createFeatureFactoryRegistryListContext,
-  FeatureFactoryRegistryListContext,
+  RegistryListContext,
   InferListRegisters,
   RegisterListArgument,
   registerToList,
-} from './FeatureFactoryRegistryListContext';
+} from './RegistryListContext';
 import {
   createFeatureFactoryRegistryMapContext,
-  FeatureFactoryRegistryMapContext,
+  RegistryMapContext,
   InferMapRegisters,
   RegisterMapArgument,
   registerToMap,
-} from './FeatureFactoryRegistryMapContext';
+} from './RegistryMapContext';
 import { fromPairs } from 'ramda';
 import { ServiceTag } from '../../ServiceFactory';
 
 export type InferRegisters<T> = InferListRegisters<T> & InferMapRegisters<T>;
 
-export interface FeatureFactoryRegistryContext<T> extends FeatureFactoryRegistryListContext<T>,
-  FeatureFactoryRegistryMapContext<T> {
+export interface RegistryContext<T> extends RegistryListContext<T>,
+  RegistryMapContext<T> {
   registers: InferRegisters<T>;
 }
 
@@ -41,7 +41,7 @@ export const registersTo = (container: MutableContainer, name: ServiceTag) => {
 export const createFeatureFactoryRegisterContext = (container: MutableContainer) =>
   fromPairs(container.services().map(([name]) => [name, registersTo(container, name)]));
 
-export const createFeatureFactoryRegistryContext = <T>(container: MutableContainer): FeatureFactoryRegistryContext<T> => ({
+export const createFeatureFactoryRegistryContext = <T>(container: MutableContainer): RegistryContext<T> => ({
   ...createFeatureFactoryRegistryListContext(container),
   ...createFeatureFactoryRegistryMapContext(container),
   registers: createFeatureFactoryRegisterContext(container) as any,

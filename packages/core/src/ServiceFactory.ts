@@ -10,9 +10,8 @@ export const serviceOfServiceFactory = <T>(sf: ServiceFactory<T>): T => sf();
 export const serviceOfServiceFactories = <T>(factories: Array<ServiceFactory<T>>): T[] => map(
   serviceOfServiceFactory, factories);
 
-export type InferServiceType<T> = T extends SF<infer Service> ? Service : unknown;
-export type InferServicesTypes<Services> = {
-  [K in keyof Services]: Services[K] extends SF<infer TType> ? TType : never;
+export type ServicesAsFactories<Services> = {
+  [K in keyof Services]: SF<Services[K]>;
 };
 
 export type ServiceTag = string;
@@ -25,4 +24,9 @@ export type ServiceFactoriesOfType<Services, TType> = {
   [K in keyof Services]: Services[K] extends SF<TType> ? Services[K] : never;
 };
 
+export type ServicesOfType<Services, TType> = {
+  [K in keyof Services]: Services[K] extends TType ? Services[K] : never;
+};
+
 export type ServiceFactoryKeysOfType<Services, TType> = keyof ServiceFactoriesOfType<Services, TType>;
+export type ServiceKeysOfType<Services, TType> = keyof ServicesOfType<Services, TType>;

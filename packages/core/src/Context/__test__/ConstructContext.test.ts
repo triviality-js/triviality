@@ -1,5 +1,5 @@
 import { always } from 'ramda';
-import { constructServiceByTags } from '../FeatureFactoryConstructContext';
+import { constructServiceByTags } from '../ConstructContext';
 
 class MyService {
   constructor(_a: number, _b: string) {

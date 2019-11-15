@@ -1,13 +1,13 @@
-import { FF, SF } from '../../src';
+import { FF } from '../../src';
 import { LoggerInterface } from '../features/LoggerInterface';
 import { HalloService } from './HalloService';
 
 export interface HalloFeatureServices {
-  halloServiceFactory: SF<(name: string) => HalloService>;
+  halloServiceFactory: (name: string) => HalloService;
 }
 
 export interface HalloFeatureDependencies {
-  logger: SF<LoggerInterface>;
+  logger: LoggerInterface;
 }
 
 export const HalloFeature: FF<HalloFeatureServices, HalloFeatureDependencies> = ({ logger }) => ({
