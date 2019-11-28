@@ -1,4 +1,4 @@
-import { makeImmutableRegistryList } from '../ImmutableRegistryList';
+import { ImmutableRegistryList, makeImmutableRegistryList } from '../ImmutableRegistryList';
 
 describe('Create makeImmutableRegistryList', () => {
   it('empty', () => {
@@ -9,6 +9,12 @@ describe('Create makeImmutableRegistryList', () => {
   it('With values', () => {
     const list = makeImmutableRegistryList<number>(1, 2);
     expect(list.toArray()).toEqual([1, 2]);
+  });
+
+  it('Should be instance of Array and ImmutableRegistryList', () => {
+    const list = makeImmutableRegistryList<number>(1, 2);
+    expect(list).toBeInstanceOf(ImmutableRegistryList);
+    expect(list).toBeInstanceOf(Array);
   });
 
   it('Can iterate values', () => {

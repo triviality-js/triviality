@@ -3,7 +3,7 @@ import { DefaultLoggerFeature } from '@triviality/logger';
 import { CommanderFeature } from '../CommanderFeature';
 import { CommanderPackageVersionFeature } from '../Feature';
 
-it('Can build container', async () => {
+it('Can run commander', async () => {
 
   const serviceContainer = await triviality()
     .add(DefaultLoggerFeature)

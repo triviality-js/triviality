@@ -1,18 +1,13 @@
 import { ContainerFactory } from '@triviality/core';
 import { DefaultLoggerFeature } from '@triviality/logger';
-import { CommanderFeature } from '../src';
-import { CommanderPackageVersionFeature } from '../src';
-import { CommanderExampleModule } from './CommanderExampleModule';
+import { CommanderFeature, CommanderPackageVersionFeature } from '../src';
+import { CommanderExampleFeature } from './CommanderExampleFeature';
 
 ContainerFactory
   .create()
   .add(DefaultLoggerFeature)
   .add(CommanderFeature)
   .add(CommanderPackageVersionFeature)
-  .add(CommanderExampleModule)
+  .add(CommanderExampleFeature)
   .build()
-  .then((container) => {
-    container
-      .startCommanderService()
-      .start();
-  });
+  .then(({ commanderBootstrapService }) => commanderBootstrapService.handle());

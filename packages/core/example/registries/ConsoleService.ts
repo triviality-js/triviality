@@ -11,7 +11,7 @@ export class ConsoleService {
   constructor(commands: ConsoleCommand[],
               private input: ConsoleInput = new ProcessInput(),
               private output: ConsoleOutput = new ProcessOutput()) {
-    commands.forEach((command) => {
+    commands.forEach((command: any) => {
       this.commandMap.set(command.name(), command);
     });
   }

@@ -11,7 +11,7 @@ export function invokeFeatureFactory<S, D, C extends MutableContainer>(container
     return (sfc) => invokeFeatureFactory(container, sfc);
   }
   const setNewService = setNewServiceToContainer(container);
-  const factoryContext = createFeatureFactoryContext<S, D>(container);
+  const factoryContext = createFeatureFactoryContext<S, D>(container, invokeFeatureFactory);
 
   withGlobalContext(factoryContext, () => {
     const newServices: [[ServiceTag, SF]] = toPairs(sf(factoryContext) as any) as any;

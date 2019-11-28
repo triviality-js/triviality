@@ -4,7 +4,7 @@ export * from './Container';
 export * from './Context';
 export * from './FeatureFactory';
 export * from './ServiceFactory';
-export * from './Features';
+export * from './Feature';
 export * from './ContainerFactory';
 
 export const triviality = ContainerFactory.create;

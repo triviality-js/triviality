@@ -1,16 +1,18 @@
 import { ServiceFactoryByTag, ServiceKeysOfType, ServiceTag, SF } from '../../ServiceFactory';
-import { ImmutableRegistryMap, makeImmutableRegistryMap, RegistryMap, RegistryTag } from './ImmutableRegistryMap';
+import { ImmutableRegistryMap, makeImmutableRegistryMap, RegistryMap } from './ImmutableRegistryMap';
 import { MutableContainer } from '../../Container';
 import { toPairs } from 'ramda';
 import { wrapReturnAsReference } from '../ReferenceContext';
 
-export type RegisterMapArgument<Services, TType> =
-  [RegistryTag, ServiceKeysOfType<Services, TType> | SF<TType>]
-  | Record<RegistryTag, SF<TType> | ServiceKeysOfType<Services, TType>>;
-export type RegisterMapArguments<Services, TType> = Array<RegisterMapArgument<Services, TType>>;
+export type RegisterMapArgument<Services, TType, TKey> =
+  [TKey, ServiceKeysOfType<Services, TType> | SF<TType>]
+  | (TKey extends string | symbol | number ? Record<TKey, SF<TType> | ServiceKeysOfType<Services, TType>> : never);
+export type RegisterMapArguments<Services, TType, TKey> = Array<RegisterMapArgument<Services, TType, TKey>>;
+
+export const REGISTER_MAP_ARGUMENTS = Symbol.for('REGISTER_MAP_ARGUMENTS');
 
 export interface RegistryMapContext<Services> {
-  registerMap<TType>(...items: RegisterMapArguments<Services, TType>): SF<ImmutableRegistryMap<TType>>;
+  registerMap<TType, TKey = string>(...items: RegisterMapArguments<Services, TType, TKey>): SF<ImmutableRegistryMap<TType, TKey>>;
 }
 
 export const createFeatureFactoryRegistryMapContext = <Services>(container: MutableContainer): RegistryMapContext<Services> => {
@@ -19,43 +21,44 @@ export const createFeatureFactoryRegistryMapContext = <Services>(container: Muta
   };
 };
 
-export type registerToMap<Services, TType> = (...items: RegisterMapArguments<Services, TType>) => {};
+export type registerWithMapArguments<Services, TType, TKey> = (...items: RegisterMapArguments<Services, TType, TKey>) => {};
 
-export type InferMapRegisters<T> = {
-  [K in keyof T]: T[K] extends ImmutableRegistryMap<infer TType> ? registerToMap<T, TType> : unknown;
+export type InferMapArgumentsRegisters<T> = {
+  [K in keyof T]: T[K] extends { [REGISTER_MAP_ARGUMENTS]: [infer TType, infer TKey] } ? registerWithMapArguments<T, TType, TKey> : unknown;
 };
 
-const getServices = <Services, T>(getService: ServiceFactoryByTag<T>, items: RegisterMapArguments<Services, T>): Array<[string, SF<T>]> => {
-  const result: Array<[string, SF<T>]> = [];
+const getServices = <Services, TType, TKey>(getService: ServiceFactoryByTag<TType>, items: RegisterMapArguments<Services, TType, TKey>): Array<[TKey, SF<TType>]> => {
+  const result: Array<[TKey, SF<TType>]> = [];
   items.forEach(
-    (arg: RegisterMapArgument<Services, T>) => {
+    (arg: RegisterMapArgument<Services, TType, TKey>) => {
       if (!(arg instanceof Array)) {
         return toPairs(arg).forEach(([tag, item]) => {
-          result.push([tag, (typeof item === 'string' ? getService(item) : item)] as [ServiceTag, SF<T>]);
+          result.push([tag, (typeof item === 'string' ? getService(item) : item)] as any as [TKey, SF<TType>]);
         });
       }
       {
         const [tag, item] = arg;
-        result.push([tag, (typeof item === 'string' ? getService(item) : item)] as [ServiceTag, SF<T>]);
+        result.push([tag, (typeof item === 'string' ? getService(item) : item)] as [TKey, SF<TType>]);
       }
     });
 
   return result;
 };
 
-const mapServices = <T>(services: Array<[ServiceTag, SF<T>]>): Array<[ServiceTag, T]> => services.map(
+const mapServices = <TType, TKey>(services: Array<[TKey, SF<TType>]>): Array<[TKey, TType]> => services.map(
   ([tag, sf]) => [tag, sf()]) as any;
 
-export const registerMap = <Services>(getService: ServiceFactoryByTag<any>) => <TType>(...args: RegisterMapArguments<Services, TType>): SF<ImmutableRegistryMap<TType>> => {
-  const factories = getServices<Services, TType>(getService, args);
-  return () => makeImmutableRegistryMap(...mapServices<TType>(factories));
+export const registerMap = <Services>(getService: ServiceFactoryByTag<any>) => <TType, TKey>(...args: RegisterMapArguments<Services, TType, TKey>): SF<ImmutableRegistryMap<TType, TKey>> => {
+  const factories = getServices<Services, TType, TKey>(getService, args);
+  return () => makeImmutableRegistryMap<TType, TKey>(...mapServices<TType, TKey>(factories));
 };
 
-export const registerToMap = <Services, TType>({ getService, getCurrentService, setService }: MutableContainer, registry: ServiceTag, ...items: RegisterMapArguments<Services, TType>): void => {
-  const service: SF<RegistryMap<TType>> = getCurrentService(registry as ServiceTag) as SF<RegistryMap<TType>>;
-  const serverFactories = getServices<Services, TType>(getService as any, items);
+export const registerToMap = <Services, TType, TKey>({ getService, getCurrentService, setService }: MutableContainer, registry: ServiceTag, ...items: RegisterMapArguments<Services, TType, TKey>): void => {
+  const service: SF<RegistryMap<TType, TKey>> = getCurrentService(
+    registry as ServiceTag) as SF<RegistryMap<TType, TKey>>;
+  const serverFactories = getServices<Services, TType, TKey>(getService as any, items);
   setService(
     registry as ServiceTag,
-    () => makeImmutableRegistryMap<TType>(...[...service(), ...mapServices(serverFactories)]),
+    () => makeImmutableRegistryMap<TType, TKey>(...[...service(), ...mapServices(serverFactories)]),
   );
 };

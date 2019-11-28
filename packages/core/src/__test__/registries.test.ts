@@ -151,7 +151,7 @@ it('Can create listeners', async () => {
     .add(pleaseComeBackFeature)
     .build();
 
-  const tearDownFunctions = container.teardown();
+  const tearDownFunctions = container.teardown.toArray();
   expect(tearDownFunctions.length).toEqual(2);
   expect(tearDownFunctions.map((service) => service('John')))
     .toEqual(['Bye John', 'Please come back John!']);

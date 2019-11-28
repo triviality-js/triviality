@@ -1,5 +1,5 @@
 import { lockAble } from '../lib';
-import { ServiceTag, SF } from '../ServiceFactory';
+import { assertServiceTag, ServiceTag, SF } from '../ServiceFactory';
 import { createImmutableContainer, ImmutableContainer } from './ImmutableContainer';
 import { MutableContainer } from './MutableContainer';
 import { fromPairs, once } from 'ramda';
@@ -22,10 +22,12 @@ export const createMutableLockableContainer = (container: ImmutableContainer = c
   }
 
   function getService(serviceTag: ServiceTag) {
+    assertServiceTag(serviceTag);
     return once(() => getCurrentService(serviceTag)());
   }
 
   function getCurrentService(serviceTag: ServiceTag): SF {
+    assertServiceTag(serviceTag);
     const service = updatedContainer.getService(serviceTag);
     return once(() => {
       if (!isLocked()) {
@@ -44,10 +46,12 @@ export const createMutableLockableContainer = (container: ImmutableContainer = c
   }
 
   function hasService(tag: ServiceTag) {
+    assertServiceTag(tag);
     return updatedContainer.hasService(tag);
   }
 
   function setService(tag: ServiceTag, sf: SF): MutableLockableContainer {
+    assertServiceTag(tag);
     if (isLocked()) {
       throw new Error(`Cannot set "${tag}" service when container is locked`);
     }
