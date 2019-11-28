@@ -1,0 +1,10 @@
+{
+  "extends": "../../../base-tsconfig",
+  "compilerOptions": {
+    "outDir": "../",
+    "noEmit": false
+  },
+  "include": [
+    "./"
+  ]
+}

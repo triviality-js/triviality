@@ -4,32 +4,33 @@ import {
   ServiceFactoryByTag,
   ServiceKeysOfType,
   serviceOfServiceFactories,
-  ServiceTag,
   SF,
 } from '../../ServiceFactory';
-import { ImmutableRegistryList, makeImmutableRegistryList, RegistryList } from './ImmutableRegistryList';
+import { makeImmutableRegistryList, RegistryList } from './ImmutableRegistryList';
 import { ImmutableContainer, MutableContainer } from '../../Container';
-import { cond, identity, map, once } from 'ramda';
+import { cond, identity, map } from 'ramda';
 import { wrapReturnAsReference } from '../ReferenceContext';
 
 export type RegisterListArgument<Services, TType> = ServiceKeysOfType<Services, TType> | SF<TType>;
 export type RegisterListArguments<Services, TType> = Array<RegisterListArgument<Services, TType>>;
 
+export const REGISTER_LIST_ARGUMENTS = Symbol.for('REGISTER_LIST_ARGUMENTS');
+
 export interface RegistryListContext<T> {
   registerList<TType>(...items: RegisterListArguments<T, TType>): SF<RegistryList<TType>>;
 }
 
-export type RegisterToList<T, TType> = (...items: RegisterListArguments<T, TType>) => {};
+export type RegisterWithListArguments<T, TType> = (...items: RegisterListArguments<T, TType>) => {};
 
-export type InferListRegisters<T> = {
-  [K in keyof T]: T[K] extends ImmutableRegistryList<infer TType> ? RegisterToList<T, TType> : unknown;
+export type InferListArgumentRegisters<T> = {
+  [K in keyof T]: T[K] extends { [REGISTER_LIST_ARGUMENTS]: infer TType } ? RegisterWithListArguments<T, TType> : unknown;
 };
 
 export const createFeatureFactoryRegistryListContext = <T>(container: MutableContainer): RegistryListContext<T> => ({
   registerList: wrapReturnAsReference(registerList<T, any>(container)),
 });
 
-const getServices = <Services, T>(getService: ServiceFactoryByTag<T>) => (...items: RegisterListArguments<Services, T>): Array<SF<T>> =>
+export const getServices = <Services, T>(getService: ServiceFactoryByTag<T>) => (...items: RegisterListArguments<Services, T>): Array<SF<T>> =>
   map(
     cond([
       [isServiceFactory, identity],
@@ -41,18 +42,6 @@ const getServices = <Services, T>(getService: ServiceFactoryByTag<T>) => (...ite
 export function registerList<Services, T>({ getService }: ImmutableContainer): (...items: RegisterListArguments<Services, T>) => SF<RegistryList<T>> {
   return (...items: RegisterListArguments<Services, T>) => {
     const serviceReferences = getServices<Services, T>(getService as any)(...items);
-    return once(() => makeImmutableRegistryList<T>(...serviceOfServiceFactories(serviceReferences)));
+    return () => makeImmutableRegistryList<T>(...serviceOfServiceFactories(serviceReferences));
   };
 }
-
-/**
- * It overrides the existing list, keeping the list itself immutable.
- */
-export const registerToList = <Services, T>({ getService, setService, getCurrentService }: MutableContainer, registry: ServiceTag, ...items: RegisterListArguments<Services, T>) => {
-  const service = getCurrentService(registry as ServiceTag) as SF<RegistryList<T>>;
-  const serviceFactories = getServices<Services, T>(getService as any)(...items);
-  setService(
-    registry as ServiceTag,
-    once(() => makeImmutableRegistryList<T>(...[...service(), ...serviceOfServiceFactories(serviceFactories)])),
-  );
-};

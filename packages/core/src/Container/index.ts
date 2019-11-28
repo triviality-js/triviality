@@ -15,3 +15,5 @@ export const setNewServiceToContainer = <T extends ImmutableContainer>({ hasServ
   }
   return setService(k, sf);
 };
+
+export const serviceNames = (container: ImmutableContainer) => container.services().map(([name]) => name);

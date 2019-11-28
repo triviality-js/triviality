@@ -1,4 +1,3 @@
-export interface Registry<T> extends Iterable<T> {
+export interface Registry<T> {
   toArray(): T[];
-  (): T[];
 }

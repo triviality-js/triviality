@@ -26,7 +26,7 @@ describe('createFeatureFactoryRegistryContext', () => {
   });
   it('Can register to map', () => {
     const container = createMutableContainer();
-    container.setService('MyRegister', makeImmutableRegistryMap(['bar', 2]));
+    container.setService('MyRegister', () => makeImmutableRegistryMap<number>(['bar', 2]));
     const context = createFeatureFactoryRegistryContext<{ MyRegister: RegistryMap<number> }>(container);
     context.registers.MyRegister(['foo', () => 1]);
     const registry: RegistryMap<number> = container.getService('MyRegister')() as any;
@@ -34,7 +34,7 @@ describe('createFeatureFactoryRegistryContext', () => {
   });
   it('Can register to list', () => {
     const container = createMutableContainer();
-    container.setService('MyRegister', makeImmutableRegistryList(2));
+    container.setService('MyRegister', () => makeImmutableRegistryList(2));
     const context = createFeatureFactoryRegistryContext<{ MyRegister: RegistryList<number> }>(container);
     context.registers.MyRegister(() => 1);
     const registry: RegistryList<number> = container.getService('MyRegister')() as any;

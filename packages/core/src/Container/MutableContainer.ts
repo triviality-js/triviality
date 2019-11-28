@@ -4,7 +4,7 @@ import { createImmutableContainer, ImmutableContainer } from './ImmutableContain
 export interface MutableContainer extends ImmutableContainer {
   getCurrentService(k: ServiceTag): SF<unknown>;
 
-  currentServices(): [[ServiceTag, SF]];
+  currentServices(): Array<[ServiceTag, SF]>;
 }
 
 export const createMutableContainer = (container: ImmutableContainer = createImmutableContainer()): MutableContainer => {
@@ -24,11 +24,11 @@ export const createMutableContainer = (container: ImmutableContainer = createImm
     };
   }
 
-  function services(): [[ServiceTag, SF]] {
+  function services(): Array<[ServiceTag, SF]> {
     return updatedContainer.services().map(([key]) => [key, getService(key)]) as any;
   }
 
-  function currentServices(): [[ServiceTag, SF]] {
+  function currentServices(): Array<[ServiceTag, SF]> {
     return updatedContainer.services();
   }
 

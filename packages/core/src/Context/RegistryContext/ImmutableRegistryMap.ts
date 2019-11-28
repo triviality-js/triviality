@@ -1,19 +1,41 @@
-import { ServiceTag } from '../../ServiceFactory';
 import { Registry } from './Registry';
+import { fromPairs } from 'ramda';
+import { REGISTER_MAP_ARGUMENTS } from './RegistryMapContext';
 
-export type RegistryTag = string;
+export type RegistryMap<TType, TKey = string> = ImmutableRegistryMap<TType, TKey>;
 
-export interface ImmutableRegistryMap<T> extends Registry<[ServiceTag, T]> {
-  register(...items: Array<[RegistryTag, T]>): this;
+export function makeImmutableRegistryMap<TType, TKey = string>(...services: Array<[TKey, TType]>): ImmutableRegistryMap<TType, TKey> {
+  return ImmutableRegistryMap.create(...services);
 }
 
-export type RegistryMap<T> = ImmutableRegistryMap<T>;
+export class ImmutableRegistryMap<TType, TKey = string> extends Array<[TKey, TType]> implements Registry<[TKey, TType]> {
 
-export function makeImmutableRegistryMap<Type>(...services: Array<[ServiceTag, Type]>): ImmutableRegistryMap<Type> {
-  const items: Map<ServiceTag, Type> = new Map([...services]);
-  const instance: ImmutableRegistryMap<Type> = (() => instance.toArray()) as any;
-  instance[Symbol.iterator] = () => items.entries();
-  instance.toArray = () => Array.from(items.entries());
-  instance.register = (...s: Array<[ServiceTag, Type]>) => makeImmutableRegistryMap(...[...items.entries(), ...s]);
-  return instance;
+  public static create<TType, TKey = string>(...items: Array<[TKey, TType]>): ImmutableRegistryMap<TType, TKey> {
+    const instance: ImmutableRegistryMap<TType, TKey> = Object.create(ImmutableRegistryMap.prototype);
+    const map = new Map(items);
+    map.forEach((value, key) => {
+      instance.push([key, value]);
+    });
+    Object.freeze(instance);
+    return instance;
+  }
+
+  public [REGISTER_MAP_ARGUMENTS]!: [TType, TKey];
+
+  /* istanbul ignore next */
+  private constructor() {
+    super();
+  }
+
+  public register(...services: Array<[TKey, TType]>): ImmutableRegistryMap<TType, TKey> {
+    return ImmutableRegistryMap.create<TType, TKey>(...[...this, ...services]);
+  }
+
+  public toArray() {
+    return [...this];
+  }
+
+  public toObject(): TKey extends string | symbol | number ? Record<TKey, TType> : never {
+    return fromPairs(this as any) as any;
+  }
 }

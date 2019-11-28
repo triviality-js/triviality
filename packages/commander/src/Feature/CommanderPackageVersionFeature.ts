@@ -1,22 +1,14 @@
-import { Feature } from '@triviality/core';
-import { CommanderConfigurationInterface } from '../CommanderConfigurationInterface';
+import { FF } from '@triviality/core';
 import { PackageVersionReader } from './PackageVersionReader';
 import { CommanderPackageVersionConfiguration } from './CommanderPackageVersionConfiguration';
+import { CommanderFeatureServices } from '../CommanderFeature';
 
-export class CommanderPackageVersionFeature implements Feature {
-  public registries() {
-    return {
-      commanderConfigurations: (): CommanderConfigurationInterface[] => {
-        return [this.commanderPackageVersionConfiguration()];
-      },
-    };
-  }
-
-  public commanderPackageVersionConfiguration() {
-    return new CommanderPackageVersionConfiguration(this.packageVersionReader());
-  }
-
-  public packageVersionReader(): PackageVersionReader {
-    return new PackageVersionReader();
-  }
+interface CommanderPackageVersionFeatureServices {
+  commanderPackageVersionConfiguration: CommanderPackageVersionConfiguration;
+  packageVersionReader: PackageVersionReader;
 }
+
+export const CommanderPackageVersionFeature: FF<CommanderPackageVersionFeatureServices, CommanderFeatureServices> = ({ construct }) => ({
+  commanderPackageVersionConfiguration: construct(CommanderPackageVersionConfiguration, 'packageVersionReader'),
+  packageVersionReader: construct(PackageVersionReader),
+});

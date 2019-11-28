@@ -31,6 +31,11 @@ export interface ServicesContext<T> {
   services<K1 extends keyof T, K2 extends keyof T, K3 extends keyof T, K4 extends keyof T, K5 extends keyof T, K6 extends keyof T, K7 extends keyof T, K8 extends keyof T, K9 extends keyof T, K10 extends keyof T>(t1: K1, t2: K2, t3: K3, t4: K4, t5: K5, t6: K6, t7: K7, t8: K8, t9: K9, t10: K10): SAF<Pick<T, K1 | K2 | K3 | K4 | K5 | K6 | K7 | K8 | K9 | K10>> & [SF<T[K1]>, SF<T[K2]>, SF<T[K3]>, SF<T[K4]>, SF<T[K5]>, SF<T[K6]>, SF<T[K7]>, SF<T[K8]>, SF<T[K9]>, SF<T[K10]>];
 
   /**
+   * Fetch instance from service.
+   */
+  instance<ServiceKey extends keyof T>(serviceKey: ServiceKey): T[ServiceKey];
+
+  /**
    * @typeGenerator({ templates: ["  instances<{{K% extends keyof T}}>({{t%: K%}}): Pick<T, {{K% - | }}> & [{{T[K%]}}];\n"] })
    */
   instances<K1 extends keyof T>(t1: K1): Pick<T, K1> & [T[K1]];
@@ -59,6 +64,7 @@ export const createFeatureFactoryServicesContext = ({ getService }: MutableConta
   service: getService as any,
   services: services(servicesByTags(getService)) as any,
   instances: instancesByTags(servicesByTags(getService)) as any,
+  instance: (key) => getService(key as any)(),
 });
 
 export function services(getServiceFactory: (...tags: ServiceTag[]) => SF[]): <T, K extends keyof T>(...keys: K[]) => Pick<T, K> & SF[] {

@@ -18,4 +18,8 @@ describe('Create makeImmutableRegistryMap', () => {
     expect([...map.register(['tag1', 3], ['tag4', 4])]).toEqual([['tag1', 3], ['tag2', 2], ['tag4', 4]]);
     expect(map.toArray()).toEqual([['tag1', 1], ['tag2', 2]]);
   });
+  it('Can convert to plain object', () => {
+    const map = makeImmutableRegistryMap<number>(['tag1', 1], ['tag2', 2]);
+    expect(map.toObject()).toEqual({ tag1: 1, tag2: 2 });
+  });
 });

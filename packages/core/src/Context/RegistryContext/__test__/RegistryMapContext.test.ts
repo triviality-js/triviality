@@ -48,4 +48,21 @@ describe('registerMap', () => {
     const map = context.registerMap(['foo1', 'tag1'], ['bar2', 'tag2']);
     expect(map().toArray()).toEqual([['foo1', 1], ['bar2', 2]]);
   });
+
+  it('Keys as reference value', () => {
+    interface Dependencies {
+      tag1: SF<number>;
+      tag2: SF<number>;
+    }
+
+    const ref1 = {};
+    const ref2 = {};
+
+    const container = createMutableContainer()
+      .setService('tag1', always(1))
+      .setService('tag2', always(2));
+    const context = createFeatureFactoryRegistryContext<Dependencies>(container);
+    const map = context.registerMap([ref1, 'tag1'], [ref2, 'tag2']);
+    expect(map().toArray()).toEqual([[ref1, 1], [ref2, 2]]);
+  });
 });

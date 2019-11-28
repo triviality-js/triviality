@@ -1,5 +1,5 @@
-import { forEach, toPairs } from 'ramda';
-import { MutableContainer, setNewServiceToContainer, setServices } from './Container';
+import { difference, forEach, toPairs, includes } from 'ramda';
+import { MutableContainer, serviceNames, setNewServiceToContainer, setServices } from './Container';
 import { FF } from './FeatureFactory';
 import { createFeatureFactoryContext, hasContextTag, withGlobalContext, postFeatureFactoryContext } from './Context';
 import { ServiceTag, SF } from './ServiceFactory';
@@ -11,10 +11,15 @@ export function invokeFeatureFactory<S, D, C extends MutableContainer>(container
     return (sfc) => invokeFeatureFactory(container, sfc);
   }
   const setNewService = setNewServiceToContainer(container);
-  const factoryContext = createFeatureFactoryContext<S, D>(container);
+  const factoryContext = createFeatureFactoryContext<S, D>(container, invokeFeatureFactory);
 
   withGlobalContext(factoryContext, () => {
-    const newServices: [[ServiceTag, SF]] = toPairs(sf(factoryContext) as any) as any;
+    const namesBefore = serviceNames(container);
+    let newServices: Array<[ServiceTag, SF]> = toPairs(sf(factoryContext) as any) as any;
+    const added: string[] = difference(serviceNames(container), namesBefore);
+    newServices = newServices.filter(([tag]) => {
+      return includes(tag, added);
+    });
     newServices.forEach(([tag]) => {
       if (hasContextTag(tag)) {
         throw new Error(`Cannot use "${tag}" context name for service factories`);

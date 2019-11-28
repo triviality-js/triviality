@@ -66,12 +66,12 @@ A feature is defined as a function.
 
 
 ```typescript
-import { FF, SF } from '@triviality/core';
+import { FF } from '@triviality/core';
 import { LoggerInterface } from './LoggerInterface';
 import { ConsoleLogger } from './ConsoleLogger';
 
 export interface LogServices {
-  logger: SF<LoggerInterface>;
+  logger: LoggerInterface;
 }
 
 export const LogFeature: FF<LogServices> = () => ({
@@ -105,7 +105,7 @@ singleton based on the service factory arguments. For example, create a service 
 ```typescript
 import { LoggerInterface } from '../features/LoggerInterface';
 import { PrefixedLogger } from './PrefixedLogger';
-import { FF, SF } from '@triviality/core';
+import { FF } from '@triviality/core';
 import { ConsoleLogger } from '../features/ConsoleLogger';
 
 export const createPrefixedLogger = (logger: LoggerInterface) => (prefix: string): LoggerInterface => {
@@ -113,8 +113,8 @@ export const createPrefixedLogger = (logger: LoggerInterface) => (prefix: string
 };
 
 export interface LogFeatureInstance {
-  logger: SF<LoggerInterface>;
-  prefixedLogger: SF<(name: string) => LoggerInterface>;
+  logger: LoggerInterface;
+  prefixedLogger: (name: string) => LoggerInterface;
 }
 
 export const LogFeature: FF<LogFeatureInstance> = ({ services }) => ({
@@ -164,16 +164,16 @@ Let's put the type checking to the test, we create a nice feature that dependenc
 
 
 ```typescript
-import { FF, SF } from '@triviality/core';
+import { FF } from '@triviality/core';
 import { LoggerInterface } from '../features/LoggerInterface';
 import { HalloService } from './HalloService';
 
 export interface HalloFeatureServices {
-  halloServiceFactory: SF<(name: string) => HalloService>;
+  halloServiceFactory: (name: string) => HalloService;
 }
 
 export interface HalloFeatureDependencies {
-  logger: SF<LoggerInterface>;
+  logger: LoggerInterface;
 }
 
 export const HalloFeature: FF<HalloFeatureServices, HalloFeatureDependencies> = ({ logger }) => ({
@@ -264,11 +264,10 @@ To define a registry inside a feature it needs to implement the 'registries' fun
 
 ```typescript
 import { FF, RegistryList } from '@triviality/core';
-import { SF } from '@triviality/core';
 import { ConsoleCommand } from './ConsoleCommand';
 
 export interface ConsoleFeatureServices {
-  consoleCommands: SF<RegistryList<ConsoleCommand>>;
+  consoleCommands: RegistryList<ConsoleCommand>;
 }
 
 export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ registerList }) => ({
@@ -295,13 +294,13 @@ export const HalloConsoleFeature: FF<{}, ConsoleFeatureServices> = ({ registers:
 
 
 ```typescript
-import { FF, SF } from '@triviality/core';
+import { FF } from '@triviality/core';
 import { ConsoleCommand } from '../ConsoleCommand';
 import { ByeConsoleCommand } from './ByeConsoleCommand';
 import { ConsoleFeatureServices } from '../ConsoleFeature';
 
 interface ByeConsoleServices {
-  byeConsoleCommand: SF<ConsoleCommand>;
+  byeConsoleCommand: ConsoleCommand;
 }
 
 export const ByeConsoleFeature: FF<ByeConsoleServices, ConsoleFeatureServices> = ({ registers: { consoleCommands }, construct, service }) => ({
@@ -317,12 +316,12 @@ During the service container build phase, the registries will be combined, so al
 
 ```typescript
 import { ConsoleService } from './ConsoleService';
-import { FF, RegistryList, SF } from '@triviality/core';
+import { FF, RegistryList } from '@triviality/core';
 import { ConsoleCommand } from './ConsoleCommand';
 
 export interface ConsoleFeatureServices {
-  consoleCommands: SF<RegistryList<ConsoleCommand>>;
-  consoleService: SF<ConsoleService>;
+  consoleCommands: RegistryList<ConsoleCommand>;
+  consoleService: ConsoleService;
 }
 
 export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ registerList }) => {
@@ -382,12 +381,11 @@ task. The feature can check if everything is configured properly or connect to e
 
 
 ```typescript
-import { FF } from '@triviality/core';
+import { FF, SetupFeatureServices } from '@triviality/core';
 import { Database } from './Database';
-import { SetupFeatureServices } from '@triviality/core';
 
 export interface DatabaseFeatureServices {
-  database: () => Database;
+  database: Database;
 }
 
 export const DatabaseFeature: FF<DatabaseFeatureServices, SetupFeatureServices> = ({ registers: { setup }, services, construct }) => ({
@@ -436,18 +434,14 @@ If you use an external feature, maybe you want to override some services. For ex
 ```typescript
 import { CasualGreetingService } from './services/CasualGreetingService';
 import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
-import { FF, SF } from '@triviality/core';
-
-export function greetingService() {
-  return new CasualGreetingService();
-}
+import { FF } from '@triviality/core';
 
 export interface GreetingsFeatureServices {
-  greetingService: SF<GreetingsServiceInterface>;
+  greetingService: GreetingsServiceInterface;
 }
 
 export const GreetingsFeature: FF<GreetingsFeatureServices> = () => ({
-  greetingService,
+  greetingService: () => new CasualGreetingService(),
 });
 ```
         
@@ -488,13 +482,13 @@ If we want to use a different way to greet we need to override the 'greetingServ
 
 
 ```typescript
-import { FF, SF } from '@triviality/core';
+import { FF } from '@triviality/core';
 import { FormalGreetingsService } from './services/FormalGreetingsService';
 import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 import { GreetingsFeatureServices } from './GreetingsFeature';
 
 interface FormalGreetingsFeatureServices {
-  formalGreetingsService: SF<GreetingsServiceInterface>;
+  formalGreetingsService: GreetingsServiceInterface;
 }
 
 export const FormalGreetingsFeature: FF<FormalGreetingsFeatureServices, GreetingsFeatureServices> = ({ override: { greetingService }, service, construct }) => ({

@@ -1,4 +1,4 @@
-import { map } from 'ramda';
+import { always, map } from 'ramda';
 
 export type ServiceFactory<T = unknown> = () => T;
 export type SF<T = unknown> = ServiceFactory<T>;
@@ -15,18 +15,21 @@ export type ServicesAsFactories<Services> = {
 };
 
 export type ServiceTag = string;
+export const assertServiceTag = (tag: ServiceTag | unknown): tag is (ServiceTag | never) => {
+  if (typeof tag !== 'string') {
+    throw new Error('Tag should be a string');
+  }
+  return true;
+};
 export type TagServicePair<T = unknown> = [ServiceTag, SF<T>];
 export const isServiceTag = (target: unknown): target is ServiceTag => typeof target === 'string';
 
 export type ServiceFactoryByTag<T = unknown> = (tag: ServiceTag) => SF<T>;
 
-export type ServiceFactoriesOfType<Services, TType> = {
-  [K in keyof Services]: Services[K] extends SF<TType> ? Services[K] : never;
-};
-
 export type ServicesOfType<Services, TType> = {
   [K in keyof Services]: Services[K] extends TType ? Services[K] : never;
 };
 
-export type ServiceFactoryKeysOfType<Services, TType> = keyof ServiceFactoriesOfType<Services, TType>;
 export type ServiceKeysOfType<Services, TType> = keyof ServicesOfType<Services, TType>;
+
+export const AllAsServiceFactory = <T>(instances: T[]): Array<SF<T>> => instances.map(always);

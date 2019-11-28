@@ -1,35 +1,31 @@
 import { Registry } from './Registry';
+import { REGISTER_LIST_ARGUMENTS } from './RegistryListContext';
 
-export interface ImmutableRegistryList<T> extends Registry<T> {
-  register(...args: T[]): this;
+export class ImmutableRegistryList<T> extends Array<T> implements Registry<T> {
+
+  public static create<T>(...items: T[]): ImmutableRegistryList<T> {
+    const instance: ImmutableRegistryList<T> = Object.create(ImmutableRegistryList.prototype);
+    instance.splice(0, 0, ...items);
+    Object.freeze(instance);
+    return instance;
+  }
+
+  public [REGISTER_LIST_ARGUMENTS]!: T;
+
+  /* istanbul ignore next */
+  private constructor() {
+    super();
+  }
+
+  public register(...args: T[]): ImmutableRegistryList<T> {
+    return ImmutableRegistryList.create(...[...this, ...args]);
+  }
+
+  public toArray(): T[] {
+    return [...this];
+  }
 }
 
 export type RegistryList<T> = ImmutableRegistryList<T>;
 
-export function makeImmutableRegistryList<Type>(...services: Type[]): RegistryList<Type> {
-  const items: Type[] = [...services];
-  const instance: RegistryList<Type> = (() => instance.toArray()) as any;
-  instance[Symbol.iterator] = () => {
-    let pointer = 0;
-    return {
-      next(): IteratorResult<Type> {
-        if (pointer < items.length) {
-          const result = {
-            done: false,
-            value: items[pointer] as Type,
-          };
-          pointer += 1;
-          return result;
-        }
-        return {
-          done: true,
-          value: null as any,
-        };
-      },
-    };
-  };
-  instance.toArray = () => items;
-
-  instance.register = (...args: Type[]) => makeImmutableRegistryList(...[...items, ...args]);
-  return instance;
-}
+export const makeImmutableRegistryList = ImmutableRegistryList.create;
