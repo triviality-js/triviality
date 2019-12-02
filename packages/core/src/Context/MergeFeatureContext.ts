@@ -1,7 +1,7 @@
 import { ServicesAsFactories, ServiceTag, SF } from '../ServiceFactory';
 import { FeatureFactory, FF } from '../FeatureFactory';
 import { MutableContainer, serviceNames } from '../Container';
-import { difference, fromPairs, once } from 'ramda';
+import { difference, fromPairs } from 'ramda';
 import { invokeFeatureFactory } from '../invokeFeatureFactory';
 
 export interface MergeFeatureContext<Services> {
@@ -22,16 +22,14 @@ export const createFeatureMergeContext = (container: MutableContainer, invoke: t
 });
 
 export const mergeFeature = <Services>(container: MutableContainer, invoke: typeof invokeFeatureFactory) => {
-  const iff = invoke(container);
   const mergeWith = (names?: string[]) => <S, Dependencies>(sf: FF<S, Services>): MergeWith<Services | Dependencies, S> => {
     const namesBefore = names || serviceNames(container);
-    iff(sf as any);
+    invoke(container)(sf as any);
     return {
       services: (): ServicesAsFactories<S> => {
         const namesAfter = serviceNames(container);
         const added = difference(namesAfter, namesBefore);
-        const serviceReferences: Array<[ServiceTag, SF]> = added.map(
-          (serviceName) => [serviceName, once(container.getService(serviceName))]);
+        const serviceReferences: Array<[ServiceTag, SF]> = added.map((serviceName) => [serviceName, container.getService(serviceName)]);
         return fromPairs(serviceReferences) as any;
       },
       with: mergeWith(namesBefore) as any,

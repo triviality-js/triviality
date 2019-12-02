@@ -1,17 +1,17 @@
-import { once } from 'ramda';
 import { ServiceTag, SF } from '../ServiceFactory';
+import { once, watchCallStack } from '../lib';
 
 export interface ImmutableContainer {
   getService(k: ServiceTag): SF<unknown>;
 
   setService(k: ServiceTag, sf: SF<unknown>): this;
 
-  services(): [[ServiceTag, SF]];
+  services(): Array<[ServiceTag, SF]>;
 
   hasService(k: ServiceTag): boolean;
 }
 
-export const getServiceFromContainer = (container: Map<string, SF>) => (k: string): SF => {
+const getServiceFromContainer = (container: Map<string, SF>) => (k: string): SF => {
   const service = container.get(k);
   if (!service) {
     throw new Error(`Service '${k}' not found`);
@@ -19,12 +19,12 @@ export const getServiceFromContainer = (container: Map<string, SF>) => (k: strin
   return service;
 };
 
-export const setServiceToContainer = (container: Map<string, SF>) => (k: string, sf: SF): ImmutableContainer => {
+const setServiceToContainer = (container: Map<string, SF>) => (k: string, sf: SF): ImmutableContainer => {
   if (typeof sf !== 'function' || sf.length > 0) {
     throw new Error(`ServiceFactory '${k}' cannot have any arguments`);
   }
   const copy = new Map<string, SF<unknown>>(container.entries());
-  copy.set(k.toString(), once(sf));
+  copy.set(k.toString(), watchCallStack('invoke', k)(once(sf)));
   return createImmutableContainer(copy);
 };
 

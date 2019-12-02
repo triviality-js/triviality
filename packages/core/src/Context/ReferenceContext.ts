@@ -3,8 +3,8 @@
  */
 import { ServiceFactory, ServiceTag, SF } from '../ServiceFactory';
 import { MutableContainer } from '../Container';
-import { once } from 'ramda';
 import { getCurrentContext, inCurrentContext } from './GlobalContext';
+import { once, watchCallStack } from '../lib';
 
 export interface ReferenceContext {
   /**
@@ -26,7 +26,7 @@ export interface PrivateFeatureFactoryReferenceContext {
 
 const getReferenced = (): Map<SF, ServiceReference> => getCurrentContext<{}, PrivateFeatureFactoryReferenceContext>()[SF_REFERENCES];
 
-export const postFeatureFactoryContext = (services: [[ServiceTag, SF]], container: MutableContainer) => {
+export const postFeatureFactoryContext = (services: Array<[ServiceTag, SF]>, container: MutableContainer) => {
   const references = getReferenced();
   services.forEach((ref: any) => {
     const [tag, sf] = ref;
@@ -42,7 +42,7 @@ export const postFeatureFactoryContext = (services: [[ServiceTag, SF]], containe
 };
 
 export const asReference = <T>(sf: SF<T>): ServiceFactory<T> => {
-  const memorized: SF<T> = once(sf);
+  const memorized: SF<T> = watchCallStack('asReference')<SF<T>, T>(once(sf));
   if (!inCurrentContext()) {
     return memorized;
   }

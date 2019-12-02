@@ -10,10 +10,11 @@ import {
 import {
   createFeatureFactoryRegistryMapContext,
   InferMapArgumentsRegisters,
-  RegisterMapArgument, registerToMap,
+  RegisterMapArgument,
+  registerToMap,
   RegistryMapContext,
 } from './RegistryMapContext';
-import { fromPairs, once } from 'ramda';
+import { fromPairs } from 'ramda';
 import { serviceOfServiceFactories, ServiceTag, SF } from '../../ServiceFactory';
 import { makeImmutableRegistryList, RegistryList } from './ImmutableRegistryList';
 import { createFeatureFactoryRegistrySetContext, RegistrySetContext } from './RegistrySetContext';
@@ -34,7 +35,7 @@ export const registerToListOrSet = <Services, T>({ getService, setService, getCu
   const serviceFactories = getServices<Services, T>(getService as any)(...items);
   setService(
     registry as ServiceTag,
-    once(() => makeImmutableRegistryList<T>(...[...service(), ...serviceOfServiceFactories(serviceFactories)])),
+    () => makeImmutableRegistryList<T>(...[...service(), ...serviceOfServiceFactories(serviceFactories)]),
   );
 };
 

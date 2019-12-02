@@ -1,5 +1,6 @@
 import { Registry } from './Registry';
 import { fromPairs } from 'ramda';
+import { REGISTER_MAP_ARGUMENTS } from './RegistryMapContext';
 
 export type RegistryMap<TType, TKey = string> = ImmutableRegistryMap<TType, TKey>;
 
@@ -18,6 +19,8 @@ export class ImmutableRegistryMap<TType, TKey = string> extends Array<[TKey, TTy
     Object.freeze(instance);
     return instance;
   }
+
+  public [REGISTER_MAP_ARGUMENTS]!: [TType, TKey];
 
   /* istanbul ignore next */
   private constructor() {

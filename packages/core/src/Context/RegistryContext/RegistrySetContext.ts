@@ -1,7 +1,6 @@
 import { serviceOfServiceFactories, SF } from '../../ServiceFactory';
 import { makeImmutableRegistrySet, RegistrySet } from './ImmutableRegistrySet';
 import { ImmutableContainer, MutableContainer } from '../../Container';
-import { once } from 'ramda';
 import { wrapReturnAsReference } from '../ReferenceContext';
 import { getServices, RegisterListArguments } from './RegistryListContext';
 
@@ -16,6 +15,6 @@ export const createFeatureFactoryRegistrySetContext = <T>(container: MutableCont
 export function registerSet<Services, T>({ getService }: ImmutableContainer): (...items: RegisterListArguments<Services, T>) => SF<RegistrySet<T>> {
   return (...items: RegisterListArguments<Services, T>) => {
     const serviceReferences = getServices<Services, T>(getService as any)(...items);
-    return once(() => makeImmutableRegistrySet<T>(...serviceOfServiceFactories(serviceReferences)));
+    return () => makeImmutableRegistrySet<T>(...serviceOfServiceFactories(serviceReferences));
   };
 }

@@ -2,7 +2,7 @@ import { lockAble } from '../lib';
 import { assertServiceTag, ServiceTag, SF } from '../ServiceFactory';
 import { createImmutableContainer, ImmutableContainer } from './ImmutableContainer';
 import { MutableContainer } from './MutableContainer';
-import { fromPairs, once } from 'ramda';
+import { fromPairs } from 'ramda';
 
 export interface MutableLockableContainer extends MutableContainer {
   lock(): Record<string, SF<unknown>>;
@@ -23,25 +23,25 @@ export const createMutableLockableContainer = (container: ImmutableContainer = c
 
   function getService(serviceTag: ServiceTag) {
     assertServiceTag(serviceTag);
-    return once(() => getCurrentService(serviceTag)());
+    return () => getCurrentService(serviceTag)();
   }
 
   function getCurrentService(serviceTag: ServiceTag): SF {
     assertServiceTag(serviceTag);
     const service = updatedContainer.getService(serviceTag);
-    return once(() => {
+    return () => {
       if (!isLocked()) {
         throw new Error(`Cannot get "${serviceTag}" service when container is unlocked`);
       }
       return service();
-    });
+    };
   }
 
   function services(): [[ServiceTag, SF]] {
     return updatedContainer.services().map(([key]) => [key, getService(key)]) as any;
   }
 
-  function currentServices(): [[ServiceTag, SF]] {
+  function currentServices(): Array<[ServiceTag, SF]> {
     return updatedContainer.services();
   }
 

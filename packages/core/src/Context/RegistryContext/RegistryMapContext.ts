@@ -56,6 +56,7 @@ export const registerMap = <Services>(getService: ServiceFactoryByTag<any>) => <
 export const registerToMap = <Services, TType, TKey>({ getService, getCurrentService, setService }: MutableContainer, registry: ServiceTag, ...items: RegisterMapArguments<Services, TType, TKey>): void => {
   const service: SF<RegistryMap<TType, TKey>> = getCurrentService(
     registry as ServiceTag) as SF<RegistryMap<TType, TKey>>;
+  debugger;
   const serverFactories = getServices<Services, TType, TKey>(getService as any, items);
   setService(
     registry as ServiceTag,
