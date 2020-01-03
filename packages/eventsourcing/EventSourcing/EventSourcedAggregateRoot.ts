@@ -1,3 +1,4 @@
+// tslint:disable-next-line
 import { EventSourcedEntity } from './EventSourcedEntity';
 import { Identity } from '../ValueObject/Identity';
 import { DomainEventStream } from '../Domain/DomainEventStream';

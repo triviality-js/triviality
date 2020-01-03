@@ -1,7 +1,7 @@
 {
   "name": "@triviality/storage",
   "private": false,
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Storage interfaces and adapters",
   "main": "index.js",
   "types": "index.d.ts",
@@ -10,7 +10,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "test": "npm-run-all clean-build build lint unit-test copy-past-detection",
-    "clean-build": "git clean -fdX --exclude node_modules",
+    "clean-build": "git clean -fdx --exclude node_modules",
     "lint": "tslint --project ./",
     "lint-fix": "tslint  --project ./ --fix",
     "security-audit": "yarn audit",
@@ -36,18 +36,18 @@
   },
   "homepage": "https://gitlab.com/epinxteren/eventsourcing-redux-bridge#README",
   "devDependencies": {
-    "jest": "^23",
-    "ts-jest": "^23",
-    "ts-node": "^7"
+    "jest": "^25",
+    "ts-jest": "^25",
+    "ts-node": "^8"
   },
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@triviality/serializer": "^0.2.3",
-    "@types/sanitize-filename": "^1.1.28",
-    "fs-extra": "^7.0.1",
-    "sanitize-filename": "^1.6.1"
+    "@triviality/serializer": "^1.0.0",
+    "@types/sanitize-filename": "1",
+    "fs-extra": "8",
+    "sanitize-filename": "1"
   },
   "gitHead": "b1d66132bb4f54b57bc411846c4fa44d6556a520"
 }

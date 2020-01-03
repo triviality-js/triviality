@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { EventSourcedEntity } from './EventSourcedEntity';
+import type { EventSourcedEntity } from './EventSourcedEntity';
 import { IncorrectEventHandlerError } from './Error/IncorrectEventHandlerError';
 import { Metadata } from '../Metadata';
 import { DomainEvent, DomainEventConstructor } from '../Domain/DomainEvent';

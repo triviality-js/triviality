@@ -1,26 +1,31 @@
-import { Feature, OptionalRegistries } from '@triviality/core';
+import { FF } from '@triviality/core';
 import { Middleware } from 'redux';
-import { ChatReduxFeature } from '../ChatReduxFeature';
+import { ChatReduxFeatureServices } from '../ChatReduxFeature';
 import { StoreState } from '../StoreState';
 import { accountMiddleware } from './accountMiddleware';
 import { accountReducer } from './accountReducer';
 
-export class AccountFeature implements Feature {
+export interface AccountFeatureServices {
+  accountMiddleware: Middleware<{}, StoreState>;
+}
 
-  public registries(): OptionalRegistries<ChatReduxFeature> {
+export const AccountFeature: FF<AccountFeatureServices, ChatReduxFeatureServices> =
+  ({
+     registers: {
+       reducers,
+       middleware,
+     },
+   }) => {
+
+    reducers({
+      account: () => accountReducer,
+    });
+
+    middleware('accountMiddleware');
+
     return {
-      reducers: () => {
-        return {
-          account: accountReducer,
-        };
-      },
-      middleware: () => {
-        return [this.accountMiddleware()];
+      accountMiddleware(): Middleware<{}, StoreState> {
+        return accountMiddleware;
       },
     };
-  }
-
-  public accountMiddleware(): Middleware<{}, StoreState> {
-    return accountMiddleware;
-  }
-}
+  };

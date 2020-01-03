@@ -21,6 +21,6 @@ export class ScalarIdentity<T> implements Identity {
   }
 
   public equals(id: Identity) {
-    return this.id.toString() === id.toString();
+    return `${this.id}` === id.toString();
   }
 }

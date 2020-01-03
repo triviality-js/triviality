@@ -1,7 +1,7 @@
 {
   "name": "@triviality/react",
   "private": false,
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "Exposes triviality service container to react components",
   "main": "index.js",
   "types": "index.d.ts",
@@ -11,7 +11,7 @@
     "watch": "tsc --watch",
     "create-types": "ts-node src/cli/createTypes.ts",
     "test": "npm-run-all clean-build build lint unit-test copy-past-detection",
-    "clean-build": "git clean -fdX --exclude node_modules",
+    "clean-build": "git clean -fdx --exclude node_modules",
     "lint": "tslint --project ./",
     "lint-fix": "tslint  --project ./ --fix",
     "security-audit": "yarn audit",
@@ -36,8 +36,8 @@
   },
   "homepage": "https://github.com/triviality-js/triviality#README",
   "dependencies": {
-    "@triviality/core": "^0.8.3",
-    "@types/react": "^16",
+    "@triviality/core": "^1.0.0",
+    "@types/react": "16",
     "moment": "^2",
     "react": "^16"
   },
@@ -45,10 +45,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/react-test-renderer": "^16.8.1",
-    "react-test-renderer": "^16.8.4",
-    "ts-jest": "^23",
-    "ts-node": "^7"
+    "@types/react-test-renderer": "16",
+    "react-test-renderer": "16"
   },
   "gitHead": "b1d66132bb4f54b57bc411846c4fa44d6556a520"
 }

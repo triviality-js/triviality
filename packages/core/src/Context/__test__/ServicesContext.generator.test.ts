@@ -90,7 +90,7 @@ const stripEmptyGeneric = replace(/<>|(<|\(), *|( *, *),|, *(\))/gm, '$1$2$3');
  */
 export const parseFunctionGeneratorAnnotation: (template: string) => GeneratorTemplate = pipe(
   match(/@typeGenerator\(([\s\S.]*)\)/),
-  pipe(nth(1), (target: string) => {
+  pipe(nth(1) as any, (target: string) => {
     const striped = stripDocBlock(target);
     try {
       // tslint:disable-next-line:no-eval

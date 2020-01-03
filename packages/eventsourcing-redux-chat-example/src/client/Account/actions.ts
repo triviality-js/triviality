@@ -1,5 +1,5 @@
 import {
-  commandHandelingActionTypes,
+  commandHandlingActionTypes,
   sendCommandAndListenToHandler,
 } from '@triviality/eventsourcing-redux/CommandHandling/actions';
 import { queryHandelingActionTypes, sendQuery } from '@triviality/eventsourcing-redux/QueryHandling/actions';
@@ -22,10 +22,10 @@ export const USER_LOGGED_OUT = actionTypeWithEntity('user logged out', ACCOUNT);
 // Commands
 export const {
   commandSucceeded: USER_REGISTRATION_SUCCEEDED,
-} = commandHandelingActionTypes(ACCOUNT, UserRegisterCommand);
+} = commandHandlingActionTypes(ACCOUNT, UserRegisterCommand);
 export const {
   commandSucceeded: USER_LOGIN_SUCCEEDED,
-} = commandHandelingActionTypes(ACCOUNT, UserLoginCommand);
+} = commandHandlingActionTypes(ACCOUNT, UserLoginCommand);
 
 // Queries
 export const {

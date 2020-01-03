@@ -13,7 +13,7 @@ it('Can create an aggregate', async () => {
   class Aggregate extends EventSourcedAggregateRoot {
     constructor(aggregateId: Identity) {
       super(aggregateId);
-      spy = jest.spyOn(this, 'initializeState');
+      spy = jest.spyOn(this, 'initializeState' as any);
     }
   }
 

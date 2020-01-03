@@ -1,5 +1,6 @@
 import { Registry } from './Registry';
-import { REGISTER_LIST_ARGUMENTS } from './RegistryListContext';
+
+export const REGISTER_LIST_ARGUMENTS = Symbol.for('REGISTER_LIST_ARGUMENTS');
 
 export class ImmutableRegistryList<T> extends Array<T> implements Registry<T> {
 

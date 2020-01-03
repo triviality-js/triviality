@@ -11,7 +11,7 @@ export class CommanderBootstrapService {
   }
 
   public async handle(argv: string[] = process.argv) {
-    const pending: Array<Promise<void>> = [];
+    const pending: Promise<void>[] = [];
     for (const service of this.commands) {
       pending.push(Promise.resolve(service.configure(this.commander)));
     }

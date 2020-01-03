@@ -1,4 +1,3 @@
-import { MutableContainer } from '../../Container';
 import {
   createFeatureFactoryRegistryListContext,
   getServices,
@@ -15,9 +14,12 @@ import {
   RegistryMapContext,
 } from './RegistryMapContext';
 import { fromPairs } from 'ramda';
-import { serviceOfServiceFactories, ServiceTag, SF } from '../../ServiceFactory';
-import { makeImmutableRegistryList, RegistryList } from './ImmutableRegistryList';
+import { serviceOfServiceFactories, ServiceTag } from '../../ServiceFactory';
+import { RegistryList } from './ImmutableRegistryList';
 import { createFeatureFactoryRegistrySetContext, RegistrySetContext } from './RegistrySetContext';
+import { Override } from '../../Value/Override';
+import { RegistrySet } from './ImmutableRegistrySet';
+import { ServiceFunctionReferenceContainerInterface } from '../../Container/ServiceFunctionReferenceContainerInterface';
 
 export type InferRegisters<T> = InferListArgumentRegisters<T> & InferMapArgumentsRegisters<T>;
 
@@ -30,16 +32,17 @@ export interface RegistryContext<T> extends RegistryListContext<T>,
 /**
  * It overrides the existing list, keeping the list itself immutable.
  */
-export const registerToListOrSet = <Services, T>({ getService, setService, getCurrentService }: MutableContainer, registry: ServiceTag, ...items: RegisterListArguments<Services, T>) => {
-  const service = getCurrentService(registry as ServiceTag) as SF<RegistryList<T>>;
-  const serviceFactories = getServices<Services, T>(getService as any)(...items);
-  setService(
-    registry as ServiceTag,
-    () => makeImmutableRegistryList<T>(...[...service(), ...serviceOfServiceFactories(serviceFactories)]),
-  );
+export const registerToListOrSet = <Services, T>(container: ServiceFunctionReferenceContainerInterface, registry: ServiceTag, ...items: RegisterListArguments<Services, T>) => {
+  const serviceFactories = getServices<Services, T>(container.getService as any)(...items);
+  container.override(new Override<RegistryList<any> | RegistrySet<any>>({
+    tag: registry,
+    override: (service) => {
+      return service.register(...[...serviceOfServiceFactories(serviceFactories)]);
+    },
+  }));
 };
 
-export const registersTo = (container: MutableContainer, name: ServiceTag) => {
+export const registersTo = (container: ServiceFunctionReferenceContainerInterface, name: ServiceTag) => {
   return (...args: any) => {
     if (args.length === 0) {
       return {};
@@ -54,10 +57,10 @@ export const registersTo = (container: MutableContainer, name: ServiceTag) => {
   };
 };
 
-export const createFeatureFactoryRegisterContext = (container: MutableContainer) =>
-  fromPairs(container.services().map(([name]) => [name, registersTo(container, name)]));
+export const createFeatureFactoryRegisterContext = (container: ServiceFunctionReferenceContainerInterface) =>
+  fromPairs(container.references().taggedPairs().map(([name]) => [name, registersTo(container, name)]));
 
-export const createFeatureFactoryRegistryContext = <T>(container: MutableContainer): RegistryContext<T> => ({
+export const createFeatureFactoryRegistryContext = <T>(container: ServiceFunctionReferenceContainerInterface): RegistryContext<T> => ({
   ...createFeatureFactoryRegistryListContext(container),
   ...createFeatureFactoryRegistryMapContext(container),
   ...createFeatureFactoryRegistrySetContext(container),

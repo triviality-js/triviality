@@ -5,8 +5,8 @@ export interface DatabaseFeatureServices {
   database: Database;
 }
 
-export const DatabaseFeature: FF<DatabaseFeatureServices, SetupFeatureServices> = ({ registers: { setup }, services, construct }) => ({
-  ...setup(() => () => {
+export const DatabaseFeature: FF<DatabaseFeatureServices, SetupFeatureServices> = ({ registers: { setupCallbacks }, services, construct }) => ({
+  ...setupCallbacks(() => () => {
     if (!services('database').database().isConnected()) {
       throw new Error('Database is not connected!');
     }

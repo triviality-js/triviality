@@ -1,19 +1,19 @@
 {
   "name": "@triviality/core",
   "private": false,
-  "version": "0.8.3",
+  "version": "1.0.0",
   "description": "Purely typed service container",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "tsc --project src",
-    "watch": "tsc --project src --watch",
+    "build": "tsc ",
+    "watch": "tsc  --watch",
     "create-types": "ts-node src/cli/createTypes.ts",
     "test": "npm-run-all clean-build build lint unit-test copy-past-detection create-readme",
-    "clean-build": "git clean -fdX --exclude node_modules",
-    "lint": "tslint --project ./",
-    "lint-fix": "tslint  --project ./ --fix",
+    "clean-build": "git clean -fdx --exclude node_modules",
+    "lint": "tslint --project . ",
+    "lint-fix": "tslint  --project . --fix",
     "security-audit": "yarn audit",
     "create-readme": "ts-node ../../scripts/build_readme.ts",
     "unit-test": "jest",
@@ -40,13 +40,11 @@
     "access": "public"
   },
   "devDependencies": {
-    "ts-jest": "^23",
-    "ts-node-dev": "latest",
-    "filehound": "^1.17.3"
+    "filehound": "1"
   },
   "gitHead": "b1d66132bb4f54b57bc411846c4fa44d6556a520",
   "dependencies": {
-    "@types/ramda": "^0.26.21",
-    "ramda": "^0.26.1"
+    "@types/ramda": "0",
+    "ramda": "0"
   }
 }

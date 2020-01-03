@@ -1,5 +1,5 @@
-import { ImmutableContainer } from '../Container';
 import { ServiceFactory, ServiceTag, SF } from '../ServiceFactory';
+import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
 
 /**
  * Context for constructing new services.
@@ -37,7 +37,7 @@ export interface ConstructContext<T> {
 
 }
 
-export const createFeatureFactoryConstructContext = ({ getService }: ImmutableContainer) => ({
+export const createFeatureFactoryConstructContext = ({ getService }: ServiceFunctionReferenceContainerInterface) => ({
   construct: constructServiceByTags(getService),
 });
 

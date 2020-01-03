@@ -64,11 +64,11 @@ it('Multiple features can register to the same register', async () => {
     courtesies: (person: string) => string[];
   }
 
-  const ShoppingMall: FF<ShoppingMallServices> = ({ registerList, service }) => ({
+  const ShoppingMall: FF<ShoppingMallServices> = ({ registerList, instance }) => ({
     personListeners: registerList(),
 
     courtesies(): (person: string) => string[] {
-      const listeners = service('personListeners')().toArray();
+      const listeners = instance('personListeners').toArray();
       return (person) => listeners.map((listener) => listener.courtesy(person));
     },
   });

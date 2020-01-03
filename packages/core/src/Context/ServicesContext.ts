@@ -1,5 +1,5 @@
-import { MutableContainer } from '../Container';
-import { ServiceFactory, ServiceTag, SF, ServicesAsFactories as SAF } from '../ServiceFactory';
+import { ServiceFactory, ServicesAsFactories as SAF, ServiceTag, SF } from '../ServiceFactory';
+import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
 
 /**
  * Context helper for retrieving services from context.
@@ -60,7 +60,7 @@ export interface ServicesContext<T> {
 
 }
 
-export const createFeatureFactoryServicesContext = ({ getService }: MutableContainer): ServicesContext<any> => ({
+export const createFeatureFactoryServicesContext = ({ getService }: ServiceFunctionReferenceContainerInterface): ServicesContext<any> => ({
   service: getService as any,
   services: services(servicesByTags(getService)) as any,
   instances: instancesByTags(servicesByTags(getService)) as any,
@@ -89,6 +89,8 @@ export function instancesByTags(getServiceFactory: (...tags: ServiceTag[]) => SF
 }
 
 /**
+ * Multiple services by tags.
+ *
  * @typeGenerator({
  *  templates: [
  *    // Service by '(tag) => service' with currying.

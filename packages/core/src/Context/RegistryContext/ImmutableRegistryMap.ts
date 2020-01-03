@@ -1,16 +1,17 @@
 import { Registry } from './Registry';
 import { fromPairs } from 'ramda';
-import { REGISTER_MAP_ARGUMENTS } from './RegistryMapContext';
+
+export const REGISTER_MAP_ARGUMENTS = Symbol.for('REGISTER_MAP_ARGUMENTS');
 
 export type RegistryMap<TType, TKey = string> = ImmutableRegistryMap<TType, TKey>;
 
-export function makeImmutableRegistryMap<TType, TKey = string>(...services: Array<[TKey, TType]>): ImmutableRegistryMap<TType, TKey> {
+export function makeImmutableRegistryMap<TType, TKey = string>(...services: [TKey, TType][]): ImmutableRegistryMap<TType, TKey> {
   return ImmutableRegistryMap.create(...services);
 }
 
 export class ImmutableRegistryMap<TType, TKey = string> extends Array<[TKey, TType]> implements Registry<[TKey, TType]> {
 
-  public static create<TType, TKey = string>(...items: Array<[TKey, TType]>): ImmutableRegistryMap<TType, TKey> {
+  public static create<TType, TKey = string>(...items: [TKey, TType][]): ImmutableRegistryMap<TType, TKey> {
     const instance: ImmutableRegistryMap<TType, TKey> = Object.create(ImmutableRegistryMap.prototype);
     const map = new Map(items);
     map.forEach((value, key) => {
@@ -27,7 +28,7 @@ export class ImmutableRegistryMap<TType, TKey = string> extends Array<[TKey, TTy
     super();
   }
 
-  public register(...services: Array<[TKey, TType]>): ImmutableRegistryMap<TType, TKey> {
+  public register(...services: [TKey, TType][]): ImmutableRegistryMap<TType, TKey> {
     return ImmutableRegistryMap.create<TType, TKey>(...[...this, ...services]);
   }
 

@@ -1,5 +1,7 @@
-import { EventSourcedAggregateRoot } from './EventSourcedAggregateRoot';
+// tslint:disable-next-line
+import type { EventSourcedAggregateRoot } from './EventSourcedAggregateRoot';
 import { DomainEvent } from '../Domain/DomainEvent';
+// tslint:disable-next-line
 import { getAggregateEventHandler } from './AggregateHandleEvent';
 
 export class EventSourcedEntity<T extends EventSourcedAggregateRoot = EventSourcedAggregateRoot> {
@@ -22,7 +24,7 @@ export class EventSourcedEntity<T extends EventSourcedAggregateRoot = EventSourc
     }
   }
 
-  protected getChildEntities(): Array<EventSourcedEntity<T>> {
+  protected getChildEntities(): EventSourcedEntity<T>[] {
     return [];
   }
 

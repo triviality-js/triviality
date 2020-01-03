@@ -2,18 +2,18 @@
 
 exports[`Logging Logs messages 1`] = `
 Array [
-  "Testing/__test__/EventSourcingTestBench.test.ts:715:8        Object.<anonymous>.EventSourcingTestBench.givenReadModelRepository",
-  "Testing/__test__/EventSourcingTestBench.test.ts:718:8        Object.<anonymous>.EventSourcingTestBench.thenAssert",
-  "Testing/EventSourcingTestBench.ts:664:18                     Object.<anonymous>.EventSourcingTestBench.thenWaitUntilProcessed",
-  "Testing/__test__/EventSourcingTestBench.test.ts:719:25       Object.<anonymous>.EventSourcingTestBench.thenModelsShouldMatch",
-  "Testing/EventSourcingTestBench.ts:545:18                     Object.<anonymous>.EventSourcingTestBench.thenWaitUntilProcessed",
+  "Testing/__test__/EventSourcingTestBench.test.ts:715:8        givenReadModelRepository",
+  "Testing/__test__/EventSourcingTestBench.test.ts:718:8        thenAssert",
+  "Testing/EventSourcingTestBench.ts:675:18                     thenWaitUntilProcessed",
+  "Testing/__test__/EventSourcingTestBench.test.ts:719:25       thenModelsShouldMatch",
+  "Testing/EventSourcingTestBench.ts:547:18                     thenWaitUntilProcessed",
 ]
 `;
 
 exports[`Logging The repository class arguments should be seen in the logs 1`] = `
 Array [
-  "Testing/__test__/EventSourcingTestBench.test.ts:766:8        Object.<anonymous>.EventSourcingTestBench.givenReadModelRepository",
-  "Testing/__test__/EventSourcingTestBench.test.ts:767:8        Object.<anonymous>.EventSourcingTestBench.givenQueryHandler",
+  "Testing/__test__/EventSourcingTestBench.test.ts:766:8        givenReadModelRepository",
+  "Testing/__test__/EventSourcingTestBench.test.ts:767:8        givenQueryHandler",
   "   Created class TestQueryHandlerWithRepository with arguments:",
   "          ProductAggregate --> EventSourcingRepository",
   "             UserAggregate --> EventSourcingRepository",
@@ -24,15 +24,15 @@ Array [
 
 exports[`Logging defaults Default logs to process 1`] = `
 Array [
-  "Testing/__test__/EventSourcingTestBench.test.ts:785:10       Object.<anonymous>.EventSourcingTestBench.givenReadModelRepository
+  "Testing/__test__/EventSourcingTestBench.test.ts:785:10       givenReadModelRepository
 ",
-  "Testing/__test__/EventSourcingTestBench.test.ts:788:10       Object.<anonymous>.EventSourcingTestBench.thenAssert
+  "Testing/__test__/EventSourcingTestBench.test.ts:788:10       thenAssert
 ",
-  "Testing/EventSourcingTestBench.ts:664:18                     Object.<anonymous>.EventSourcingTestBench.thenWaitUntilProcessed
+  "Testing/EventSourcingTestBench.ts:675:18                     thenWaitUntilProcessed
 ",
-  "Testing/__test__/EventSourcingTestBench.test.ts:789:27       Object.<anonymous>.EventSourcingTestBench.thenModelsShouldMatch
+  "Testing/__test__/EventSourcingTestBench.test.ts:789:27       thenModelsShouldMatch
 ",
-  "Testing/EventSourcingTestBench.ts:545:18                     Object.<anonymous>.EventSourcingTestBench.thenWaitUntilProcessed
+  "Testing/EventSourcingTestBench.ts:547:18                     thenWaitUntilProcessed
 ",
 ]
 `;

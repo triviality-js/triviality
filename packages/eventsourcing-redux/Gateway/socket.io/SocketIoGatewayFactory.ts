@@ -9,10 +9,7 @@ import { ProjectorGatewayFactory } from '../Projector/ProjectorGatewayFactory';
 import { ProjectorGatewayInterface } from '../../ReadModel/ProjectorGatewayInterface';
 import { SocketConnection } from './ValueObject/SocketConnection';
 import { SocketIoGatewayFactoryError } from './Error/SocketIoGatewayFactoryError';
-
-export interface SocketIoGatewayOptions {
-  nsp: string;
-}
+import { SocketIoGatewayOptions } from './SocketIoGatewayOptions';
 
 /**
  * Namespace based gateway factory for projectors.

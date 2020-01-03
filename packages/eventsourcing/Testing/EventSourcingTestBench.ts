@@ -1,6 +1,8 @@
+// tslint:disable-next-line
 import { AggregateTestContextCollection } from './Context/AggregateTestContextCollection';
 import { ReadModelTestContextCollection } from './Context/ReadModelTestContextCollection';
 import { Identity } from '../ValueObject/Identity';
+// tslint:disable-next-line
 import { DomainMessageTestFactory } from './DomainMessageTestFactory';
 import { ReadModelTestContext } from './Context/ReadModelTestContext';
 import moment from 'moment';
@@ -17,7 +19,7 @@ import {
 } from '../EventSourcing/EventSourcedAggregateRoot';
 import { ReadModel, ReadModelConstructor } from '../ReadModel/ReadModel';
 import { EventSourcingRepositoryInterface } from '../EventSourcing/EventSourcingRepositoryInterface';
-import { EventListenerConstructor, EventListener } from '../EventHandling/EventListener';
+import { EventListener, EventListenerConstructor } from '../EventHandling/EventListener';
 import { DomainEvent } from '../Domain/DomainEvent';
 import { SimpleDomainEventStream } from '../Domain/SimpleDomainEventStream';
 import {
@@ -28,7 +30,6 @@ import { Repository } from '../ReadModel/Repository';
 import { Command } from '../CommandHandling/Command';
 import { DomainMessage } from '../Domain/DomainMessage';
 import { DomainEventStream } from '../Domain/DomainEventStream';
-import Constructable = jest.Constructable;
 import { QueryHandler, QueryHandlerConstructor } from '../QueryHandling/QueryHandler';
 import { QueryBus } from '../QueryHandling/QueryBus';
 import { SimpleQueryBus } from '../QueryHandling/SimpleQueryBus';
@@ -39,6 +40,7 @@ import * as extsprintf from 'extsprintf';
 import { ClassUtil } from '../ClassUtil';
 import { LoggerInterface, NullLogger, PrefixLogger } from '@triviality/logger';
 import { ProcessLogger } from '@triviality/logger/ProcessLogger';
+import Constructable = jest.Constructable;
 
 export interface TestTask {
   callback: () => Promise<any>;
@@ -117,7 +119,7 @@ export class EventSourcingTestBench {
     classes?: RepositoryReference[],
   ): this;
   public givenCommandHandler(
-    createOrConstructor: ValueOrFactory<CommandHandler, this> | (new (...repositories: Array<EventSourcingRepositoryInterface<any>>) => CommandHandler),
+    createOrConstructor: ValueOrFactory<CommandHandler, this> | (new (...repositories: EventSourcingRepositoryInterface<any>[]) => CommandHandler),
     classes: RepositoryReference[] = []) {
     return this.addTask(async () => {
       if (classes.length !== 0 && typeof createOrConstructor === 'function') {
@@ -154,7 +156,7 @@ export class EventSourcingTestBench {
     classes?: RepositoryReference[],
   ): this;
   public givenQueryHandler(
-    createOrConstructor: ValueOrFactory<QueryHandler, this> | (new (...repositories: Array<EventSourcingRepositoryInterface<any>>) => QueryHandler),
+    createOrConstructor: ValueOrFactory<QueryHandler, this> | (new (...repositories: EventSourcingRepositoryInterface<any>[]) => QueryHandler),
     classes: RepositoryReference[] = []) {
     return this.addTask(async () => {
       if (classes.length !== 0 && typeof createOrConstructor === 'function') {
@@ -187,7 +189,7 @@ export class EventSourcingTestBench {
    */
   public givenEventListener(createOrEventListener: ValueOrFactory<EventListener, this>): this;
   public givenEventListener(
-    constructor: (new (...repositories: Array<EventSourcingRepositoryInterface<any>>) => EventListener) | EventListenerConstructor,
+    constructor: (new (...repositories: EventSourcingRepositoryInterface<any>[]) => EventListener) | EventListenerConstructor,
     classes: RepositoryReference[],
   ): this;
   public givenEventListener(
@@ -498,7 +500,7 @@ export class EventSourcingTestBench {
    *       new DomainMessage(orderId1, 0, new OrderCreated(), EventSourcingTestBench.defaultCurrentTime)
    *     ]);
    */
-  public thenMatchEvents(events: Array<DomainEvent | DomainMessage>): this {
+  public thenMatchEvents(events: (DomainEvent | DomainMessage)[]): this {
     return this.addTask(async () => {
       const messages = await this.getRecordedMessages();
       const actualEvents = messages.map((message, index) => {
@@ -580,7 +582,12 @@ export class EventSourcingTestBench {
     return this.addTask(async () => {
       await this.thenWaitUntilProcessed();
       const models = await this.models.getAllModels();
-      expect(models).toMatchSnapshot(snapshotName);
+      if (snapshotName) {
+        expect(models).toMatchSnapshot(snapshotName);
+      } else {
+        expect(models).toMatchSnapshot();
+      }
+
     });
   }
 
@@ -607,7 +614,11 @@ export class EventSourcingTestBench {
       if (Object.getOwnPropertyNames(models).length !== 0) {
         data.models = models;
       }
-      expect(data).toMatchSnapshot(snapshotName);
+      if (snapshotName) {
+        expect(data).toMatchSnapshot(snapshotName);
+      } else {
+        expect(data).toMatchSnapshot();
+      }
     });
   }
 
@@ -700,7 +711,7 @@ export class EventSourcingTestBench {
   public getLogger(indent: number = 0): LoggerInterface {
     const totalIndent = this.indent + indent;
     if (totalIndent !== 0) {
-      return PrefixLogger.with(this.logger,  extsprintf.sprintf(`%${totalIndent * 3}s`, ''));
+      return PrefixLogger.with(this.logger, extsprintf.sprintf(`%${totalIndent * 3}s`, ''));
     }
     return this.logger;
   }

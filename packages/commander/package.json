@@ -1,7 +1,7 @@
 {
   "name": "@triviality/commander",
   "private": false,
-  "version": "0.5.4",
+  "version": "1.0.0",
   "description": "Commander as a Triviality Module",
   "main": "index.js",
   "types": "index.d.ts",
@@ -10,7 +10,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "test": "npm-run-all clean-build build lint unit-test copy-past-detection",
-    "clean-build": "git clean -fdX --exclude node_modules",
+    "clean-build": "git clean -fdx --exclude node_modules",
     "lint": "tslint --project ./",
     "lint-fix": "tslint  --project ./ --fix",
     "security-audit": "yarn audit",
@@ -36,16 +36,11 @@
   },
   "homepage": "https://github.com/triviality-js/triviality#README",
   "dependencies": {
-    "@triviality/core": "^0.8.3",
-    "@triviality/logger": "^0.2.4",
-    "@types/find-up": "^2.1.1",
-    "commander": "^2",
-    "find-up": "^3"
-  },
-  "devDependencies": {
-    "jest": "^23",
-    "ts-jest": "^23",
-    "ts-node": "^7"
+    "@triviality/core": "^1.0.0",
+    "@triviality/logger": "^1.0.0",
+    "@types/find-up": "2",
+    "commander": "2",
+    "find-up": "3"
   },
   "gitHead": "b1d66132bb4f54b57bc411846c4fa44d6556a520"
 }

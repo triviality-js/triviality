@@ -1,10 +1,10 @@
 {
-  "extends": "../../../base-tsconfig",
+  "extends": "../../base-tsconfig",
   "compilerOptions": {
-    "outDir": "../",
+    "outDir": "./",
     "noEmit": false
   },
   "include": [
-    "./"
+    "./src"
   ]
 }

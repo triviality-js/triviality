@@ -1,9 +1,7 @@
-import { Container, Feature, Optional, OptionalRegistries } from '@triviality/core';
-import { LoggerFeature } from '@triviality/logger';
-import { ReduxFeature } from '@triviality/redux';
-import { SerializerFeature } from '@triviality/serializer';
-import { Action, ReducersMapObject } from 'redux';
-import { Epic } from 'redux-observable';
+import { FF, SetupFeatureServices } from '@triviality/core';
+import { LoggerFeatureServices } from '@triviality/logger';
+import { SerializerFeatureServices } from '@triviality/serializer';
+import { Action, AnyAction } from 'redux';
 import { commandHandlerResponseMiddleware } from './CommandHandling/Middleware/commandHandlerResponseMiddleware';
 import { commandMiddleware } from './CommandHandling/Middleware/commandMiddleware';
 import { gatewayOpen } from './Gateway/actions';
@@ -15,61 +13,74 @@ import { SocketIOGatewayRegistry } from './Gateway/socket.io/SocketIOGatewayRegi
 import { queryHandlerResponseMiddleware } from './QueryHandling/Middleware/queryHandlerResponseMiddleware';
 import { queryMiddleware } from './QueryHandling/Middleware/queryMiddleware';
 import { EntityName } from './ValueObject/EntityName';
+import { ReduxFeatureServices } from '@triviality/redux/ReduxFeature';
 
-export class EventsourcingReduxClientFeature<S = {}, A extends Action<any> = Action<any>> implements Feature {
+export interface EventsourcingReduxClientFeatureServices {
+  openCQSGateway: () => void;
 
-  constructor(private container: Container<LoggerFeature, SerializerFeature, ReduxFeature<S, A>>) {
-  }
+  gatewayRegistry: GatewayRegistry<any>;
 
-  public registries(): OptionalRegistries<ReduxFeature<S, A>> {
-    return {
-      middleware: () => {
-        return [
-          commandHandlerResponseMiddleware(),
-          queryHandlerResponseMiddleware(),
-          queryMiddleware(this.defaultGateway()),
-          commandMiddleware(this.defaultGateway()),
-        ];
-      },
-      epics: (): Array<Epic<A, A, S>> => [
-        gatewayEpic((gate: string, metadata) => this.gatewayRegistry().get(gate, metadata).listen()),
-      ],
-      reducers: (): Optional<ReducersMapObject<S, A>> => {
-        return {
-          gateway: gatewayReducer(this.defaultGatewayOption().gate),
-        } as any;
-      },
-    };
-  }
+  defaultGateway: ClientGatewayInterface;
 
-  public setup() {
-    const { setup } = this.defaultGatewayOption();
-    if (setup) {
-      this.openCQSGateway()();
-    }
-  }
-
-  public openCQSGateway() {
-    return () => {
-      const { gate, entity } = this.defaultGatewayOption();
-      this.container.store().dispatch(gatewayOpen(entity, gate));
-    };
-  }
-
-  public gatewayRegistry(): GatewayRegistry<any> {
-    return new SocketIOGatewayRegistry(this.container.serializer());
-  }
-
-  public defaultGateway(): ClientGatewayInterface {
-    const { gate, entity } = this.defaultGatewayOption();
-    return this.gatewayRegistry().get(gate, { entity });
-  }
-
-  public defaultGatewayOption(): { entity: EntityName, gate: any, setup: boolean } {
-    return {
-      entity: 'cqs',
-      gate: '/cqs',
-      setup: true,
-    };
-  }
+  defaultGatewayOption: { entity: EntityName, gate: any, setup: boolean };
 }
+
+export interface EventsourcingReduxClientFeatureDependencies<S = any, A extends Action = AnyAction, D = {}> extends SetupFeatureServices, LoggerFeatureServices, SerializerFeatureServices, ReduxFeatureServices<S, A, D> {
+
+}
+
+export const EventsourcingReduxClientFeature = <S = {}, A extends Action<any> = Action<any>>(): FF<EventsourcingReduxClientFeatureServices, EventsourcingReduxClientFeatureDependencies<S, A>> =>
+  ({
+     store, serializer,
+     instance,
+     registers: {
+       setupCallbacks,
+       middleware,
+       epics,
+       reducers,
+     },
+   }) => {
+
+    setupCallbacks('openCQSGateway');
+
+    middleware(
+      () => commandHandlerResponseMiddleware(),
+      () => queryHandlerResponseMiddleware(),
+      () => queryMiddleware(instance('defaultGateway')),
+      () => commandMiddleware(instance('defaultGateway')),
+    );
+
+    epics(
+      () => gatewayEpic((gate: string, metadata) => instance('gatewayRegistry').get(gate, metadata).listen()),
+    );
+
+    reducers(
+      ['gateway', () => gatewayReducer(instance('defaultGatewayOption').gate)],
+    );
+
+    return {
+      openCQSGateway() {
+        return () => {
+          const { gate, entity } = this.defaultGatewayOption();
+          store().dispatch(gatewayOpen(entity, gate) as any);
+        };
+      },
+
+      gatewayRegistry(): GatewayRegistry<any> {
+        return new SocketIOGatewayRegistry(serializer());
+      },
+
+      defaultGateway(): ClientGatewayInterface {
+        const { gate, entity } = this.defaultGatewayOption();
+        return this.gatewayRegistry().get(gate, { entity });
+      },
+
+      defaultGatewayOption(): { entity: EntityName, gate: any, setup: boolean } {
+        return {
+          entity: 'cqs',
+          gate: '/cqs',
+          setup: true,
+        };
+      },
+    };
+  };

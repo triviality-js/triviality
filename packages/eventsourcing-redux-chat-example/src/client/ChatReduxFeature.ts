@@ -1,13 +1,28 @@
-import { EventsourcingReduxClientFeature } from '@triviality/eventsourcing-redux/EventsourcingReduxClientFeature';
-import { EntityMetadata } from '@triviality/eventsourcing-redux/Redux/EntityMetadata';
-import { ReduxFeature } from '@triviality/redux/ReduxFeature';
-import { Action } from 'redux';
-import { StoreState } from './StoreState';
+import {
+  EventsourcingReduxClientFeature,
+  EventsourcingReduxClientFeatureDependencies,
+  EventsourcingReduxClientFeatureServices,
+} from '@triviality/eventsourcing-redux/EventsourcingReduxClientFeature';
+import { StoreActions, StoreState } from './StoreState';
+import { FF } from '@triviality/core';
+import { ReduxFeature, ReduxFeatureServices } from '@triviality/redux';
 
-export class ChatReduxFeature extends ReduxFeature<StoreState, Action<any> & { metadata: EntityMetadata }> {
+export interface ChatReduxFeatureServices extends ReduxFeatureServices<StoreState, StoreActions> {
 
 }
 
-export class ChatEventsourcingReduxFeature extends EventsourcingReduxClientFeature<StoreState, Action<any> & { metadata: EntityMetadata }> {
+export const ChatReduxFeature: FF<ChatReduxFeatureServices> = (context) => {
+  return ReduxFeature()(context);
+};
+
+export interface ChatEventsourcingReduxFeatureServices extends EventsourcingReduxClientFeatureServices {
 
 }
+
+export interface ChatEventsourcingReduxFeatureDependencies extends EventsourcingReduxClientFeatureDependencies<StoreState, StoreActions> {
+
+}
+
+export const ChatEventsourcingReduxFeature: FF<ChatEventsourcingReduxFeatureServices, ChatEventsourcingReduxFeatureDependencies> = (context) => {
+  return EventsourcingReduxClientFeature<StoreState>()(context);
+};

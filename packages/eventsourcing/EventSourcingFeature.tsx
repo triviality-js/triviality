@@ -1,5 +1,5 @@
-import { Container, Feature } from '@triviality/core';
-import { LoggerFeature, PrefixLogger } from '@triviality/logger';
+import { FF, RegistryList, SetupFeatureServices } from '@triviality/core';
+import { LoggerFeatureServices, PrefixLogger } from '@triviality/logger';
 import { CommandBus } from './CommandHandling/CommandBus';
 import { CommandHandler } from './CommandHandling/CommandHandler';
 import { SimpleCommandBus } from './CommandHandling/SimpleCommandBus';
@@ -14,73 +14,87 @@ import { SimpleQueryBus } from './QueryHandling/SimpleQueryBus';
 import { ReplayService } from './ReplayService';
 import { EventListener } from './EventHandling/EventListener';
 
-export class EventSourcingFeature implements Feature {
+export interface EventSourcingFeatureServices {
+  commandHandlers: RegistryList<CommandHandler>;
+  queryHandlers: RegistryList<QueryHandler>;
+  eventListeners: RegistryList<EventListener>;
+  domainEventStreamDecorators: RegistryList<DomainEventStreamDecorator>;
 
-  constructor(protected container: Container<LoggerFeature>) {
-  }
+  commandBus: CommandBus;
 
-  public registries() {
+  queryBus: QueryBus;
+
+  domainEventStreamDecorator: AggregateDomainEventStreamDecorator;
+
+  replayService: ReplayService;
+
+  eventStore: EventStore;
+
+  domainEventBus: AsynchronousEventBus;
+
+  setupEventSourcing(): Promise<void>;
+}
+
+export const EventSourcingFeature: FF<EventSourcingFeatureServices, LoggerFeatureServices & SetupFeatureServices> =
+  ({
+     registers: {
+       setupCallbacks,
+     },
+     registerList,
+     logger,
+   }) => {
+
     return {
-      commandHandlers: (): CommandHandler[] => {
-        return [];
+      ...setupCallbacks('setupEventSourcing'),
+
+      commandHandlers: registerList(),
+      queryHandlers: registerList(),
+      eventListeners: registerList(),
+      domainEventStreamDecorators: registerList(),
+      commandBus(): CommandBus {
+        return new SimpleCommandBus();
       },
-      queryHandlers: (): QueryHandler[] => {
-        return [];
+
+      queryBus(): QueryBus {
+        return new SimpleQueryBus();
       },
-      eventListeners: (): EventListener[] => {
-        return [];
+
+      domainEventStreamDecorator(): AggregateDomainEventStreamDecorator {
+        return new AggregateDomainEventStreamDecorator(this.domainEventStreamDecorators());
       },
-      domainEventStreamDecorators: (): DomainEventStreamDecorator[] => {
-        return [];
+
+      replayService() {
+        return new ReplayService(
+          this.eventStore(),
+          this.domainEventBus(),
+        );
+      },
+
+      eventStore(): EventStore {
+        return new InMemoryEventStore();
+      },
+
+      domainEventBus(): AsynchronousEventBus {
+        const errorLogger = new PrefixLogger(logger(), 'domainEventBus');
+        return new AsynchronousEventBus((e) => {
+          errorLogger.error(e);
+        });
+      },
+
+      setupEventSourcing() {
+        return async () => {
+          this.commandHandlers().forEach((handler) => {
+            this.commandBus().subscribe(handler);
+          });
+
+          this.eventListeners().forEach((listener) => {
+            this.domainEventBus().subscribe(listener);
+          });
+          this.queryHandlers().forEach((listener) => {
+            this.queryBus().subscribe(listener);
+          });
+        };
       },
     };
-  }
 
-  public async setup() {
-    const handlers = await this.registries().commandHandlers();
-    handlers.forEach((handler) => {
-      this.commandBus().subscribe(handler);
-    });
-
-    const listeners = await this.registries().eventListeners();
-    listeners.forEach((listener) => {
-      this.domainEventBus().subscribe(listener);
-    });
-
-    const queryHandler = await this.registries().queryHandlers();
-    queryHandler.forEach((listener) => {
-      this.queryBus().subscribe(listener);
-    });
-  }
-
-  public commandBus(): CommandBus {
-    return new SimpleCommandBus();
-  }
-
-  public queryBus(): QueryBus {
-    return new SimpleQueryBus();
-  }
-
-  public domainEventStreamDecorator(): AggregateDomainEventStreamDecorator {
-    return new AggregateDomainEventStreamDecorator(this.registries().domainEventStreamDecorators());
-  }
-
-  public replayService() {
-    return new ReplayService(
-      this.eventStore(),
-      this.domainEventBus(),
-    );
-  }
-
-  public eventStore(): EventStore {
-    return new InMemoryEventStore();
-  }
-
-  public domainEventBus(): AsynchronousEventBus {
-    const logger = new PrefixLogger(this.container.logger(), 'domainEventBus');
-    return new AsynchronousEventBus((e) => {
-      logger.error(e);
-    });
-  }
-
-}
+  };
