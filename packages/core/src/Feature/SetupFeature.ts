@@ -4,19 +4,17 @@ import { FF } from '../FeatureFactory';
 export type SetupCallback = () => Promise<void> | void;
 
 export interface SetupFeatureServices {
-  setup: RegistryList<SetupCallback>;
-  callSetupServices: SetupCallback;
+  setupCallbacks: RegistryList<SetupCallback>;
 }
 
-const callSetupServices = (setups: Iterable<SetupCallback>) =>
-  async () => {
-    for (const setup of setups) {
-      await setup();
-    }
-  };
+export const callSetupServices = async (setups: Iterable<SetupCallback>) => {
+  for (const setup of setups) {
+    await setup();
+  }
+};
 
-export const SetupFeature: FF<SetupFeatureServices> = ({ registerList, compose }) =>
-  ({
-    setup: registerList<SetupCallback>(),
-    callSetupServices: compose(callSetupServices, 'setup'),
-  });
+export const SetupFeature: FF<SetupFeatureServices> = function setupFeature({ registerList }) {
+  return {
+    setupCallbacks: registerList<SetupCallback>(),
+  };
+};

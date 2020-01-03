@@ -1,4 +1,5 @@
 export * from './ComposeContext';
+export * from './createFeatureFactoryContext';
 export * from './ConstructContext';
 export * from './OverrideContext';
 export * from './RegistryContext';

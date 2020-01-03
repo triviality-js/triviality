@@ -1,12 +1,12 @@
-import { ServiceTag, SF } from '../ServiceFactory';
-import { once, watchCallStack } from '../lib';
+import { assetServiceFactory, ServiceTag, SF } from '../ServiceFactory';
+import { once } from '../lib';
 
 export interface ImmutableContainer {
   getService(k: ServiceTag): SF<unknown>;
 
   setService(k: ServiceTag, sf: SF<unknown>): this;
 
-  services(): Array<[ServiceTag, SF]>;
+  services(): [ServiceTag, SF][];
 
   hasService(k: ServiceTag): boolean;
 }
@@ -20,11 +20,9 @@ const getServiceFromContainer = (container: Map<string, SF>) => (k: string): SF 
 };
 
 const setServiceToContainer = (container: Map<string, SF>) => (k: string, sf: SF): ImmutableContainer => {
-  if (typeof sf !== 'function' || sf.length > 0) {
-    throw new Error(`ServiceFactory '${k}' cannot have any arguments`);
-  }
+  assetServiceFactory(sf);
   const copy = new Map<string, SF<unknown>>(container.entries());
-  copy.set(k.toString(), watchCallStack('invoke', k)(once(sf)));
+  copy.set(k.toString(), once(sf));
   return createImmutableContainer(copy);
 };
 

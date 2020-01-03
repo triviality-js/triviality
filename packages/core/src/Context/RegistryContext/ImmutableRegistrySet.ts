@@ -1,5 +1,5 @@
 import { Registry } from './Registry';
-import { REGISTER_LIST_ARGUMENTS } from './RegistryListContext';
+import { REGISTER_LIST_ARGUMENTS } from './ImmutableRegistryList';
 
 export class ImmutableRegistrySet<T> extends Array<T> implements Registry<T> {
   public static create<T>(...items: readonly T[]): ImmutableRegistrySet<T> {

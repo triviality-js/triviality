@@ -1,5 +1,5 @@
 export * from './Serializeable';
-export * from './SerializerFeature';
+export * from './SerializerFeatureServices';
 export * from './SerializerInterface';
 export * from './Metadata';
 export * from './Error/SerializerError';

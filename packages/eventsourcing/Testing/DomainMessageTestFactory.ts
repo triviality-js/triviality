@@ -1,4 +1,5 @@
-import { EventSourcingTestBench } from './EventSourcingTestBench';
+// tslint:disable-next-line
+import type { EventSourcingTestBench } from './EventSourcingTestBench';
 import { DomainEvent } from '../Domain/DomainEvent';
 import { Identity } from '../ValueObject/Identity';
 import { DomainMessage } from '../Domain/DomainMessage';
@@ -18,7 +19,7 @@ export class DomainMessageTestFactory {
     return new DomainMessage(id, playhead, event, this.testBench.getCurrentTime());
   }
 
-  public createDomainMessages<Id extends Identity>(id: Id, events: DomainEvent[]): Array<DomainMessage<DomainEvent, Id>> {
+  public createDomainMessages<Id extends Identity>(id: Id, events: DomainEvent[]): DomainMessage<DomainEvent, Id>[] {
     return events.map((event) => {
       return this.createDomainMessage<Id>(id, event);
     });

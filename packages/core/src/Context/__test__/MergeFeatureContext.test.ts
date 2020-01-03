@@ -1,4 +1,10 @@
-import triviality, { createFeatureFactoryContext, createMutableContainer, FF, RegistrySet } from '../..';
+import triviality, {
+  createFeatureFactoryContext,
+  FF,
+  RegistrySet,
+  ServiceFunctionReferenceContainer,
+  SetupFeatureServices,
+} from '../..';
 import { invokeFeatureFactory } from '../../invokeFeatureFactory';
 
 it('Can merge features', async () => {
@@ -7,14 +13,28 @@ it('Can merge features', async () => {
     bar: string;
   }
 
-  const context = createFeatureFactoryContext<{}, {}>(createMutableContainer(), invokeFeatureFactory);
+  const container = new ServiceFunctionReferenceContainer();
+  const context = createFeatureFactoryContext<{}, {}>({ container, invoke: invokeFeatureFactory });
   const myFeature: FF<MyFeatureServices> = () => ({
     bar: () => 'bar',
     foo: () => 1,
   });
-  const services = context.merge(myFeature).services();
+  const services = context.merge(myFeature).services('bar', 'foo');
+  container.build();
   expect(services.foo()).toEqual(1);
   expect(services.bar()).toEqual('bar');
+});
+
+it('Merged services can use default services', async () => {
+  const spy = jest.fn();
+  const myFeature: FF<{}, SetupFeatureServices> = ({ registers: { setupCallbacks } }) => ({
+    ...setupCallbacks(() => spy),
+  });
+  await triviality().add(({ merge }) => {
+    merge(myFeature);
+    return {};
+  }).build();
+  expect(spy).toBeCalled();
 });
 
 it('Can merge multiple features', async () => {
@@ -34,16 +54,18 @@ it('Can merge multiple features', async () => {
     buildings: () => 10,
   });
 
-  const context = createFeatureFactoryContext<{}, {}>(createMutableContainer(), invokeFeatureFactory);
+  const container = new ServiceFunctionReferenceContainer();
+  const context = createFeatureFactoryContext<{}, {}>({ container, invoke: invokeFeatureFactory });
   const services = context
     .merge(userFeature)
     .with(buildingFeature)
-    .services();
+    .services('users', 'buildings');
+  container.build();
   expect(services.users()).toEqual(3);
   expect(services.buildings()).toEqual(10);
 });
 
-it.skip('Can merge multiple times', async () => {
+it('Can merge multiple times', async () => {
 
   interface User {
     age: number;
@@ -89,10 +111,10 @@ it.skip('Can merge multiple times', async () => {
     const withUserFeature = merge(userFeature);
     const { buildings: buildings1, users: users1 } = withUserFeature
       .with(buildingFeature)
-      .services();
+      .services('buildings', 'users');
     const { buildings: buildings2, users: users2 } = withUserFeature
       .with(buildingFeature)
-      .services();
+      .services('buildings', 'users');
     return {
       buildings1,
       buildings2,
@@ -106,10 +128,85 @@ it.skip('Can merge multiple times', async () => {
   expect(b1).toEqual({ size: 1 });
   expect(b2).toEqual({ size: 2 });
   expect(u1).toEqual({ age: 40 });
-  expect(u2).toEqual({ age: 80 });
+  expect(u2).toEqual({ age: 40 });
 });
 
-it('Can merge with registers', async () => {
+it('Can merge multiple services', async () => {
+
+  interface F1 {
+    one: number;
+  }
+
+  const f1: FF<F1> = () => ({ one: () => 1 });
+
+  interface F2 {
+    two: number;
+  }
+
+  const f2: FF<F2> = () => ({ two: () => 2 });
+
+  interface F3 {
+    three: number;
+  }
+
+  const f3: FF<F3> = () => ({ three: () => 3 });
+
+  interface MyFeature extends F1, F2, F3 {
+  }
+
+  const myFeature: FF<MyFeature, {}> = ({ merge }) => {
+    return merge(f1).with(f2).with(f3).all();
+  };
+
+  const { one, two, three } = await triviality()
+    .add(myFeature)
+    .build();
+
+  expect([one, two, three]).toEqual([1, 2, 3]);
+});
+
+it('Can override merged services', async () => {
+
+  interface Orginal {
+    one: number;
+  }
+
+  const orginalFeature: FF<Orginal> = () => ({ one: () => 1 });
+
+  interface F2 {
+    two: number;
+  }
+
+  const f2: FF<F2, Orginal> = ({ one: o }) => ({ two: () => o() + 2 });
+
+  interface F3 {
+    three: number;
+  }
+
+  const f3: FF<F3, Orginal> = ({ one: o }) => ({ three: () => o() + 3 });
+
+  interface MyFeature extends Orginal, F2, F3 {
+  }
+
+  const myFeature: FF<MyFeature, {}> = ({ merge }) => {
+    return merge(orginalFeature).with(f2).with(f3).all();
+  };
+
+  const myFeatureOverride: FF<{}, Orginal> = ({ override: { one: o } }) => {
+    return {
+      ...o(() => 10),
+    };
+  };
+
+  const { one, two, three } = await triviality()
+    .add(myFeature)
+    .add(myFeatureOverride)
+    .build();
+
+  expect([one, two, three]).toEqual([10, 12, 13]);
+});
+
+it('Can directly fetch all new services', async () => {
 
   interface User {
     name: string;
@@ -137,7 +234,7 @@ it('Can merge with registers', async () => {
   }
 
   const myFeature: FF<MyFeatureServices, {}> = ({ merge }) => {
-    const { users } = merge(userFeature).with(johnUserFeature).with(JaneUserFeature).services();
+    const { users } = merge(userFeature).with(johnUserFeature).with(JaneUserFeature).services('users');
     return {
       users,
       names: () => users().map(({ name }) => name),

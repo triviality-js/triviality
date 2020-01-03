@@ -160,9 +160,9 @@ export function commandHandledFailed(command: SerializableCommand, entity: strin
 }
 
 /**
- * Convenience function to get command action types.
+ * Convenience function to get all command action types.
  */
-export function commandHandelingActionTypes(entity: EntityName, command: CommandConstructor) {
+export function commandHandlingActionTypes(entity: EntityName, command: CommandConstructor) {
   return {
     transmitting: COMMAND_TRANSMITTING(entity, command),
     transmittingSuccessfully: COMMAND_TRANSMITTED_SUCCESSFULLY(entity, command),

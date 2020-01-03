@@ -5,7 +5,7 @@ import { hasEntityMetadata } from '../../Redux/EntityMetadata';
 import { MissingEntityMetadataError } from '../../Redux/Error/MissingEntityMetadataError';
 import { commandHandledFailed, commandHandledSuccessfully } from '../actions';
 import { CommandAction } from '../CommandAction';
-import { isCommandMessage } from './index';
+import { isCommandMessage } from './isComandMessage';
 
 /**
  * Emit success or error action on client gateway.

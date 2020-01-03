@@ -4,7 +4,7 @@ import { SetupFeatureServices } from '../Feature';
 it('Execute setup step', async () => {
   const spySetup = jest.fn().mockResolvedValue(void 0);
 
-  const MyService: FF<void, SetupFeatureServices> = ({ registers: { setup } }) => setup(() => spySetup);
+  const MyService: FF<void, SetupFeatureServices> = ({ registers: { setupCallbacks } }) => setupCallbacks(() => spySetup);
 
   await triviality()
     .add(MyService)
@@ -14,7 +14,7 @@ it('Execute setup step', async () => {
 
 it('Catches setup step error', async () => {
   const spySetup = jest.fn().mockRejectedValue('Some error');
-  const MyService: FF<void, SetupFeatureServices> = ({ registers: { setup } }) => setup(() => spySetup);
+  const MyService: FF<void, SetupFeatureServices> = ({ registers: { setupCallbacks } }) => setupCallbacks(() => spySetup);
 
   const promise = triviality()
     .add(MyService)

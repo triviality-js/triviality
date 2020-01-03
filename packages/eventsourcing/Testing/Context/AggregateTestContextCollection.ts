@@ -1,7 +1,7 @@
-
 import { ClassUtil } from '../../ClassUtil';
 import { AggregateTestContext } from './AggregateTestContext';
-import { EventSourcingTestBench } from '../EventSourcingTestBench';
+// tslint:disable-next-line
+import type { EventSourcingTestBench } from '../EventSourcingTestBench';
 import { DomainEvent } from '../../Domain/DomainEvent';
 import {
   EventSourcedAggregateRoot,

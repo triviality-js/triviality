@@ -1,11 +1,13 @@
 import { SF } from '../../ServiceFactory';
 import {
-  ServicesContext,
+  createFeatureFactoryServicesContext,
   instancesByTags,
   servicesByTags,
-  createFeatureFactoryServicesContext,
+  ServicesContext,
 } from '../ServicesContext';
-import { createMutableContainer } from '../../Container';
+import { ServiceFunctionReferenceContainer } from '../../Container';
+import { TaggedServiceFactoryReference } from '../../Value/TaggedServiceFactoryReference';
+import { always } from 'ramda';
 
 type FetchA = (tag: 'foo') => SF<number>;
 type FetchB = (tag: 'bar') => SF<string>;
@@ -45,8 +47,13 @@ it('Can fetch service instances', () => {
 });
 
 it('Can fetch single service instance', () => {
-  const container = createMutableContainer();
-  container.setService('foo', () => 'bar');
+  const container = new ServiceFunctionReferenceContainer();
+  container.add(new TaggedServiceFactoryReference({
+    tag: 'foo',
+    factory: always('bar'),
+    feature: () => Object,
+  }));
   const context = createFeatureFactoryServicesContext(container);
+  container.build();
   expect(context.instance('foo')).toEqual('bar');
 });

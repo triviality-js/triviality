@@ -1,5 +1,4 @@
 import { FF } from '../../FeatureFactory';
-import { SF } from '../../ServiceFactory';
 import { testFeatureFactory } from '../../testing';
 
 describe('FeatureFactoryContext', () => {
@@ -18,7 +17,7 @@ describe('FeatureFactoryContext', () => {
         specialNumber: () => SpecialNumberTwice(otherSpecialNumber()),
       });
 
-      const result = await testFeatureFactory(MyFeature, { otherSpecialNumber: jest.fn(() => 1) as any });
+      const result = await testFeatureFactory(MyFeature, { otherSpecialNumber: 1 });
       expect(result.specialNumber).toEqual(2);
     });
     it('Services should be memorized', async () => {
@@ -27,12 +26,11 @@ describe('FeatureFactoryContext', () => {
           that: () => dep(),
         };
       };
-      const mock = jest.fn();
-      const dependencies = { dep: jest.fn(() => mock) as any };
+      const mock = jest.fn(() => ({}));
+      const dependencies = { dep: mock };
       const result = await testFeatureFactory(MyFeature, dependencies);
       // Should not return new instances of mock object.
-      expect(result.that).toBe(dependencies.dep());
-      expect(dependencies.dep).toBeCalledTimes(2);
+      expect(result.that).toBe(dependencies.dep);
     });
   });
 
@@ -46,24 +44,26 @@ describe('FeatureFactoryContext', () => {
         };
       };
 
-      const result = await testFeatureFactory(MyFeature, { age: jest.fn(() => 32) as any });
+      const result = await testFeatureFactory(MyFeature, { age: 32 });
 
       expect(result.myFullNameWithAge).toEqual('Eric Pinxteren 32');
     });
 
     it('Services should be memorized', async () => {
-      const MyFeature: FF<{ foo: SF<jest.Mock> }, { bar: SF<jest.Mock> }> = ({ services }) => {
+      const MyFeature: FF<{ foo: number }, { bar: jest.Mock<number> }> = ({ services }) => {
         const { bar } = services('bar');
         return {
-          foo: () => bar(),
+          foo: () => bar()(),
         };
       };
 
-      const dependencies = { bar: jest.fn() as any };
+      const dependencies = { bar: jest.fn(() => 1) };
       const result = await testFeatureFactory(MyFeature, dependencies);
 
       // Should not return new instances of mock object.
-      expect(result.foo).toBe(dependencies.bar());
+      expect(result.foo).toBe(1);
+      expect(result.foo).toBe(1);
+      expect(result.bar).toBeCalledTimes(1);
     });
   });
 
@@ -83,7 +83,7 @@ describe('FeatureFactoryContext', () => {
         specialNumber: compose(SpecialNumberTwice, 'otherSpecialNumber'),
       });
 
-      const result = await testFeatureFactory(MyFeature, { otherSpecialNumber: jest.fn(() => 1) as any });
+      const result = await testFeatureFactory(MyFeature, { otherSpecialNumber: 1 });
 
       expect(result.specialNumber).toEqual(2);
     });

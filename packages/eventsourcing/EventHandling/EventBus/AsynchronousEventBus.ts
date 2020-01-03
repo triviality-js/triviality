@@ -22,7 +22,7 @@ export class AsynchronousEventBus implements EventBus {
   private queue: DomainEventStream[] = [];
   private isProcessing: boolean = false;
   private activeStreamSubscription: Subscription | null = null;
-  private eventHandlersMappedByEvent: { [eventName: string]: Array<(domainMessage: DomainMessage) => Promise<void>> } = {};
+  private eventHandlersMappedByEvent: { [eventName: string]: ((domainMessage: DomainMessage) => Promise<void>)[] } = {};
   /* For keeping track if the bus is handling events or not. */
   private isProcessingSubject = new Subject<boolean>();
 

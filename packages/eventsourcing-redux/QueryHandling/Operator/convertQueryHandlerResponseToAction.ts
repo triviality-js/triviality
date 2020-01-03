@@ -5,7 +5,7 @@ import { hasEntityMetadata } from '../../Redux/EntityMetadata';
 import { MissingEntityMetadataError } from '../../Redux/Error/MissingEntityMetadataError';
 import { queryHandledFailed, queryHandledSuccessfully } from '../actions';
 import { QueryAction } from '../QueryAction';
-import { isQueryMessage } from './index';
+import { isQueryMessage } from './isQueryMessage';
 
 /**
  * Handle query and convert to redux action.

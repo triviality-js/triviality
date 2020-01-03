@@ -73,7 +73,7 @@ class Product extends EventSourcedAggregateRoot {
     this.apply(new NameHasChangesEvent(name));
   }
 
-  protected getChildEntities(): Array<EventSourcedEntity<any>> {
+  protected getChildEntities(): EventSourcedEntity<any>[] {
     return [this._dimensions];
   }
 

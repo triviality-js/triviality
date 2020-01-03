@@ -1,8 +1,8 @@
 import { curryN } from 'ramda';
-import { ImmutableContainer } from '../Container';
 import { ServiceTag, SF } from '../ServiceFactory';
 import { servicesByTags } from './ServicesContext';
 import { wrapReturnAsReference } from './ReferenceContext';
+import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
 
 /**
  * Context for creating new service factories.
@@ -47,6 +47,6 @@ export const composeServiceByTags = curryN(2, <Service>(
   return () => serviceFactory(...(servicesByTags as any)(getServiceFactory, ...tags).map((sf: any) => sf()));
 });
 
-export const createFeatureFactoryComposeContext = (container: ImmutableContainer): ComposeContext<any> => ({
+export const createFeatureFactoryComposeContext = (container: ServiceFunctionReferenceContainerInterface): ComposeContext<any> => ({
   compose: wrapReturnAsReference(composeServiceByTags(container.getService)),
 });

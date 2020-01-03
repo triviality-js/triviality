@@ -2,72 +2,95 @@
  * Context for creating new service factories.
  */
 import { ServiceFactory, ServiceTag, SF } from '../ServiceFactory';
-import { MutableContainer } from '../Container';
-import { getCurrentContext, inCurrentContext } from './GlobalContext';
-import { once, watchCallStack } from '../lib';
+import { once } from '../lib';
+import { ServiceFunctionReferenceContainer } from '../Container/ServiceFunctionReferenceContainer';
+import { TaggedServiceFactoryReference } from '../Value/TaggedServiceFactoryReference';
+import { getCurrentContainer, getCurrentFeatureFactory, inCurrentContext } from './GlobalContext';
+import { InternalServiceFactoryReference } from '../Value/InternalServiceFactoryReference';
+import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
+import { MergedTaggedServiceFunctionReference } from '../Value/MergedTaggedServiceFunctionReference';
 
 export interface ReferenceContext {
   /**
-   * Makes services reference so they can be overridden or decorated.
+   * Makes a service reference so they can be overridden or decorated when passed as return value
+   * to the service factory.
+   *
+   * @example
+   *    const sf = ({reference}) => {
+   *      const someService = reference(() => 'hi!');
+   *      return {someService, otherService: () => someService() }
+   *    }
+   *
+   * Now someService can be overridden, the service in otherService also overridden.
    */
   reference<S>(sf: ServiceFactory<S>): ServiceFactory<S>;
 }
 
-const SF_REFERENCES = Symbol.for('SF_REFERENCES');
+export const SERVICE_REFERENCE = Symbol.for('SERVICE_REFERENCE');
 
-interface ServiceReference<T = unknown> {
-  target: SF<T>;
-  reference: SF<T>;
-}
-
-export interface PrivateFeatureFactoryReferenceContext {
-  [SF_REFERENCES]: Map<SF, ServiceReference>;
-}
-
-const getReferenced = (): Map<SF, ServiceReference> => getCurrentContext<{}, PrivateFeatureFactoryReferenceContext>()[SF_REFERENCES];
-
-export const postFeatureFactoryContext = (services: Array<[ServiceTag, SF]>, container: MutableContainer) => {
-  const references = getReferenced();
-  services.forEach((ref: any) => {
-    const [tag, sf] = ref;
-    const reference = references.get(sf);
-    if (!reference) {
-      return;
-    }
-    container.setService(tag, reference.target);
-    reference.target = container.getService(tag);
-    references.delete(sf);
-    services.splice(services.indexOf(ref), 1);
-  });
-};
-
-export const asReference = <T>(sf: SF<T>): ServiceFactory<T> => {
-  const memorized: SF<T> = watchCallStack('asReference')<SF<T>, T>(once(sf));
+export const asReference = <T>(sf: SF<T>): SF<T> => {
+  let factory: SF<T> = once(sf);
+  const result: any = () => factory();
+  /**
+   * Only used when services not called by container factory.
+   */
   if (!inCurrentContext()) {
-    return memorized;
+    return result;
   }
-  const reference: ServiceReference<T> = {
-    reference: () => reference.target(),
-    target: memorized,
+  const currentContainer = getCurrentContainer();
+  /**
+   * Multiple dependency can reference this internal dependency.
+   */
+  const referencedDependency = new InternalServiceFactoryReference({
+    factory: sf,
+    feature: getCurrentFeatureFactory(),
+  });
+
+  factory = currentContainer.add(referencedDependency);
+  /**
+   * When the service factory is returned by a SF, this function will be called.
+   */
+  result[SERVICE_REFERENCE] = (builder: ServiceFunctionReferenceContainer, tag: ServiceTag) => {
+    const dependency = new TaggedServiceFactoryReference({
+      tag,
+      factory,
+      feature: getCurrentFeatureFactory(),
+    });
+    referencedDependency.addReferenceProxy(dependency);
+    factory = builder.add(dependency);
   };
-  const context = getCurrentContext<{}, PrivateFeatureFactoryReferenceContext>();
-  context[SF_REFERENCES].set(reference.reference, reference);
-  return reference.reference;
+  return result;
 };
 
-export const getCurrentReference = <S>(sf: ServiceFactory<S>): ServiceFactory<S> => {
-  const references = getReferenced();
-  const reference = references.get(sf);
-  if (!reference) {
-    return sf;
-  }
-  return reference.target as any;
+export const asMergeReference = <T>(reference: () => TaggedServiceFactoryReference): SF<T> => {
+  const result: any = () => {
+    return reference().getProxy()();
+  };
+  result[SERVICE_REFERENCE] = (builder: ServiceFunctionReferenceContainer, tag: ServiceTag) => {
+    const dependency = new MergedTaggedServiceFunctionReference(
+      reference(),
+      tag,
+      getCurrentFeatureFactory(),
+    );
+    /**
+     * Does this re-assignment have any use?
+     */
+    builder.add(dependency);
+  };
+  return result;
+};
+
+export const isServiceReferenced = (factory: any | SF<any>) => {
+  return typeof factory[SERVICE_REFERENCE] === 'function';
+};
+
+export const handleServiceReferenced = <T>(builder: ServiceFunctionReferenceContainerInterface, factory: SF<T>, tag: ServiceTag): SF<T> => {
+  return (factory as any)[SERVICE_REFERENCE](builder, tag);
 };
 
 export const wrapReturnAsReference: <T extends ((...args: any[]) => ServiceFactory<any>)>(toWrap: T) => T =
   ((toWrap: any) => (...args: any[]): ServiceFactory<any> => asReference(toWrap(...args))) as any;
 
-export const createServiceFactoryReferenceContext = (_container: MutableContainer): ReferenceContext & PrivateFeatureFactoryReferenceContext => ({
+export const createServiceFactoryReferenceContext = (): ReferenceContext => ({
   reference: asReference,
-  [SF_REFERENCES]: new Map(),
 });

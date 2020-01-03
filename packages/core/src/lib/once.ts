@@ -1,13 +1,17 @@
 export const once = <T extends () => R, R>(fn: T): () => R => {
   let called = false;
+  let hasResult = false;
   let result: R;
-  return (...args: any[]) => {
+  return function (this: any, ...args: any[]) {
     if (called) {
-      return result;
+      if (hasResult) {
+        return result;
+      }
+      throw new Error('Recursion error');
     }
-    // @ts-ignore
-    result = (fn as any).apply(this, args);
     called = true;
+    result = (fn as any).apply(this, args);
+    hasResult = true;
     return result;
   };
 };

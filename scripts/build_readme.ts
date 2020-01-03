@@ -2,7 +2,7 @@ import { exec } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 // @ts-ignore
-import markdownInclude from 'markdown-include';
+import * as markdownInclude from 'markdown-include';
 
 const name = process.cwd().split('/').slice(-1)[0];
 
@@ -73,7 +73,7 @@ export async function executeFile(directory: string, tsFile: string, ...args: Ar
   return new Promise((resolve, reject) => {
     const file = path.join(directory, tsFile);
     exec(
-      `bash -c "./../../node_modules/.bin/ts-node ${file} ${args.join(' ')}"`,
+      `bash -c "./../../node_modules/.bin/ts-node --project "./../../base-tsconfig.json"  ${file} ${args.join(' ')}"`,
       (error, stdout, stderr) => {
         if (stdout.trim() === '') {
           throw new Error(`No output for file ${file} ${error} ${stderr}`);

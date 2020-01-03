@@ -1,37 +1,47 @@
-import { difference, forEach, toPairs, includes } from 'ramda';
-import { MutableContainer, serviceNames, setNewServiceToContainer, setServices } from './Container';
+import { forEach, toPairs } from 'ramda';
 import { FF } from './FeatureFactory';
-import { createFeatureFactoryContext, hasContextTag, withGlobalContext, postFeatureFactoryContext } from './Context';
+import {
+  createFeatureFactoryContext,
+  handleServiceReferenced,
+  hasContextTag,
+  isServiceReferenced,
+  withGlobalContext,
+} from './Context';
 import { ServiceTag, SF } from './ServiceFactory';
+import { TaggedServiceFactoryReference } from './Value/TaggedServiceFactoryReference';
+import { InternalContextContext } from './Context/InternalContextContext';
 
-export function invokeFeatureFactory<S, D, C extends MutableContainer>(container: C, sf: FF<S, D>): void;
-export function invokeFeatureFactory<S, D, C extends MutableContainer>(container: C): (sf: FF<S, D>) => void;
-export function invokeFeatureFactory<S, D, C extends MutableContainer>(container: C, sf?: FF<S, D>): ((sf: FF<S, D>) => void) | void {
-  if (!sf) {
-    return (sfc) => invokeFeatureFactory(container, sfc);
+type ExcludeInvokeInternalContext = Omit<InternalContextContext, 'invoke'> & { invoke?: typeof invokeFeatureFactory};
+
+export function invokeFeatureFactory(context: ExcludeInvokeInternalContext, ff: FF): void;
+export function invokeFeatureFactory(context: ExcludeInvokeInternalContext): (ff: FF) => void;
+export function invokeFeatureFactory(internalContext: ExcludeInvokeInternalContext, ff?: FF): ((ff: FF) => void) | void {
+  if (!ff) {
+    return (ffc) => invokeFeatureFactory(internalContext, ffc);
   }
-  const setNewService = setNewServiceToContainer(container);
-  const factoryContext = createFeatureFactoryContext<S, D>(container, invokeFeatureFactory);
-
-  withGlobalContext(factoryContext, () => {
-    const namesBefore = serviceNames(container);
-    let newServices: Array<[ServiceTag, SF]> = toPairs(sf(factoryContext) as any) as any;
-    const added: string[] = difference(serviceNames(container), namesBefore);
-    newServices = newServices.filter(([tag]) => {
-      return includes(tag, added);
-    });
-    newServices.forEach(([tag]) => {
+  const { container } = internalContext;
+  const context = createFeatureFactoryContext({ invoke: invokeFeatureFactory, ...internalContext });
+  withGlobalContext({ context, container, featureFactory: ff }, () => {
+    const newServices: [ServiceTag, SF][] = toPairs(ff(context) as any) as any;
+    newServices.forEach(([tag, factory]) => {
       if (hasContextTag(tag)) {
         throw new Error(`Cannot use "${tag}" context name for service factories`);
       }
-      if (container.hasService(tag)) {
+      if (container.references().hasTagged(tag)) {
         throw new Error(`Cannot redefine "${tag}" service`);
       }
+      if (isServiceReferenced(factory)) {
+        handleServiceReferenced(container, factory, tag);
+        return;
+      }
+      container.add(new TaggedServiceFactoryReference({
+        tag,
+        factory,
+        feature: ff,
+      }));
     });
-    postFeatureFactoryContext(newServices,  container);
-    setServices(setNewService)(newServices);
   });
 }
 
-export const invokeFeatureFactories: <T extends MutableContainer>(container: T) => (features: Array<FF<any, any>>) => void =
-  <T extends MutableContainer>(container: T) => forEach<FF>(invokeFeatureFactory(container));
+export const invokeFeatureFactories: (context: ExcludeInvokeInternalContext) => (features: FF<any, any>[]) => void = (context) => forEach<FF>(
+  invokeFeatureFactory(context));

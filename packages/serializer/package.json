@@ -10,7 +10,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "test": "npm-run-all clean-build build lint unit-test copy-past-detection",
-    "clean-build": "git clean -fdX --exclude node_modules",
+    "clean-build": "git clean -fdx --exclude node_modules",
     "lint": "tslint --project ./",
     "lint-fix": "tslint  --project ./ --fix",
     "security-audit": "yarn audit",
@@ -38,14 +38,10 @@
   },
   "homepage": "https://github.com/triviality-js/triviality#README",
   "dependencies": {
-    "@triviality/core": "^0.8.3",
+    "@triviality/core": "0",
     "immutable": "^4.0.0-rc.12",
-    "transit-immutable-js": "^0.7.0",
-    "transit-js": "^0.8.861"
-  },
-  "devDependencies": {
-    "ts-jest": "^23",
-    "ts-node": "^7"
+    "transit-immutable-js": "0",
+    "transit-js": "0"
   },
   "publishConfig": {
     "access": "public"
