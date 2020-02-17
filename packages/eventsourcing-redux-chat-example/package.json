@@ -61,7 +61,7 @@
     "socket.io": "^2.1.1",
     "ts-node-dev": "^1.0.0-pre.32",
     "uuid-validate": "^0.0.3",
-    "yup": "^0.26.6"
+    "yup": "^0.28.1"
   },
   "devDependencies": {
     "jest": "^23",
