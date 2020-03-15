@@ -20,7 +20,7 @@ export function invokeFeatureFactory(internalContext: ExcludeInvokeInternalConte
     return (ffc) => invokeFeatureFactory(internalContext, ffc);
   }
   const { container } = internalContext;
-  const context = createFeatureFactoryContext({ invoke: invokeFeatureFactory, ...internalContext });
+  const context: any = createFeatureFactoryContext({ invoke: invokeFeatureFactory, ...internalContext });
   withGlobalContext({ context, container, featureFactory: ff }, () => {
     const newServices: [ServiceTag, SF][] = toPairs(ff(context) as any) as any;
     newServices.forEach(([tag, factory]) => {
