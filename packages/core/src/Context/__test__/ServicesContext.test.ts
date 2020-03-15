@@ -18,6 +18,7 @@ it('Can fetch services', () => {
   });
   const withServices = servicesByTags<'foo', SF<number>, 'bar', SF<string>>(fetchService);
   const context: ServicesContext<{ foo: SF<number>, bar: SF<string> }> = {
+    dependencies: null as any,
     service: null as any,
     services: withServices as any,
     instances: null as any,
@@ -35,6 +36,7 @@ it('Can fetch service instances', () => {
   });
   const withServices = instancesByTags(fetchServices as any);
   const context: ServicesContext<{ foo: SF<number>, bar: SF<string> }> = {
+    dependencies: null as any,
     service: null as any,
     services: null as any,
     instances: withServices as any,

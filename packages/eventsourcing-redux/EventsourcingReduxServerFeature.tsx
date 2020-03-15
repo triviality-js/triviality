@@ -27,11 +27,11 @@ export interface EventsourcingReduxServerFeatureServices {
   serverGateway: ServerSocketIOGateway;
 }
 
-export interface EventsourcingReduxServerFeatureServicesDependencies extends LoggerFeatureServices, SerializerFeatureServices, EventSourcingFeatureServices, CommanderFeatureServices {
+export interface EventsourcingReduxServerFeatureDependencies extends LoggerFeatureServices, SerializerFeatureServices, EventSourcingFeatureServices, CommanderFeatureServices {
 
 }
 
-export const EventsourcingReduxServerFeature: FF<EventsourcingReduxServerFeatureServices, EventsourcingReduxServerFeatureServicesDependencies> =
+export const EventsourcingReduxServerFeature: FF<EventsourcingReduxServerFeatureServices, EventsourcingReduxServerFeatureDependencies> =
   ({
      logger,
      serializer,

@@ -3,6 +3,9 @@ import { FF } from '../FeatureFactory';
 
 export type SetupCallback = () => Promise<void> | void;
 
+/**
+ * TODO: rename to application hooks?
+ */
 export interface SetupFeatureServices {
   setupCallbacks: RegistryList<SetupCallback>;
 }

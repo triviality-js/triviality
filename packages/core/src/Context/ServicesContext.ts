@@ -5,6 +5,8 @@ import { ServiceFunctionReferenceContainerInterface } from '../Container/Service
  * Context helper for retrieving services from context.
  */
 export interface ServicesContext<T> {
+  dependencies(): T;
+
   service<K1 extends keyof T>(t1: K1): SF<T[K1]>;
 
   /**
@@ -60,7 +62,18 @@ export interface ServicesContext<T> {
 
 }
 
-export const createFeatureFactoryServicesContext = ({ getService }: ServiceFunctionReferenceContainerInterface): ServicesContext<any> => ({
+export const createFeatureFactoryServicesContext = ({ getService, references }: ServiceFunctionReferenceContainerInterface): ServicesContext<any> => ({
+  dependencies: () => {
+    const container: Record<ServiceTag, unknown> = {};
+    references().taggedPairs().forEach(([tag, dependency]) => {
+      Object.defineProperty(container, tag, {
+        get: () => dependency.getProxy()(),
+        enumerable: true,
+        configurable: false,
+      });
+    });
+    return container;
+  },
   service: getService as any,
   services: services(servicesByTags(getService)) as any,
   instances: instancesByTags(servicesByTags(getService)) as any,
