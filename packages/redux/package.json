@@ -1,7 +1,7 @@
 {
   "name": "@triviality/redux",
   "private": false,
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Redux triviality integration",
   "main": "index.js",
   "types": "index.d.ts",
@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/triviality-js/triviality#README",
   "dependencies": {
-    "@triviality/core": "^1.1.0",
+    "@triviality/core": "^1.2.0",
     "redux": "4",
     "redux-devtools-extension": "2",
     "redux-observable": "1",
