@@ -62,10 +62,10 @@ export interface ServicesContext<T> {
 
 }
 
-export const createFeatureFactoryServicesContext = ({ getService, references }: ServiceFunctionReferenceContainerInterface): ServicesContext<any> => ({
+export const createFeatureFactoryServicesContext = (api: ServiceFunctionReferenceContainerInterface): ServicesContext<any> => ({
   dependencies: () => {
     const container: Record<ServiceTag, unknown> = {};
-    references().taggedPairs().forEach(([tag, dependency]) => {
+    api.references().taggedPairs().forEach(([tag, dependency]) => {
       Object.defineProperty(container, tag, {
         get: () => dependency.getProxy()(),
         enumerable: true,
@@ -74,10 +74,10 @@ export const createFeatureFactoryServicesContext = ({ getService, references }: 
     });
     return container;
   },
-  service: getService as any,
-  services: services(servicesByTags(getService)) as any,
-  instances: instancesByTags(servicesByTags(getService)) as any,
-  instance: (key) => getService(key as any)(),
+  service: api.getService as any,
+  services: services(servicesByTags(api.getService)) as any,
+  instances: instancesByTags(servicesByTags(api.getService)) as any,
+  instance: (key) => api.getService(key as any)(),
 });
 
 export function services(getServiceFactory: (...tags: ServiceTag[]) => SF[]): <T, K extends keyof T>(...keys: K[]) => Pick<T, K> & SF[] {
