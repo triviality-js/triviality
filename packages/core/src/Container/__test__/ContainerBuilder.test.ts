@@ -2,19 +2,19 @@ import { ServiceFunctionReferenceContainer } from '../ServiceFunctionReferenceCo
 import { TaggedServiceFactoryReference } from '../../Value/TaggedServiceFactoryReference';
 
 describe('ContainerBuilder', () => {
-  it('Can add dependency', () => {
+  it('Can add dependency', async () => {
     const container = new ServiceFunctionReferenceContainer();
     container.add(new TaggedServiceFactoryReference({
       tag: 'foobar',
       factory: () => 1,
       feature: () => Object,
     }));
-    expect(container.build()).toEqual({
+    expect(await container.build()).toEqual({
       foobar: 1,
     });
   });
 
-  it('Can add multiple dependencies', () => {
+  it('Can add multiple dependencies', async () => {
     const builder = new ServiceFunctionReferenceContainer();
     builder.add(new TaggedServiceFactoryReference({
       tag: 'foo',
@@ -26,37 +26,37 @@ describe('ContainerBuilder', () => {
       factory: () => 'bye',
       feature: () => Object,
     }));
-    expect(builder.build()).toEqual({
+    expect(await builder.build()).toEqual({
       foo: 'hi',
       bar: 'bye',
     });
   });
 
-  it('Should be able to get reference to an actual service', () => {
+  it('Should be able to get reference to an actual service', async () => {
     const builder = new ServiceFunctionReferenceContainer();
     builder.add(new TaggedServiceFactoryReference({
       tag: 'foobar',
       factory: () => 1,
       feature: () => Object,
     }));
-    expect(builder.build()).toEqual({
+    expect(await  builder.build()).toEqual({
       foobar: 1,
     });
   });
 
-  it('Should be able to call service by reference', () => {
+  it('Should be able to call service by reference', async () => {
     const builder = new ServiceFunctionReferenceContainer();
     builder.add(new TaggedServiceFactoryReference({
       tag: 'foobar',
       factory: () => 1,
       feature: () => Object,
     }));
-    builder.build();
+    await builder.build();
     expect(builder.getService('foobar')()).toEqual(1);
   });
 
-  describe('Know dependencies chain', () => {
-    it('Of single dependency', () => {
+  describe('Know dependencies chain',  () => {
+    it('Of single dependency', async () => {
       const builder = new ServiceFunctionReferenceContainer();
       builder.add(new TaggedServiceFactoryReference({
         tag: 'house',
@@ -69,7 +69,7 @@ describe('ContainerBuilder', () => {
         feature: () => Object,
       }));
 
-      expect(builder.build()).toEqual({
+      expect(await builder.build()).toEqual({
         person: 'Eric lives in a Nice house',
         house: 'Nice house',
       });

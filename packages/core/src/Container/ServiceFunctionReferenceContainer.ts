@@ -2,10 +2,9 @@ import { ServiceTag, SF } from '../ServiceFactory';
 import { ServiceFactoryReference } from '../Value/ServiceFactoryReference';
 import { Override } from '../Value/Override';
 import { TaggedServiceFactoryReference } from '../Value/TaggedServiceFactoryReference';
-import {
-  ServiceFunctionReferenceContainerInterface,
-} from './ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from './ServiceFunctionReferenceContainerInterface';
 import { ImmutableServiceReferenceList } from '../Value/ImmutableServiceReferenceList';
+import { AsyncServiceFunctionReferenceError } from '../Value/AsyncServiceFunctionReferenceError';
 
 export enum BuildingState {
   defineServices,
@@ -69,13 +68,14 @@ export class ServiceFunctionReferenceContainer<Services = any> implements Servic
           return reference.getService();
         }
         this.dependencyCallStack = this.dependencyCallStack.add(reference);
-        /**
-         * This will cause a chain of dependencies to be called.
-         */
-        reference.callServiceFactory(bound);
-
-        this.dependencyCallStack = this.dependencyCallStack.remove(reference);
-
+        try {
+          /**
+           * This will cause a chain of dependencies to be called.
+           */
+          reference.callServiceFactory(bound);
+        } finally {
+          this.dependencyCallStack = this.dependencyCallStack.remove(reference);
+        }
         return reference.getService();
       },
     });
@@ -85,18 +85,56 @@ export class ServiceFunctionReferenceContainer<Services = any> implements Servic
     return reference.configuration.proxy;
   }
 
-  public build(): Services {
+  public async build(): Promise<Services> {
     this.assertDefineServices();
     this.state = BuildingState.buildServices;
 
     const container: Record<ServiceTag, unknown> = {};
 
-    this.serviceReferences.toArray().forEach((dependency) => {
-      const instance = dependency.getProxy()();
-      if (dependency instanceof TaggedServiceFactoryReference) {
-        container[dependency.tag] = instance;
+    let pending: Promise<void>[] = [];
+
+    async function handlePendingPromise(promise: Promise<void>) {
+      return promise.catch((e) => {
+        if (!(e instanceof AsyncServiceFunctionReferenceError)) {
+          return Promise.reject(e);
+        }
+        pending.push(handlePendingPromise(e.wait()));
+        return Promise.resolve();
+      });
+    }
+
+    async function invokeProxy(reference: ServiceFactoryReference) {
+      try {
+        const instance = reference.getProxy()();
+        if (reference instanceof TaggedServiceFactoryReference) {
+          container[reference.tag] = instance;
+        }
+      } catch (e) {
+        /**
+         * This service can be depended on a sync service, wait for it first.
+         */
+        if (!(e instanceof AsyncServiceFunctionReferenceError)) {
+          return Promise.reject(e);
+        }
+        pending.push(handlePendingPromise(e.wait()));
       }
-    });
+      return Promise.resolve();
+    }
+
+    async function invokeProxies(references: ImmutableServiceReferenceList) {
+      do {
+        const waitForPending = Promise.all(pending);
+        pending = [];
+        await waitForPending;
+        for (const dependency of references.toArray()) {
+          invokeProxy(dependency);
+        }
+      } while (pending.length !== 0);
+    }
+
+    // Resolve all async service references first.
+    await invokeProxies(this.serviceReferences.async());
+    await invokeProxies(this.serviceReferences.notASync());
 
     this.state = BuildingState.done;
     return container as any;

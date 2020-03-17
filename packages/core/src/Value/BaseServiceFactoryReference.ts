@@ -2,6 +2,7 @@ import { assetServiceFactory, ServiceFactory, ServiceTag, SF } from '../ServiceF
 import { ImmutableServiceReferenceList } from './ImmutableServiceReferenceList';
 import { FeatureFactory, FF } from '../FeatureFactory';
 import { ServiceFactoryReference } from './ServiceFactoryReference';
+import { AsyncServiceFunctionReferenceError } from './AsyncServiceFunctionReferenceError';
 
 export interface ServiceFactoryReferenceOptions {
   readonly factory: SF;
@@ -82,7 +83,14 @@ export abstract class BaseServiceFactoryReference {
   public callServiceFactory(thisReference: Record<ServiceTag, SF>) {
     this.assertServiceFunctionNotYetInvoked();
     this.serviceFactoryInvoked = true;
-    this.service = this.factory.bind(thisReference)();
+    try {
+      this.service = this.factory.bind(thisReference)();
+    } catch (e) {
+      if (e instanceof AsyncServiceFunctionReferenceError) {
+        this.serviceFactoryInvoked = false;
+      }
+      throw e;
+    }
     this.serviceDefined = true;
   }
 
@@ -124,7 +132,7 @@ export abstract class BaseServiceFactoryReference {
     return `#${this.getUuid()} ${this.feature.name || '?'}`;
   }
 
-  private assertServiceFunctionNotYetInvoked() {
+  protected assertServiceFunctionNotYetInvoked() {
     if (this.serviceFactoryInvoked) {
       throw new Error('Service factory is already invoked.');
     }

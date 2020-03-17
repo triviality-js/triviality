@@ -35,6 +35,18 @@ export class ImmutableServiceReferenceList {
     return filtered.map((dependency: any) => [dependency.tag, dependency]);
   }
 
+  public async(): ImmutableServiceReferenceList {
+    return this.filter((dep) => {
+      return dep.type === 'async';
+    });
+  }
+
+  public notASync(): ImmutableServiceReferenceList {
+    return this.filter((dep) => {
+      return dep.type !== 'async';
+    });
+  }
+
   public filter(accept: (reference: ServiceFactoryReference) => boolean): ImmutableServiceReferenceList {
     const filtered = this.references.filter(accept);
     return new ImmutableServiceReferenceList(filtered);

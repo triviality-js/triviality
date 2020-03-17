@@ -48,7 +48,7 @@ export class MergeServiceFunctionReferenceContainer<Services = any> implements S
     return proxy;
   }
 
-  public build(): Services {
+  public async build(): Promise<Services> {
     return this.servicesReferences as any;
   }
 

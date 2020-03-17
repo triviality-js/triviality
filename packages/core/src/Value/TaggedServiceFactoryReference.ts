@@ -23,8 +23,7 @@ export class TaggedServiceFactoryReference extends BaseServiceFactoryReference {
 
   public callServiceFactory(thisReference: Record<ServiceTag, SF>) {
     super.callServiceFactory(thisReference);
-    this.service = this.overrides.reduce(
-      (service, override) => override.override.call(thisReference, service), this.service);
+    this.service = this.overrides.reduce((service, override) => override.override.call(thisReference, service), this.service);
   }
 
   public label(): string {

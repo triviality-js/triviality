@@ -37,7 +37,7 @@ describe('registerSet', () => {
     container.build();
     expect(Set().toArray()).toEqual([1, 2]);
   });
-  it('create Set with service tag references and thunkify services', () => {
+  it('create Set with service tag references and thunkify services', async () => {
     interface Dependencies {
       tag1: SF<number>;
       tag2: SF<number>;
@@ -56,7 +56,7 @@ describe('registerSet', () => {
     }));
     const context = createFeatureFactoryRegistryContext<Dependencies>(container);
     const Set = context.registerSet('tag1', 'tag2', always(3), 'tag2');
-    container.build();
+    await container.build();
     expect(Set().toArray()).toEqual([1, 2, 3]);
   });
 });

@@ -1,12 +1,13 @@
 /* tslint:disable */
 
-import type { ComposeContext } from './ComposeContext';
-import type  { ConstructContext } from './ConstructContext';
-import type  { OverrideContext } from './OverrideContext';
-import type  { RegistryContext } from './RegistryContext';
-import type  { ServicesContext } from './ServicesContext';
-import type { ReferenceContext } from './ReferenceContext';
-import type { MergeFeatureContext } from './MergeFeatureContext';
+import { ComposeContext } from './ComposeContext';
+import { ConstructContext } from './ConstructContext';
+import { OverrideContext } from './OverrideContext';
+import { RegistryContext } from './RegistryContext';
+import { ServicesContext } from './ServicesContext';
+import { ReferenceContext } from './ReferenceContext';
+import { MergeFeatureContext } from './MergeFeatureContext';
+import { AsyncContext } from './AsyncContext';
 
 export interface FeatureFactoryContext<T> extends ReferenceContext,
   RegistryContext<T>,
@@ -14,5 +15,6 @@ export interface FeatureFactoryContext<T> extends ReferenceContext,
   ServicesContext<T>,
   ConstructContext<T>,
   OverrideContext<T>,
-  MergeFeatureContext<T> {
+  MergeFeatureContext<T>,
+  AsyncContext {
 }

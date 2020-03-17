@@ -41,10 +41,10 @@ export interface ComposeContext<T> {
 }
 
 export const composeServiceByTags = curryN(2, <Service>(
-  getServiceFactory: (tag: ServiceTag) => SF<Service>,
+  getServiceFactory: (...tag: ServiceTag[]) => SF<Service>,
   serviceFactory: (...services: any[]) => Service,
-  ...tags: string[]): SF<Service> => {
-  return () => serviceFactory(...(servicesByTags as any)(getServiceFactory, ...tags).map((sf: any) => sf()));
+  ...tags: ServiceTag[]): SF<Service> => {
+  return () => serviceFactory(...servicesByTags(getServiceFactory)(...(tags as [ServiceTag])).map((sf: SF) => sf()));
 });
 
 export const createFeatureFactoryComposeContext = (container: ServiceFunctionReferenceContainerInterface): ComposeContext<any> => ({

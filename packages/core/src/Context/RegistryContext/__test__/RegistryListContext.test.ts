@@ -15,7 +15,7 @@ describe('registerList', () => {
     const list = context.registerList<number>(always(1), always(2));
     expect(list().toArray()).toEqual([1, 2]);
   });
-  it('create list with service tag references', () => {
+  it('create list with service tag references', async () => {
     interface Dependencies {
       tag1: SF<number>;
       tag2: SF<number>;
@@ -34,10 +34,10 @@ describe('registerList', () => {
     }));
     const context = createFeatureFactoryRegistryContext<Dependencies>(container);
     const list = context.registerList('tag1', 'tag2');
-    container.build();
+    await container.build();
     expect(list().toArray()).toEqual([1, 2]);
   });
-  it('create list with service tag references and thunkify services', () => {
+  it('create list with service tag references and thunkify services', async () => {
     interface Dependencies {
       tag1: SF<number>;
       tag2: SF<number>;
@@ -56,7 +56,7 @@ describe('registerList', () => {
     }));
     const context = createFeatureFactoryRegistryContext<Dependencies>(container);
     const list = context.registerList('tag1', 'tag2', always(3), 'tag2');
-    container.build();
+    await container.build();
     expect(list().toArray()).toEqual([1, 2, 3, 2]);
   });
 });

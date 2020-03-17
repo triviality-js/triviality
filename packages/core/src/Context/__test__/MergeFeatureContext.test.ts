@@ -20,7 +20,7 @@ it('Can merge features', async () => {
     foo: () => 1,
   });
   const services = context.merge(myFeature).services('bar', 'foo');
-  container.build();
+  await container.build();
   expect(services.foo()).toEqual(1);
   expect(services.bar()).toEqual('bar');
 });
@@ -60,7 +60,7 @@ it('Can merge multiple features', async () => {
     .merge(userFeature)
     .with(buildingFeature)
     .services('users', 'buildings');
-  container.build();
+  await container.build();
   expect(services.users()).toEqual(3);
   expect(services.buildings()).toEqual(10);
 });

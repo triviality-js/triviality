@@ -10,6 +10,7 @@ import { createFeatureMergeContext } from './MergeFeatureContext';
 import { ServiceFunctionReferenceContainer } from '../Container';
 import { FeatureFactoryContext } from './FeatureFactoryContext';
 import { keys, includes } from 'ramda';
+import { createFeatureFactoryAsyncContext } from './AsyncContext';
 
 export const createFeatureFactoryContext = <OwnServices, Dependencies>(context: InternalContextContext):
   FeatureFactoryContext<OwnServices & Dependencies> & ServicesAsFactories<Dependencies> => {
@@ -23,6 +24,7 @@ export const createFeatureFactoryContext = <OwnServices, Dependencies>(context: 
     ...createFeatureFactoryConstructContext(container),
     ...createFeatureFactoryRegistryContext(container),
     ...createFeatureMergeContext(context),
+    ...createFeatureFactoryAsyncContext(context),
   }) as any;
 };
 

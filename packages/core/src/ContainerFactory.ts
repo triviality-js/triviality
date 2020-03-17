@@ -29,7 +29,7 @@ export class ContainerFactory<S> {
     const kernelFeature: any = KernelFeature(container);
     const features: FeatureFactory[] = [kernelFeature, ...this.featureFactories];
     invokeFeatureFactories({ container, invoke: invokeFeatureFactory })(features);
-    const services: S & SetupFeatureServices & KernelServices = container.build();
+    const services: S & SetupFeatureServices & KernelServices = await container.build();
     await callSetupServices(services.setupCallbacks);
     return services;
   }
