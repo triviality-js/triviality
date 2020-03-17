@@ -15,12 +15,9 @@ it('Execute setup step', async () => {
 it('Catches setup step error', async () => {
   const spySetup = jest.fn().mockRejectedValue('Some error');
   const MyService: FF<void, SetupFeatureServices> = ({ registers: { setupCallbacks } }) => setupCallbacks(() => spySetup);
-
   const promise = triviality()
     .add(MyService)
     .build();
-  expect(spySetup).toBeCalled();
-
   await expect(promise).rejects.toEqual('Some error');
   expect(spySetup).toBeCalled();
 });

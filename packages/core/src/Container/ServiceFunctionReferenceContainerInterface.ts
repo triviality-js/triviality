@@ -12,5 +12,5 @@ export interface ServiceFunctionReferenceContainerInterface<Services = any> {
 
   override<T>(override: Override<T>): this;
 
-  build(): Services;
+  build(): Promise<Services>;
 }

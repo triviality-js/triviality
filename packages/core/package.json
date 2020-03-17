@@ -40,6 +40,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@types/node": "^13.9.1",
     "filehound": "1"
   },
   "gitHead": "b1d66132bb4f54b57bc411846c4fa44d6556a520",

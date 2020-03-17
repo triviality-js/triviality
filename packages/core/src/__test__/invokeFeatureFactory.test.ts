@@ -6,7 +6,7 @@ import { TaggedServiceFactoryReference } from '../Value/TaggedServiceFactoryRefe
 
 describe('invokeFeatureFactory', () => {
 
-  it('Can invoke feature factory', () => {
+  it('Can invoke feature factory', async () => {
     const container = new ServiceFunctionReferenceContainer();
     const service = jest.fn().mockReturnValue(1);
     invokeFeatureFactory({ container }, () => ({
@@ -14,11 +14,11 @@ describe('invokeFeatureFactory', () => {
     }));
 
     expect(container.references().hasTagged('service4')).toBeTruthy();
-    container.build();
+    await container.build();
     expect(container.getService('service4')()).toBe(1);
   });
 
-  it('Called with all dependencies', () => {
+  it('Called with all dependencies', async () => {
     const container = new ServiceFunctionReferenceContainer();
 
     invokeFeatureFactory({ container }, () => ({
@@ -27,7 +27,7 @@ describe('invokeFeatureFactory', () => {
 
     const mockSF = jest.fn().mockReturnValue({});
     invokeFeatureFactory({ container }, mockSF);
-    container.build();
+    await container.build();
     expect(container.references().hasTagged('tag1')).toBeTruthy();
     expect(container.getService('tag1')()).toBe(1);
   });
@@ -63,7 +63,7 @@ describe('invokeFeatureFactory', () => {
   });
 });
 
-it('invokeFeatureFactories', () => {
+it('invokeFeatureFactories', async () => {
   const container = new ServiceFunctionReferenceContainer();
   const service1 = jest.fn().mockReturnValue(1);
 
@@ -80,7 +80,7 @@ it('invokeFeatureFactories', () => {
 
   expect(container.references().hasTagged('service1')).toBeTruthy();
   expect(container.references().hasTagged('service2')).toBeTruthy();
-  container.build();
+  await container.build();
   expect(container.getService('service1')()).toBe(1);
   expect(container.getService('service2')()).toBe(1);
 });

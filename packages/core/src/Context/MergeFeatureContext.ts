@@ -104,7 +104,7 @@ export const mergeFeature = <Services>({ container, invoke }: InternalContextCon
     }
     return {
       service: current.getService,
-      services: services(servicesByTags(current.getService)) as any,
+      services: services((...tags: ServiceTag[]) => servicesByTags(current.getService)(...(tags as [ServiceTag]))) as any,
       all: () => {
         return fromPairs(current.references().taggedPairs().filter(([tag]) => {
           return !container.references().hasTagged(tag);

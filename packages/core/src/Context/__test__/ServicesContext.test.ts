@@ -48,7 +48,7 @@ it('Can fetch service instances', () => {
   expect(bar).toEqual(2);
 });
 
-it('Can fetch single service instance', () => {
+it('Can fetch single service instance', async () => {
   const container = new ServiceFunctionReferenceContainer();
   container.add(new TaggedServiceFactoryReference({
     tag: 'foo',
@@ -56,6 +56,6 @@ it('Can fetch single service instance', () => {
     feature: () => Object,
   }));
   const context = createFeatureFactoryServicesContext(container);
-  container.build();
+  await container.build();
   expect(context.instance('foo')).toEqual('bar');
 });

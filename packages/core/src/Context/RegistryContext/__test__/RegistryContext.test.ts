@@ -19,7 +19,7 @@ describe('createFeatureFactoryRegistryContext', () => {
     const list = context.registerList<number>(() => 1, () => 2);
     expect(Array.from(list())).toEqual([1, 2]);
   });
-  it('Can register to map', () => {
+  it('Can register to map', async () => {
     const container = new ServiceFunctionReferenceContainer();
     container.add(new TaggedServiceFactoryReference({
       tag: 'MyRegister',
@@ -28,11 +28,11 @@ describe('createFeatureFactoryRegistryContext', () => {
     }));
     const context = createFeatureFactoryRegistryContext<{ MyRegister: RegistryMap<number> }>(container);
     context.registers.MyRegister(['foo', () => 1]);
-    container.build();
+    await container.build();
     const registry: RegistryMap<number> = container.getService('MyRegister')() as any;
     expect(registry.toArray()).toEqual([['bar', 2], ['foo', 1]]);
   });
-  it('Can register to list', () => {
+  it('Can register to list', async () => {
     const container = new ServiceFunctionReferenceContainer();
     container.add(new TaggedServiceFactoryReference({
       tag: 'MyRegister',
@@ -41,7 +41,7 @@ describe('createFeatureFactoryRegistryContext', () => {
     }));
     const context = createFeatureFactoryRegistryContext<{ MyRegister: RegistryList<number> }>(container);
     context.registers.MyRegister(() => 1);
-    container.build();
+    await container.build();
     const registry: RegistryList<number> = container.getService('MyRegister')() as any;
     expect(registry.toArray()).toEqual([2, 1]);
   });
