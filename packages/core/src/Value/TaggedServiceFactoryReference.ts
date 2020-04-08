@@ -1,7 +1,8 @@
 import { ServiceTag, SF } from '../ServiceFactory';
-import { Override } from './Override';
+import { Override, OverrideFunction } from './Override';
 // tslint:disable-next-line
 import { BaseServiceFactoryReference, ServiceFactoryReferenceOptions } from './BaseServiceFactoryReference';
+import { AsyncServiceFunctionReferenceError } from './AsyncServiceFunctionReferenceError';
 
 interface TaggedServiceFactoryReferenceOptions extends ServiceFactoryReferenceOptions {
   readonly tag: ServiceTag;
@@ -22,8 +23,30 @@ export class TaggedServiceFactoryReference extends BaseServiceFactoryReference {
   }
 
   public callServiceFactory(thisReference: Record<ServiceTag, SF>) {
-    super.callServiceFactory(thisReference);
-    this.service = this.overrides.reduce((service, override) => override.override.call(thisReference, service), this.service);
+    this.assertServiceFunctionNotYetInvoked();
+    this.serviceFactoryInvoked = true;
+
+    const invokeOriginal: SF = () => {
+      try {
+        return this.factory.bind(thisReference)();
+      } catch (e) {
+        if (e instanceof AsyncServiceFunctionReferenceError) {
+          this.serviceFactoryInvoked = false;
+        }
+        throw e;
+      }
+    };
+
+    const overrides: OverrideFunction<unknown>[] =
+      this.overrides
+          .map((override) => (previous) => override.override(previous));
+
+    this.service = overrides.reduce<SF>(
+      (prev: SF, next) => () => next(prev),
+      invokeOriginal,
+    )();
+
+    this.serviceDefined = true;
   }
 
   public label(): string {

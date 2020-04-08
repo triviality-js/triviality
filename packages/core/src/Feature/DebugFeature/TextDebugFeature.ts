@@ -6,8 +6,8 @@ export interface DebugFeatureServices {
   getDependencyTree(): string;
 }
 
-export const TextDebugFeature: FF<DebugFeatureServices, KernelServices> = function textDebugFeature({ dependencyInfo }) {
+export const TextDebugFeature: FF<DebugFeatureServices, KernelServices> = function textDebugFeature({ kernel }) {
   return {
-    getDependencyTree: () => () => drawDependencies(dependencyInfo().references()),
+    getDependencyTree: () => () => drawDependencies(kernel().references()),
   };
 };

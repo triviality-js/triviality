@@ -4,8 +4,7 @@ import { StoreState } from '../../StoreState';
 import { AppState } from '../AppState';
 
 it('should be able to fetch data when there is none', async () => {
-  const container = await serviceContainerFactory().build();
-  const store = container.valueStore();
+  const { valueStore: store } = await serviceContainerFactory().build();
   const state: StoreState = store.get()!;
   expect(state.account).toEqual(new AccountState());
   expect(state.app).toEqual(new AppState());

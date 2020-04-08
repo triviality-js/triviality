@@ -8,6 +8,4 @@ triviality()
   .add(HalloConsoleFeature)
   .add(ByeConsoleFeature)
   .build()
-  .then((container) => {
-    return container.consoleService.handle();
-  });
+  .then((container) => container.consoleService.handle());

@@ -3,7 +3,7 @@ import { FF } from '../FeatureFactory';
 import { ImmutableServiceReferenceList } from '../Value/ImmutableServiceReferenceList';
 
 export interface KernelServices {
-  dependencyInfo: {
+  kernel: {
     references(): ImmutableServiceReferenceList,
     callStack(): ImmutableServiceReferenceList,
   };
@@ -11,7 +11,7 @@ export interface KernelServices {
 
 export const KernelFeature: (builder: ServiceFunctionReferenceContainer) => FF<KernelServices> = (container: ServiceFunctionReferenceContainer): FF<KernelServices> => function kernelFeature() {
   return {
-    dependencyInfo: () => {
+    kernel: () => {
       return {
         references: () => container.references(),
         callStack: () => container.getCallStack(),

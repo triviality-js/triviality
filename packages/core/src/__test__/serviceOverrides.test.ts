@@ -57,8 +57,8 @@ it('Override service', async () => {
   expect(container.halloAndByeService.speak('John')).toEqual('@, Bye John');
 });
 
-const screamSpeakService = (service: SpeakServiceInterface): SpeakServiceInterface => ({
-  speak: (name: string): string => `${service.speak(name)}!!!`,
+const screamSpeakService = (service: () => SpeakServiceInterface): SpeakServiceInterface => ({
+  speak: (name: string): string => `${service().speak(name)}!!!`,
 });
 
 const ScreamGreetingsFeature: FF<void, GreetingsFeatureServices> = ({ override }) => {
@@ -68,7 +68,7 @@ const ScreamGreetingsFeature: FF<void, GreetingsFeatureServices> = ({ override }
 
 const HiHalloFeature: FF<void, GreetingsFeatureServices> = ({ override: { halloService } }) =>
   halloService((original) => ({
-    speak: (name: string): string => original.speak(name).replace('Hallo', 'Hi'),
+    speak: (name: string): string => original().speak(name).replace('Hallo', 'Hi'),
   }));
 
 it('Can be decorated multiple times', async () => {
@@ -114,5 +114,25 @@ it('Cannot add extra services with overrides', async () => {
     .add(MyHalloFeature);
 
   await expect(container.build()).rejects.toThrow();
-})
-;
+});
+
+it('If service is override, original should not be called anymore', async () => {
+  const spy = jest.fn();
+
+  interface MyFeatureServices {
+    foo: string;
+  }
+  const MyFeature: FF<MyFeatureServices> = () => ({
+    foo: spy,
+  });
+  const MyOverideFeature: FF<{}, MyFeatureServices> = ({ override: { foo } }) => ({
+    ...foo(() => 'bar'),
+  });
+  const { foo: f } = await triviality()
+    .add(MyFeature)
+    .add(MyOverideFeature)
+    .build();
+
+  expect(f).toEqual('bar');
+  expect(spy).not.toBeCalled();
+});

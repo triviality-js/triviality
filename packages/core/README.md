@@ -348,9 +348,7 @@ triviality()
   .add(HalloConsoleFeature)
   .add(ByeConsoleFeature)
   .build()
-  .then((container) => {
-    return container.consoleService.handle();
-  });
+  .then((container) => container.consoleService.handle());
 ```
         
 
@@ -564,7 +562,7 @@ function decorateWithScreams(greeter: GreetingsServiceInterface): GreetingsServi
 }
 
 export const ScreamGreetingsFeature: FF<unknown, GreetingsFeatureServices> = ({ override: { greetingService } }) => ({
-  ...greetingService(decorateWithScreams),
+  ...greetingService((original) => decorateWithScreams(original())),
 });
 ```
         

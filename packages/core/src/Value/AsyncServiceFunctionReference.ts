@@ -30,6 +30,9 @@ export class AsyncServiceFunctionReference extends BaseServiceFactoryReference {
     return 'async';
   }
 
+  /**
+   * Wait for this service to be invoked.
+   */
   public wait = async (): Promise<void> => {
     if (this.promise) {
       await this.promise;
