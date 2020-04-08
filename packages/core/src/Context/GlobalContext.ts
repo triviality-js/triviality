@@ -3,6 +3,9 @@ import type { FeatureFactoryContext } from './FeatureFactoryContext';
 import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
 import { FF } from '../FeatureFactory';
 
+/**
+ * TODO: rename everything as invoke context.
+ */
 export interface InvokeContext {
   context: FeatureFactoryContext<any>;
   container: ServiceFunctionReferenceContainerInterface;

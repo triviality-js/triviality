@@ -1,5 +1,5 @@
 import { curry, fromPairs } from 'ramda';
-import { ServiceTag } from '../ServiceFactory';
+import { ServiceTag, SF } from '../ServiceFactory';
 import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
 
 /**
@@ -14,7 +14,10 @@ export const createFeatureFactoryOverrideContext = (container: ServiceFunctionRe
     container.references().taggedPairs().map(([serviceName]) => [serviceName, overrideBy(container, serviceName)])),
 });
 
-type OverrideWith<T> = (original: T) => T;
+/**
+ * TODO: original should be a function, so it's not always needed to execute service factory.
+ */
+type OverrideWith<T> = (original: SF<T>) => T;
 
 export type Overrides<T> = {
   [K in keyof T]: (overrideWith: OverrideWith<T[K]>) => {};

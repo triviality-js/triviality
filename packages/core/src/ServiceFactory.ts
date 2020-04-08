@@ -26,8 +26,8 @@ export type ServicesAsFactories<Services> = {
 
 export type ServiceTag = string;
 export const assertServiceTag = (tag: ServiceTag | unknown): tag is (ServiceTag | never) => {
-  if (typeof tag !== 'string') {
-    throw new Error('Tag should be a string');
+  if (typeof tag !== 'string' || tag === '') {
+    throw new Error('Tag should be a one empty string');
   }
   return true;
 };

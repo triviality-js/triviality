@@ -62,7 +62,7 @@ export const registerToMap = <Services, TType, TKey>(container: ServiceFunctionR
   container.override(new Override<RegistryMap<TType, TKey>>({
     tag: registry,
     override: (service) => {
-      return service.register(...mapServices(serverFactories));
+      return service().register(...mapServices(serverFactories));
     },
   }));
 };

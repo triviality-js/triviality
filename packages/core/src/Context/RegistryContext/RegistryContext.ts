@@ -37,7 +37,7 @@ export const registerToListOrSet = <Services, T>(container: ServiceFunctionRefer
   container.override(new Override<RegistryList<any> | RegistrySet<any>>({
     tag: registry,
     override: (service) => {
-      return service.register(...[...serviceOfServiceFactories(serviceFactories)]);
+      return service().register(...[...serviceOfServiceFactories(serviceFactories)]);
     },
   }));
 };

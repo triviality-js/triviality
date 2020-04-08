@@ -1,11 +1,11 @@
-import { FeatureFactory } from './FeatureFactory';
+import { FeatureFactory, FF } from './FeatureFactory';
 import { invokeFeatureFactories, invokeFeatureFactory } from './invokeFeatureFactory';
 import { callSetupServices, SetupFeature, SetupFeatureServices } from './Feature';
 import { ServiceFunctionReferenceContainer } from './Container';
 import { KernelFeature, KernelServices } from './Feature/KernelFeature';
 
 /**
- * Container factory.
+ * Immutable container factory.
  */
 export class ContainerFactory<S> {
   public static create = (): ContainerFactory<SetupFeatureServices & KernelServices> => {
@@ -26,8 +26,8 @@ export class ContainerFactory<S> {
 
   public async build(): Promise<S> {
     const container = new ServiceFunctionReferenceContainer();
-    const kernelFeature: any = KernelFeature(container);
-    const features: FeatureFactory[] = [kernelFeature, ...this.featureFactories];
+    const kernelFeature: FF<KernelServices> = KernelFeature(container);
+    const features: FeatureFactory<any>[] = [kernelFeature, ...this.featureFactories];
     invokeFeatureFactories({ container, invoke: invokeFeatureFactory })(features);
     const services: S & SetupFeatureServices & KernelServices = await container.build();
     await callSetupServices(services.setupCallbacks);
