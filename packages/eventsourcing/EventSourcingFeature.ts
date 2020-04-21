@@ -1,4 +1,4 @@
-import { FF, RegistryList, SetupFeatureServices } from '@triviality/core';
+import { FF, RegistryList, RegistrySet, SetupFeatureServices } from '@triviality/core';
 import { LoggerFeatureServices, PrefixLogger } from '@triviality/logger';
 import { CommandBus } from './CommandHandling/CommandBus';
 import { CommandHandler } from './CommandHandling/CommandHandler';
@@ -13,6 +13,11 @@ import { QueryHandler } from './QueryHandling/QueryHandler';
 import { SimpleQueryBus } from './QueryHandling/SimpleQueryBus';
 import { ReplayService } from './ReplayService';
 import { EventListener } from './EventHandling/EventListener';
+import { EventBus } from './EventHandling/EventBus';
+import { CommandConstructor, getHandlersDistinctCommands } from './CommandHandling';
+import { EventSourcedEntityConstructor } from './EventSourcing/EventSourcedEntity';
+import { getEventSourcedEntityDistinctDomainEvents } from './EventSourcing/AggregateHandleEvent';
+import { DomainEventConstructor } from './Domain/DomainEvent';
 
 export interface EventSourcingFeatureServices {
   commandHandlers: RegistryList<CommandHandler>;
@@ -30,7 +35,19 @@ export interface EventSourcingFeatureServices {
 
   eventStore: EventStore;
 
-  domainEventBus: AsynchronousEventBus;
+  domainEventBus: EventBus;
+
+  /**
+   * Automatically resolves from command handlers.
+   */
+  commands: CommandConstructor[];
+
+  /**
+   * Automatically resolves from eventSourcedEntities.
+   */
+  domainEvents: DomainEventConstructor[];
+
+  eventSourcedEntities: RegistrySet<EventSourcedEntityConstructor>;
 
   setupEventSourcing(): Promise<void>;
 }
@@ -41,13 +58,18 @@ export const EventSourcingFeature: FF<EventSourcingFeatureServices, LoggerFeatur
        setupCallbacks,
      },
      registerList,
+     registerSet,
      logger,
    }) => {
-
+    const eventSourcedEntities = registerSet<EventSourcedEntityConstructor>();
+    const commandHandlers = registerList<CommandHandler>();
     return {
       ...setupCallbacks('setupEventSourcing'),
 
-      commandHandlers: registerList(),
+      commands: () => getHandlersDistinctCommands(commandHandlers()),
+      domainEvents: () => getEventSourcedEntityDistinctDomainEvents(eventSourcedEntities()),
+      commandHandlers,
+      eventSourcedEntities: registerSet(),
       queryHandlers: registerList(),
       eventListeners: registerList(),
       domainEventStreamDecorators: registerList(),

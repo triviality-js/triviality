@@ -11,6 +11,20 @@ export interface CommandHandlerMetadata {
   command: CommandConstructor;
 }
 
+export function getHandlersDistinctCommands(handlers: CommandHandler[]): CommandConstructor[] {
+  const commands: CommandConstructor[] = [];
+  handlers.forEach((handler) => {
+    const metadata = getHandleCommandMetadata(handler);
+    metadata.forEach(({ command }) => {
+      if (commands.indexOf(command) >= 0) {
+        return;
+      }
+      commands.push(command);
+    });
+  });
+  return commands;
+}
+
 export function getHandleCommandMetadata(target: CommandHandler): CommandHandlerMetadata[] {
   const metadata = Metadata.getMetadata(COMMAND_HANDLERS, target.constructor);
   if (!metadata) {
