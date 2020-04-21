@@ -1,7 +1,8 @@
 import 'reflect-metadata';
-import type { EventSourcedEntity } from './EventSourcedEntity';
+import type { EventSourcedEntity, EventSourcedEntityConstructor } from './EventSourcedEntity';
 import { IncorrectEventHandlerError } from './Error/IncorrectEventHandlerError';
 import { Metadata } from '../Metadata';
+import { uniq } from 'lodash';
 import { DomainEvent, DomainEventConstructor } from '../Domain/DomainEvent';
 import { EventListenerConstructor } from '../EventHandling/EventListener';
 
@@ -12,8 +13,24 @@ export interface EventHandlerMetadata {
   event: DomainEventConstructor<any>;
 }
 
+export function getEventSourcedEntityDistinctDomainEvents(entities: EventSourcedEntityConstructor[]): DomainEventConstructor[] {
+  const events: DomainEventConstructor[] = [];
+  entities.forEach((target: EventSourcedEntityConstructor) => {
+    const metadata: EventHandlerMetadata[] | undefined = Metadata.getMetadata(
+      AGGREGATE_EVENT_HANDLER, target);
+    if (!metadata) {
+      return;
+    }
+    metadata.map(({ event }) => {
+      events.push(event);
+    });
+  });
+  return uniq(events);
+}
+
 export function getAggregateEventHandler(target: EventSourcedEntity, event: DomainEvent): string | null {
-  const metadata: EventHandlerMetadata[] | undefined = Metadata.getMetadata(AGGREGATE_EVENT_HANDLER, target.constructor);
+  const metadata: EventHandlerMetadata[] | undefined = Metadata.getMetadata(
+    AGGREGATE_EVENT_HANDLER, target.constructor);
   if (!metadata) {
     return null;
   }

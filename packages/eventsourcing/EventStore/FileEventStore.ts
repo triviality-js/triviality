@@ -43,13 +43,12 @@ export class FileEventStore<Id extends Identity> implements EventStore<Id> {
     }
     const serialized: FileMessage[] = JSON.parse(fileSystem.readFileSync(file).toString());
     const memoryRepository = InMemoryEventStore.fromArray(serialized.map((event) => fromFile(event, serializer)));
-    return new this(file, serializer, memoryRepository, serialized, fs);
+    return new this(file, serializer, memoryRepository, fs);
   }
 
   protected constructor(protected readonly file: string,
                         protected readonly serializer: SerializerInterface,
                         protected readonly repository: InMemoryEventStore,
-                        protected readonly serialized: FileMessage[],
                         protected readonly fileSystem: typeof fs) {
   }
 
@@ -67,8 +66,8 @@ export class FileEventStore<Id extends Identity> implements EventStore<Id> {
 
   public async append(id: Identity, eventStream: DomainEventStream): Promise<void> {
     const events = await eventStream.pipe(toArray()).toPromise();
-    events.forEach((event) => this.serialized.push(toFile(event, this.serializer)));
-    this.fileSystem.writeFileSync(this.file, JSON.stringify(this.serialized));
+    const serialized = events.map((event) => toFile(event, this.serializer));
+    this.fileSystem.writeFileSync(this.file, JSON.stringify(serialized));
     await this.repository.append(id, eventStream);
   }
 
