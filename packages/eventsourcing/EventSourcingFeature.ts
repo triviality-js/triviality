@@ -69,7 +69,7 @@ export const EventSourcingFeature: FF<EventSourcingFeatureServices, LoggerFeatur
       commands: () => getHandlersDistinctCommands(commandHandlers()),
       domainEvents: () => getEventSourcedEntityDistinctDomainEvents(eventSourcedEntities()),
       commandHandlers,
-      eventSourcedEntities: registerSet(),
+      eventSourcedEntities,
       queryHandlers: registerList(),
       eventListeners: registerList(),
       domainEventStreamDecorators: registerList(),

@@ -24,9 +24,12 @@ export class EventSourcingRepository<AggregateClass extends EventSourcedAggregat
     return this.aggregateFactory.create(id, domainEventStream);
   }
 
-  public async save(aggregate: AggregateClass) {
-    const domainEventStream = aggregate.getUncommittedEvents();
-    const eventStream = this.decorateForWrite(aggregate, domainEventStream);
+  public async save(aggregate: AggregateClass, decorator?: DomainEventStreamDecorator) {
+    let eventStream = aggregate.getUncommittedEvents();
+    if (decorator) {
+      eventStream = decorator.decorate(aggregate, eventStream);
+    }
+    eventStream = this.decorateForWrite(aggregate, eventStream);
     await this.eventStore.append(aggregate.getAggregateRootId(), eventStream);
     await this.eventBus.publish(eventStream);
   }
