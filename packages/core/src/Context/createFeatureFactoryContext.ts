@@ -7,7 +7,7 @@ import { createFeatureFactoryServicesContext } from './ServicesContext';
 import { createFeatureFactoryConstructContext } from './ConstructContext';
 import { createFeatureFactoryRegistryContext } from './RegistryContext';
 import { createFeatureMergeContext } from './MergeFeatureContext';
-import { ServiceFunctionReferenceContainer } from '../Container';
+import { ServiceFunctionReferenceContainer } from '../Containerd';
 import { FeatureFactoryContext } from './FeatureFactoryContext';
 import { keys, includes } from 'ramda';
 import { createFeatureFactoryAsyncContext } from './AsyncContext';

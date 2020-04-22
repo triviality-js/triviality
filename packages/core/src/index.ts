@@ -1,6 +1,6 @@
 import { ContainerFactory } from './ContainerFactory';
 
-export * from './Container';
+export * from './Containerd';
 export * from './Context';
 export * from './FeatureFactory';
 export * from './ServiceFactory';

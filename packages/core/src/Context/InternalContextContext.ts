@@ -1,4 +1,4 @@
-import type { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
+import type { ServiceFunctionReferenceContainerInterface } from '../Containerd/ServiceFunctionReferenceContainerInterface';
 
 // tslint:disable-next-line
 import type { invokeFeatureFactory } from '../invokeFeatureFactory';

@@ -1,6 +1,6 @@
 // tslint:disable-next-line
 import type { FeatureFactoryContext } from './FeatureFactoryContext';
-import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../Containerd/ServiceFunctionReferenceContainerInterface';
 import { FF } from '../FeatureFactory';
 
 /**

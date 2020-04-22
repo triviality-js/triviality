@@ -1,4 +1,4 @@
-import { ServiceFunctionReferenceContainer } from '../Container';
+import { ServiceFunctionReferenceContainer } from '../Containerd';
 import { FF } from '../FeatureFactory';
 import { ImmutableServiceReferenceList } from '../Value/ImmutableServiceReferenceList';
 

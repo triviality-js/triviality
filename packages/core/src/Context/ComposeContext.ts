@@ -2,7 +2,7 @@ import { curryN } from 'ramda';
 import { ServiceTag, SF } from '../ServiceFactory';
 import { servicesByTags } from './ServicesContext';
 import { wrapReturnAsReference } from './ReferenceContext';
-import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../Containerd/ServiceFunctionReferenceContainerInterface';
 
 /**
  * Context for creating new service factories.

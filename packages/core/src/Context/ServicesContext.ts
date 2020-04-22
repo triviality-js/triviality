@@ -1,5 +1,5 @@
 import { ServicesAsFactories as SAF, ServiceTag, SF } from '../ServiceFactory';
-import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../Containerd/ServiceFunctionReferenceContainerInterface';
 
 /**
  * Context helper for retrieving services from context.

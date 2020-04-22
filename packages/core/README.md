@@ -518,7 +518,7 @@ triviality()
 ```
         
 
-Now the original 'greetingService' service is overridden for the whole application. If we now run the example we get the following result: 
+Now the original 'greetingService' service is overridden for the hole application. If we now run the example we get the following result: 
 
 
 ```bash

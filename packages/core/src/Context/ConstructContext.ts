@@ -1,5 +1,5 @@
 import { ServiceFactory, ServiceTag, SF } from '../ServiceFactory';
-import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../Containerd/ServiceFunctionReferenceContainerInterface';
 
 /**
  * Context for constructing new services.

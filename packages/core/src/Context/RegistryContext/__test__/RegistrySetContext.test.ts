@@ -2,7 +2,7 @@ import { createFeatureFactoryRegistryContext } from '../RegistryContext';
 import { always } from 'ramda';
 import { SF } from '../../../ServiceFactory';
 import { TaggedServiceFactoryReference } from '../../../Value/TaggedServiceFactoryReference';
-import { ServiceFunctionReferenceContainer } from '../../../Container';
+import { ServiceFunctionReferenceContainer } from '../../../Containerd';
 
 describe('registerSet', () => {
   it('create empty Set', () => {
