@@ -1,7 +1,7 @@
 {
   "name": "@triviality/eventsourcing",
   "private": false,
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Typed event sourcing framework",
   "main": "index.js",
   "types": "index.d.ts",
@@ -44,9 +44,9 @@
     "typeorm": "^0"
   },
   "dependencies": {
-    "@triviality/core": "^1.2.1",
-    "@triviality/serializer": "^1.1.2",
-    "@triviality/storage": "^1.1.2",
+    "@triviality/core": "^1.2.2",
+    "@triviality/serializer": "^1.1.3",
+    "@triviality/storage": "^1.1.3",
     "@types/extsprintf": "1",
     "@types/lodash": "^4.14.150",
     "@types/uuid": "3",
