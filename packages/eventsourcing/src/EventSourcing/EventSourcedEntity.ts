@@ -9,6 +9,10 @@ export class EventSourcedEntity<T extends EventSourcedAggregateRoot = EventSourc
   constructor(protected aggregateRoot: T) {
   }
 
+  protected apply(event: DomainEvent) {
+    (this.aggregateRoot as any).apply(event);
+  }
+
   protected handle(event: DomainEvent) {
     const method = this.getHandlersName(event);
     if (!method) {
