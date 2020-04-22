@@ -1,140 +1,83 @@
-import { Feature } from '../Type/Feature';
-import { OptionalRegistries, triviality } from '../index';
-import { Container } from '../Type/Container';
+import { FeatureFactory, FF, triviality } from '../index';
+import { RegistryList } from '../Context';
+import { always } from 'ramda';
 
 it('A feature can define a register', async () => {
 
-  class Feature1 implements Feature {
-    public registries() {
-      return {
-        personListeners: () => [1],
-      };
-    }
+  interface Feature1Services {
+    personListeners: RegistryList<number>;
   }
+
+  const Feature1: FF<Feature1Services> = ({ registerList }) => ({
+    personListeners: registerList(() => 1),
+  });
 
   const container = await triviality()
     .add(Feature1)
     .build();
-  expect(container.registries().personListeners()).toEqual([1]);
+  expect(container.personListeners.toArray()).toEqual([1]);
 });
 
 it('A feature can fetch it\s own registers services', async () => {
 
-  class Feature1 implements Feature {
-    public registries() {
-      return {
-        featureVersions: (): number[] => {
-          return [1, 2, 4];
-        },
-      };
-    }
+  interface Feature1Services {
+    featureVersions: RegistryList<number>;
 
-    public sum(): number {
-      const numbers = this.registries().featureVersions();
-      return numbers.reduce((i: number, n: number) => i + n, 0);
-    }
+    sum: number;
 
-    public multiply(): number {
-      const numbers = this.registries().featureVersions();
-      return numbers.reduce((i: number, n: number) => i * n, 1);
-    }
+    multiply: number;
   }
+
+  const Feature1: FF<Feature1Services> = ({ services, registerList }) => {
+    const { featureVersions } = services('featureVersions');
+    return ({
+      featureVersions: registerList<number>(always(1), always(2), always(4)),
+      sum: (): number => {
+        const numbers = featureVersions().toArray();
+        return numbers.reduce((i: number, n: number) => i + n, 0);
+      },
+
+      multiply(): number {
+        const numbers = featureVersions().toArray();
+        return numbers.reduce((i: number, n: number) => i * n, 1);
+      },
+    });
+  };
 
   const serviceContainer = await triviality()
     .add(Feature1)
     .build();
-  expect(serviceContainer.sum()).toEqual(7);
-  expect(serviceContainer.multiply()).toEqual(8);
+  expect(serviceContainer.sum).toEqual(7);
+  expect(serviceContainer.multiply).toEqual(8);
+  expect(serviceContainer.featureVersions.toArray()).toEqual([1, 2, 4]);
 });
 
-it('A feature can fetch the registers from the container', async () => {
-  class Feature1 implements Feature {
-    public registries() {
-      return {
-        featureVersions: (): number[] => {
-          return [1, 2, 4];
-        },
-      };
-    }
-  }
-
-  class Feature2 implements Feature {
-
-    constructor(private container: Container<Feature1>) {
-
-    }
-
-    public sum(): number {
-      const numbers = this.container.registries().featureVersions();
-      return numbers.reduce((i: number, n: number) => i + n, 0);
-    }
-
-    public multiply(): number {
-      const numbers = this.container.registries().featureVersions();
-      return numbers.reduce((i: number, n: number) => i * n, 1);
-    }
-  }
-
-  const serviceContainer = await triviality()
-    .add(Feature1)
-    .add(Feature2)
-    .build();
-  expect(serviceContainer.sum()).toEqual(7);
-  expect(serviceContainer.multiply()).toEqual(8);
-});
-
-it('Multiple feature can register to the same register', async () => {
+it('Multiple features can register to the same register', async () => {
 
   interface PersonEventListener {
     courtesy(event: string): string;
   }
 
-  class ShoppingMall implements Feature {
-    public registries() {
-      return {
-        // Template every listener should match to.
-        personListeners: (): PersonEventListener[] => {
-          return [];
-        },
-      };
-    }
+  interface ShoppingMallServices {
+    personListeners: RegistryList<PersonEventListener>;
 
-    public courtesies(person: string): string[] {
-      return this.registries().personListeners().map((listener) => listener.courtesy(person));
-    }
+    courtesies: (person: string) => string[];
   }
 
-  class Feature1 implements Feature {
-    public registries() {
-      return {
-        personListeners: (): PersonEventListener[] => {
-          return [this.halloEventListener()];
-        },
-      };
-    }
+  const ShoppingMall: FF<ShoppingMallServices> = ({ registerList, instance }) => ({
+    personListeners: registerList(),
 
-    private halloEventListener(): PersonEventListener {
-      return {
-        courtesy: (event: string) => `Hallo ${event}`,
-      };
-    }
-  }
+    courtesies(): (person: string) => string[] {
+      const listeners = instance('personListeners').toArray();
+      return (person) => listeners.map((listener) => listener.courtesy(person));
+    },
+  });
 
-  class Feature2 implements Feature {
-    public registries() {
-      return {
-        personListeners: (): PersonEventListener[] => {
-          return [this.byeEventListener()];
-        },
-      };
-    }
+  const Feature1: FF<void, ShoppingMallServices> = ({ registers: { personListeners } }) =>
+    personListeners((): PersonEventListener => ({ courtesy: (name: string) => `Hallo ${name}` }));
 
-    private byeEventListener(): PersonEventListener {
-      return {
-        courtesy: (event: string) => `Bye ${event}`,
-      };
-    }
-  }
+  const Feature2: FF<void, ShoppingMallServices> = ({ registers: { personListeners } }) =>
+    personListeners((): PersonEventListener => ({ courtesy: (name: string) => `Bye ${name}` }));
 
   const container = await triviality()
     .add(ShoppingMall)
@@ -143,118 +86,73 @@ it('Multiple feature can register to the same register', async () => {
     .build();
   expect(container.courtesies('John')).toEqual(['Hallo John', 'Bye John']);
   expect(container.courtesies('Jane')).toEqual(['Hallo Jane', 'Bye Jane']);
-  expect(container.registries().personListeners().length).toEqual(2);
-});
-
-it('registries are locked and cannot be changed', async () => {
-  const container = await triviality()
-    .add(class Test implements Feature {
-      public registries() {
-        return {
-          testReg: (): number[] => {
-            return [];
-          },
-        };
-      }
-    })
-    .build();
-  expect(() => {
-    ((container.registries().testReg) as any) = 1;
-  }).toThrow('Container is locked and cannot be altered.');
+  expect(container.personListeners.toArray().length).toEqual(2);
 });
 
 it('Feature can add registry to the existing ones', async () => {
 
-  class PersonFeature implements Feature {
-    public registries() {
-      return {
-        persons: (): string[] => {
-          return ['John', 'Jane'];
-        },
-      };
-    }
+  interface PersonFeatureServices {
+    persons: RegistryList<string>;
   }
 
-  class ShopsFeature implements Feature {
-    public registries() {
-      return {
-        shops: (): string[] => {
-          return ['KFC'];
-        },
-      };
-    }
+  const PersonFeature: FF<PersonFeatureServices> = ({ registerList }) => ({
+    persons: registerList<string>(always('John'), always('Jane')),
+  });
+
+  interface ShopFeatureServices {
+    shops: RegistryList<string>;
   }
 
-  class MyFeature implements Feature {
-    public registries(): OptionalRegistries<PersonFeature, ShopsFeature> {
-      return {
-        persons: (): string[] => {
-          return ['Superman'];
-        },
-        shops: (): string[] => {
-          return ['Mac'];
-        },
-      };
-    }
-  }
+  const ShopsFeature: FF<ShopFeatureServices> = ({ registerList }) => ({
+    shops: registerList(always('KFC')),
+  });
 
-  class EmptyFeature implements Feature {
-  }
+  const MyFeature: FF<void, PersonFeatureServices & ShopFeatureServices> = ({ registers: { persons, shops } }) => ({
+    ...persons(() => 'Superman'),
+    ...shops(() => 'Mac'),
+  });
 
   const container = await triviality()
     .add(PersonFeature)
     .add(ShopsFeature)
     .add(MyFeature)
-    .add(EmptyFeature)
     .build();
 
-  expect(container.registries().shops()).toEqual(['KFC', 'Mac']);
-  expect(container.registries().persons()).toEqual(['John', 'Jane', 'Superman']);
+  expect(container.shops.toArray()).toEqual(['KFC', 'Mac']);
+  expect(container.persons.toArray()).toEqual(['John', 'Jane', 'Superman']);
 });
 
-it('Feature can have async registries', async () => {
-  class MyFeature implements Feature {
-    public async registries() {
-      return {
-        persons: (): string[] => {
-          return ['Superman'];
-        },
-        shops: (): string[] => {
-          return ['Mac'];
-        },
-      };
-    }
+it('Can create listeners', async () => {
+
+  interface SayGoodByListenerFeatureServices {
+    teardown: RegistryList<(name: string) => string>;
+    sayBye: (name: string) => string;
   }
 
-  const container = await triviality()
-    .add(MyFeature)
-    .build();
+  const sayGoodByListenerFeature: FF<SayGoodByListenerFeatureServices> = ({ registerList }) => {
+    return ({
+      teardown: registerList('sayBye'),
+      sayBye: () => (name: string) => `Bye ${name}`,
+    });
+  };
 
-  expect(container.registries().shops()).toEqual(['Mac']);
-  expect(container.registries().persons()).toEqual(['Superman']);
-});
-
-it('Async registries can fetch async services', async () => {
-  const asyncService = jest.fn().mockResolvedValue({ hallo: () => 'hallo' });
-
-  class MyFeature implements Feature {
-    public async registries() {
-      const halloService = await this.halloService();
-      return {
-        listeners: (): Array<{ hallo: () => string }> => {
-          return [halloService];
-        },
-      };
-    }
-
-    public halloService(): Promise<{ hallo: () => string }> {
-      return asyncService();
-    }
+  interface PleaseComeBackFeatureServices {
+    pleaseComeBack: (name: string) => string;
   }
 
+  const pleaseComeBackFeature: FeatureFactory<PleaseComeBackFeatureServices, SayGoodByListenerFeatureServices> =
+    ({ services, registers: { teardown } }) => ({
+      pleaseComeBack: () => (name: string) => `Please come back ${name}!`,
+      ...teardown(...services('pleaseComeBack')),
+    });
+
   const container = await triviality()
-    .add(MyFeature)
+    .add(sayGoodByListenerFeature)
+    .add(pleaseComeBackFeature)
     .build();
 
-  expect(container.registries().listeners()[0].hallo()).toEqual('hallo');
+  const tearDownFunctions = container.teardown.toArray();
+  expect(tearDownFunctions.length).toEqual(2);
+  expect(tearDownFunctions.map((service) => service('John')))
+    .toEqual(['Bye John', 'Please come back John!']);
 });

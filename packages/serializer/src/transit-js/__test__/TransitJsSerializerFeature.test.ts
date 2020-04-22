@@ -1,6 +1,6 @@
-import triviality, { Feature, OptionalRegistries } from '@triviality/core';
+import triviality, { FF } from '@triviality/core';
 import { Record } from 'immutable';
-import { TransitJsSerializerFeature } from '../TransitJsSerializerFeature';
+import { TransitJsSerializerFeature, TransitJsSerializerFeatureServices } from '../TransitJsSerializerFeature';
 
 it('Can use TransitJsSerializerFeature', async () => {
 
@@ -21,29 +21,19 @@ it('Can use TransitJsSerializerFeature', async () => {
 
   const UserRecord = Record<{ name: string, address: Address }>({ name: null!, address: null! }, 'UserRecord');
 
-  class MyUserFeature implements Feature {
-    public registries(): OptionalRegistries<TransitJsSerializerFeature> {
-      return {
-        serializableClasses: () => {
-          return {
-            Address,
-          };
-        },
-        serializableRecords: () => {
-          return [UserRecord];
-        },
-      };
-    }
-  }
+  const MyUserFeature: FF<unknown, TransitJsSerializerFeatureServices> = ({ registers: { serializableClasses, serializableRecords } }) => ({
+    ...serializableClasses(['Address', () => Address]),
+    ...serializableRecords(() => UserRecord),
+  });
 
-  const container = await triviality()
+  const { serializer } = await triviality()
     .add(TransitJsSerializerFeature)
     .add(MyUserFeature)
     .build();
 
-  const serializer = container.serializer();
   const serialized = serializer.serialize(new UserRecord({ name: 'Eric', address: new Address('1234TR', 'Goes') }));
 
   expect(typeof serialized).toEqual('string');
-  expect(serializer.deserialize(serialized)).toEqual(new UserRecord({ name: 'Eric', address: new Address('1234TR', 'Goes') }));
+  expect(serializer.deserialize(serialized)).toEqual(
+    new UserRecord({ name: 'Eric', address: new Address('1234TR', 'Goes') }));
 });

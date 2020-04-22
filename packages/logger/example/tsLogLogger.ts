@@ -1,4 +1,4 @@
-import { TsLogLogger } from '../src/TsLogLogger';
+import { TsLogLogger } from '../src';
 import { Logger } from 'ts-log';
 
 const tsLogger: Logger = console;

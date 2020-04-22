@@ -4,7 +4,6 @@ import { LogFeature } from './LogFeature';
 triviality()
   .add(LogFeature)
   .build()
-  .then((container) => {
-    const logger = container.logger();
+  .then(({ logger }) => {
     logger.info('Hallo word');
   });

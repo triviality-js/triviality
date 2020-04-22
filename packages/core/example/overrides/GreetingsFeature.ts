@@ -1,11 +1,11 @@
-import { Feature } from '../../src';
-import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 import { CasualGreetingService } from './services/CasualGreetingService';
+import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
+import { FF } from '../../src';
 
-export class GreetingsFeature implements Feature {
-
-  public greetingService(): GreetingsServiceInterface {
-    return new CasualGreetingService();
-  }
-
+export interface GreetingsFeatureServices {
+  greetingService: GreetingsServiceInterface;
 }
+
+export const GreetingsFeature: FF<GreetingsFeatureServices> = () => ({
+  greetingService: () => new CasualGreetingService(),
+});

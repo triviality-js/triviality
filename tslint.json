@@ -1,7 +1,8 @@
 {
   "extends": [
     "tslint:recommended",
-    "tslint-config-airbnb"
+    "tslint-config-airbnb",
+    "tslint-no-circular-imports"
   ],
   "jsRules": {
     "object-literal-sort-keys": false
@@ -31,7 +32,8 @@
     ],
     "no-reference": false,
     "max-classes-per-file": false,
-    "jsx-boolean-value": false
+    "jsx-boolean-value": false,
+    "unified-signatures": false
   },
   "rulesDirectory": [],
   "linterOptions": {

@@ -1,7 +1,7 @@
 {
   "name": "@triviality/logger",
   "private": false,
-  "version": "0.2.4",
+  "version": "1.1.0",
   "description": "Typescript loggers with an interface that support composition",
   "main": "index.js",
   "types": "index.d.ts",
@@ -10,7 +10,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "test": "npm-run-all clean-build build lint unit-test copy-past-detection",
-    "clean-build": "git clean -fdX --exclude node_modules",
+    "clean-build": "git clean -fdx --exclude node_modules",
     "lint": "tslint --project ./",
     "lint-fix": "tslint  --project ./ --fix",
     "security-audit": "yarn audit",
@@ -38,13 +38,9 @@
   },
   "homepage": "https://github.com/triviality-js/triviality#README",
   "dependencies": {
-    "@triviality/core": "^0.8.3",
-    "moment": "^2.23",
-    "ts-log": "^2.1"
-  },
-  "devDependencies": {
-    "ts-jest": "^23",
-    "ts-node": "^7"
+    "@triviality/core": "^1.2.0",
+    "moment": "2",
+    "ts-log": "2"
   },
   "publishConfig": {
     "access": "public"

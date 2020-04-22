@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { ComponentClass, FunctionComponent } from 'react';
-import { Omit } from '@triviality/core';
 import { ServiceContainerConsumer } from './ServiceContainerConsumer';
 
 export interface WithServiceContainerProps<T> {

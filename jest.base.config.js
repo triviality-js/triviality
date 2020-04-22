@@ -2,14 +2,6 @@ module.exports = {
     collectCoverage: false,
     testEnvironment: "node",
     coverageDirectory: "reports/coverage",
-    collectCoverageFrom: [
-        "src/**/*.{tsx?}",
-        "!example/**/*",
-        "!__test__/*",
-        "!**/__test__/**",
-        "!**/build",
-        "!**/.stryker-tmp",
-    ],
     coverageReporters: [
         "json-summary",
         "text",

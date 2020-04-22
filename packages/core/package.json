@@ -1,19 +1,19 @@
 {
   "name": "@triviality/core",
   "private": false,
-  "version": "0.8.3",
+  "version": "1.2.0",
   "description": "Purely typed service container",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "tsc",
-    "watch": "tsc --watch",
+    "build": "tsc ",
+    "watch": "tsc  --watch",
     "create-types": "ts-node src/cli/createTypes.ts",
-    "test": "npm-run-all clean-build build lint unit-test copy-past-detection",
-    "clean-build": "git clean -fdX --exclude node_modules",
-    "lint": "tslint --project ./",
-    "lint-fix": "tslint  --project ./ --fix",
+    "test": "npm-run-all clean-build build lint unit-test copy-past-detection create-readme",
+    "clean-build": "git clean -fdx --exclude node_modules",
+    "lint": "tslint --project . ",
+    "lint-fix": "tslint  --project . --fix",
     "security-audit": "yarn audit",
     "create-readme": "ts-node ../../scripts/build_readme.ts",
     "unit-test": "jest",
@@ -40,8 +40,15 @@
     "access": "public"
   },
   "devDependencies": {
-    "ts-jest": "^23",
-    "ts-node": "^7"
+    "@types/node": "^13.9.1",
+    "filehound": "1",
+    "prettier": "^2.0.2"
   },
-  "gitHead": "b1d66132bb4f54b57bc411846c4fa44d6556a520"
+  "gitHead": "b1d66132bb4f54b57bc411846c4fa44d6556a520",
+  "dependencies": {
+    "@types/lodash": "^4.14.149",
+    "@types/ramda": "0",
+    "lodash": "^4.17.15",
+    "ramda": "0"
+  }
 }

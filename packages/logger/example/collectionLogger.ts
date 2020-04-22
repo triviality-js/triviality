@@ -1,6 +1,4 @@
-import { CollectionLogger } from '../src/CollectionLogger';
-import { ConsoleLogger } from '../src/ConsoleLogger';
-import { PrefixLogger } from '../src/PrefixLogger';
+import { CollectionLogger, ConsoleLogger, PrefixLogger } from '../src';
 
 const consoleLogger = new ConsoleLogger(console);
 const logger = new CollectionLogger([

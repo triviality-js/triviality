@@ -1,9 +1,11 @@
-import { Feature } from '../../src';
+import { FF } from '../../src';
 import { LoggerInterface } from './LoggerInterface';
 import { ConsoleLogger } from './ConsoleLogger';
 
-export class LogFeature implements Feature {
-  public logger(): LoggerInterface {
-    return new ConsoleLogger();
-  }
+export interface LogServices {
+  logger: LoggerInterface;
 }
+
+export const LogFeature: FF<LogServices> = () => ({
+  logger: () => new ConsoleLogger(),
+});

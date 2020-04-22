@@ -42,7 +42,7 @@ export function queryHandlerResponseMiddleware<D extends Dispatch = Dispatch, S 
 
     handleQueryActions$.next(action);
 
-    if (isQueryStatusSubscribable(action)) {
+    if (isQueryStatusSubscribable<any>(action)) {
       const entity = action.metadata.entity;
       const query = action.query;
       const queriesForEntity$: Observable<QueryAction> = queryActions$.pipe(

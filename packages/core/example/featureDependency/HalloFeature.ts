@@ -1,13 +1,15 @@
+import { FF } from '../../src';
+import { LoggerInterface } from '../features/LoggerInterface';
 import { HalloService } from './HalloService';
-import { Container, Feature } from '../../src';
-import { LogFeature } from '../features/LogFeature';
 
-export class HalloFeature implements Feature {
-
-  constructor(private container: Container<LogFeature>) {
-  }
-
-  public halloService(name: string): HalloService {
-    return new HalloService(this.container.logger(), name);
-  }
+export interface HalloFeatureServices {
+  halloServiceFactory: (name: string) => HalloService;
 }
+
+export interface HalloFeatureDependencies {
+  logger: LoggerInterface;
+}
+
+export const HalloFeature: FF<HalloFeatureServices, HalloFeatureDependencies> = ({ logger }) => ({
+  halloServiceFactory: () => (name: string) => new HalloService(logger(), name),
+});

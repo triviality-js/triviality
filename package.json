@@ -1,35 +1,40 @@
 {
   "name": "root",
   "private": true,
+  "engines": {
+    "node": "^11",
+    "yarn": "^1.22"
+  },
   "devDependencies": {
-    "@stryker-mutator/core": "^1.1.0",
-    "@stryker-mutator/html-reporter": "^1.1.0",
-    "@stryker-mutator/jest-runner": "^1.1.0",
-    "@stryker-mutator/typescript": "^1.1.0",
-    "@types/find": "^0.2.1",
-    "@types/fs-extra": "^5.0.5",
-    "@types/jest": "^23",
-    "@types/node": "^10",
-    "browser-sync": "^2.26.3",
+    "@stryker-mutator/core": "^2",
+    "@stryker-mutator/html-reporter": "^2",
+    "@stryker-mutator/jest-runner": "^2",
+    "@stryker-mutator/typescript": "^2",
+    "@types/find": "^0",
+    "@types/fs-extra": "^8",
+    "@types/jest": "^25",
+    "@types/node": "^12",
+    "browser-sync": "^2",
     "child-process-promise": "^2",
-    "css-loader": "^1.0.0",
+    "css-loader": "^3",
     "find": "^0.3.0",
-    "fs-extra": "^7.0.1",
-    "jest": "^23",
-    "jscpd": "^2",
-    "lerna": "^3.13.1",
+    "fs-extra": "^8",
+    "jest": "^25",
+    "jscpd": "^3",
+    "lerna": "^3",
     "markdown-include": "^0",
-    "node-sass": "^4.9.3",
+    "node-sass": "^4.13",
     "npm-run-all": "^4",
-    "sass-loader": "^7.1.0",
-    "style-loader": "^0.23.0",
-    "ts-jest": "^23",
-    "ts-loader": "^5.2.1",
+    "sass-loader": "^7",
+    "style-loader": "^1",
+    "ts-jest": "^25",
+    "ts-loader": "^5.4.5",
     "ts-node": "^7",
-    "tslint": "^5",
-    "tslint-config-airbnb": "^5",
-    "tslint-microsoft-contrib": "^6",
-    "typescript": "^3"
+    "tslint": "^6",
+    "tslint-config-airbnb": "^5.11",
+    "tslint-microsoft-contrib": "^6.2",
+    "tslint-no-circular-imports": "^0.7.0",
+    "typescript": "^3.8"
   },
   "workspaces": [
     "packages/*"
@@ -54,10 +59,9 @@
     "copy-past-detection": "jscpd"
   },
   "dependencies": {
-    "@symfony/webpack-encore": "^0.26.0",
+    "@symfony/webpack-encore": "^0.28.3",
     "browser-sync-webpack-plugin": "^2.2.2",
-    "ts-node-dev": "^1.0.0-pre.32",
-    "webpack": "4.29.6",
-    "webpack-visualizer-plugin": "^0.1.11"
+    "ts-node-dev": "^1.0.0-pre.44",
+    "webpack-visualizer-plugin": "^0"
   }
 }

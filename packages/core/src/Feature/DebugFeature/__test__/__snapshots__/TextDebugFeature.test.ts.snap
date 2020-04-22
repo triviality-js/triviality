@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`With complex dependencies 1`] = `
+"              ________________________________________________________________________________________________________________________________________________________________________________
+             /                           \\\\                                  \\\\                       \\\\        \\\\        \\\\           \\\\             \\\\                   \\\\                         \\\\
+  #1 kernelFeature.kernel  #3 setupFeature.setupCallbacks  #4 textDebugFeature.getDependencyTree  #5 CF.a  #6 CF.b  #7 CF.c  #8 CF.single    #9 CF.ab           #10 CF.abc_________      #11 CF.nested
+                                                                                                                                   |        /        \\\\         /          \\\\        \\\\           |
+                                                                                                                                #5 CF.a  #5 CF.a   #6 CF.b  #5 CF.a     #6 CF.b  #7 CF.c  #10 CF.abc_________
+                                                                                                                                                                                         /          \\\\        \\\\
+                                                                                                                                                                                      #5 CF.a     #6 CF.b  #7 CF.c"
+`;
+
+exports[`Without any services 1`] = `
+"              ______________________________________________________________
+             /                           \\\\                                  \\\\
+  #1 kernelFeature.kernel  #3 setupFeature.setupCallbacks  #4 textDebugFeature.getDependencyTree"
+`;

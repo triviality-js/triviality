@@ -1,66 +1,61 @@
-import { Container, Feature, OptionalRegistries } from '@triviality/core';
-import { EventsourcingReduxClientFeature } from '@triviality/eventsourcing-redux/EventsourcingReduxClientFeature';
+import { FF } from '@triviality/core';
+import { EventsourcingReduxClientFeatureServices } from '@triviality/eventsourcing-redux/EventsourcingReduxClientFeature';
 import { persistentStateEnhancer } from '@triviality/eventsourcing-redux/Redux/persistentStateEnhancer';
 import { StateStorageInterface } from '@triviality/eventsourcing-redux/Redux/StateStorageInterface';
-import { LoggerFeature } from '@triviality/logger';
-import { SerializerFeature } from '@triviality/serializer';
-import { singleValue } from '@triviality/storage';
+import { LoggerFeatureServices } from '@triviality/logger';
+import { SerializerFeatureServices } from '@triviality/serializer';
+import { singleValue, SingleValueStoreAdapter } from '@triviality/storage';
 import { domStorage } from '@triviality/storage/DOM';
 import { serializeValue } from '@triviality/storage/SerializableKeyValueStoreAdapter';
-import { ChatReduxFeature } from '../ChatReduxFeature';
-import { StoreState } from '../StoreState';
+import { ChatReduxFeatureServices } from '../ChatReduxFeature';
+import { StoredState, StoreState } from '../StoreState';
 import { appReducer } from './appReducer';
 import { AppStateStorage } from './AppStateStorage';
+import { StoreEnhancer } from 'redux';
 
-export class AppFeature implements Feature {
-
-  constructor(private container: Container<LoggerFeature, SerializerFeature, ChatReduxFeature>) {
-  }
-
-  public registries(): OptionalRegistries<ChatReduxFeature> {
-    return {
-      reducers: () => {
-        return {
-          app: appReducer,
-        };
-      },
-      enhancers: () => {
-        return [this.persistentStoreEnhancer()];
-      },
-    };
-  }
-
-  public serviceOverrides(container: Readonly<Container<EventsourcingReduxClientFeature>>): Partial<Container<EventsourcingReduxClientFeature>> {
-    return {
-      defaultGatewayOption: () => {
-        const baseOptions = container.defaultGatewayOption();
-        return {
-          ...baseOptions,
-          gate: `http://localhost:3000${baseOptions.gate}`,
-        };
-      },
-    };
-  }
-
-  public valueStore(): StateStorageInterface<StoreState> {
-    const logger = this.container.logger();
-    return new AppStateStorage(
-      this.storedStateStore(),
-      logger,
-    );
-  }
-
-  public storedStateStore() {
-    return singleValue(
-      serializeValue(
-        this.container.serializer(),
-        domStorage(window.localStorage),
-      ),
-      'chat-state',
-    );
-  }
-
-  public persistentStoreEnhancer() {
-    return persistentStateEnhancer(this.valueStore());
-  }
+export interface AppFeatureServices {
+  persistentStoreEnhancer: StoreEnhancer;
+  valueStore: StateStorageInterface<StoreState>;
+  storedStateStore: SingleValueStoreAdapter<StoredState>;
 }
+
+export interface AppFeatureDependencies extends LoggerFeatureServices, SerializerFeatureServices, ChatReduxFeatureServices, EventsourcingReduxClientFeatureServices {
+
+}
+
+export const AppFeature: FF<AppFeatureServices, AppFeatureDependencies> =
+  ({
+     logger,
+     serializer,
+     registers: {
+       reducers,
+       enhancers,
+     },
+   }) => {
+    reducers({
+      app: () => appReducer,
+    });
+    enhancers('persistentStoreEnhancer');
+    return {
+      valueStore(): StateStorageInterface<StoreState> {
+        const valueStoreLogger = logger();
+        return new AppStateStorage(
+          this.storedStateStore(),
+          valueStoreLogger,
+        );
+      },
+
+      storedStateStore(): SingleValueStoreAdapter<StoredState> {
+        return singleValue(
+          serializeValue(
+            serializer(),
+            domStorage(window.localStorage),
+          ),
+          'chat-state',
+        );
+      },
+      persistentStoreEnhancer(): StoreEnhancer {
+        return persistentStateEnhancer(this.valueStore()) as any;
+      },
+    };
+  };

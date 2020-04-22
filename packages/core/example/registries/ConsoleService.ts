@@ -6,23 +6,28 @@ import { ProcessOutput } from './ProcessOutput';
 
 export class ConsoleService {
 
-  private commandMap: { [name: string]: ConsoleCommand } = {};
+  private commandMap = new Map<string, ConsoleCommand>();
 
   constructor(commands: ConsoleCommand[],
               private input: ConsoleInput = new ProcessInput(),
               private output: ConsoleOutput = new ProcessOutput()) {
-    commands.forEach((command) => {
-      this.commandMap[command.name()] = command;
+    commands.forEach((command: any) => {
+      this.commandMap.set(command.name(), command);
     });
   }
 
   public async handle() {
     const name = this.input.getArg(0, '');
-    if (!this.commandMap[name]) {
+    if (name.trim() === '') {
+      this.output.info('No command given');
+      return;
+    }
+    const command = this.commandMap.get(name);
+    if (!command) {
       this.output.error(`Missing command for ${name}`);
       return;
     }
-    await this.commandMap[name].execute(this.input, this.output);
+    await command.execute(this.input, this.output);
   }
 
 }

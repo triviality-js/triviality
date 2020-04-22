@@ -1,12 +1,14 @@
 import { LoggerInterface } from '../LoggerInterface';
-import { LoggerFeature } from './LoggerFeature';
 import { ConsoleLogger } from '../ConsoleLogger';
 import { PrefixDateLogger } from '../PrefixDateLogger';
+import { FF } from '@triviality/core';
 
-export class DefaultLoggerFeature extends LoggerFeature {
-
-  public logger(): LoggerInterface {
-    return new PrefixDateLogger(new ConsoleLogger(console));
-  }
-
+export interface LoggerFeatureServices {
+  logger: LoggerInterface;
 }
+
+export const DefaultLoggerFeature: FF<LoggerFeatureServices, {}> = () => ({
+
+  logger: () => new PrefixDateLogger(new ConsoleLogger(console)),
+
+});

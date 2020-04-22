@@ -9,4 +9,3 @@ export * from './PrefixLogger';
 export * from './TsLogLogger';
 
 export * from './Feature/DefaultLoggerFeature';
-export * from './Feature/LoggerFeature';

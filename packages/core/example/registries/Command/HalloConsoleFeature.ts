@@ -1,20 +1,7 @@
-import { Feature, Registries } from '../../../src';
-import { ConsoleCommand } from '../ConsoleCommand';
+import { FF } from '../../../src';
+import { ConsoleFeatureServices } from '../ConsoleFeature';
 import { HalloConsoleCommand } from './HalloConsoleCommand';
-import { ConsoleFeature } from '../ConsoleFeature';
 
-export class HalloConsoleFeature implements Feature {
-
-  public registries(): Registries<ConsoleFeature> {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [this.halloConsoleCommand()];
-      },
-    };
-  }
-
-  private halloConsoleCommand() {
-    return new HalloConsoleCommand();
-  }
-
-}
+export const HalloConsoleFeature: FF<{}, ConsoleFeatureServices> = ({ registers: { consoleCommands }, construct }) => ({
+  ...consoleCommands(construct(HalloConsoleCommand)),
+});

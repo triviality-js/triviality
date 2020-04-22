@@ -7,6 +7,6 @@ triviality()
   .add(HalloFeature)
   .build()
   .then((container) => {
-    const service = container.halloService('John');
+    const service = container.halloServiceFactory('John');
     service.speak();
   });

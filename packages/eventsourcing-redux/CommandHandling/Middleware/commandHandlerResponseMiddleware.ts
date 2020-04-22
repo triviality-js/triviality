@@ -35,7 +35,7 @@ export function commandHandlerResponseMiddleware<D extends Dispatch = Dispatch, 
 
     handleCommandActions$.next(action);
 
-    if (isCommandStatusSubscribable(action)) {
+    if (isCommandStatusSubscribable<any>(action)) {
       const entity = action.metadata.entity;
       const command = action.command;
       const commandsForEntity$: Observable<CommandAction> = commandActions$.pipe(

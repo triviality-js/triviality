@@ -1,12 +1,12 @@
-import { Container, Feature, OptionalContainer } from '../../src';
+import { FF } from '../../src';
+import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 import { ScreamGreetingsService } from './services/ScreamGreetingsService';
-import { GreetingsFeature } from './GreetingsFeature';
+import { GreetingsFeatureServices } from './GreetingsFeature';
 
-export class ScreamGreetingsFeature implements Feature {
-  public serviceOverrides(container: Container<GreetingsFeature>): OptionalContainer<GreetingsFeature> {
-    return {
-      greetingService: () => new ScreamGreetingsService(container.greetingService()),
-    };
-  }
-
+function decorateWithScreams(greeter: GreetingsServiceInterface): GreetingsServiceInterface {
+  return new ScreamGreetingsService(greeter);
 }
+
+export const ScreamGreetingsFeature: FF<unknown, GreetingsFeatureServices> = ({ override: { greetingService } }) => ({
+  ...greetingService((original) => decorateWithScreams(original())),
+});

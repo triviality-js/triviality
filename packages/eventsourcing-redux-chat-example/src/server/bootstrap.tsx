@@ -23,5 +23,5 @@ ContainerFactory
   .add(ChatChannelFeature)
   .build()
   .then((container) => {
-    container.startCommanderService().start();
+    container.commanderBootstrapService.handle();
   });

@@ -56,27 +56,31 @@ is connected properly before your application code even has executed.
 
 > It's not required to use Typescript when using Triviality, but it's highly recommended.
 
+# Class
+
 ## Features
 
 Triviality by its core is split into features. Each feature has his own services definitions
 so it can serve it's unique and there separate logic.
-A feature is defined as a class.
+A feature is defined as a function.
 
 
 ```typescript
-import { Feature } from '@triviality/core';
+import { FF } from '@triviality/core';
 import { LoggerInterface } from './LoggerInterface';
 import { ConsoleLogger } from './ConsoleLogger';
 
-export class LogFeature implements Feature {
-  public logger(): LoggerInterface {
-    return new ConsoleLogger();
-  }
+export interface LogServices {
+  logger: LoggerInterface;
 }
+
+export const LogFeature: FF<LogServices> = () => ({
+  logger: () => new ConsoleLogger(),
+});
 ```
         
 
-As you can see a feature class has functions. The function name is the service name.
+As you can see a feature return factory functions. The function name is the service name.
 The function implementation is the service definition. Before we can use the service from the service container
 we need to build it:   
 
@@ -88,8 +92,7 @@ import { LogFeature } from './LogFeature';
 triviality()
   .add(LogFeature)
   .build()
-  .then((container) => {
-    const logger = container.logger();
+  .then(({ logger }) => {
     logger.info('Hallo word');
   });
 ```
@@ -100,21 +103,24 @@ singleton based on the service factory arguments. For example, create a service 
 
 
 ```typescript
-import { Feature } from '@triviality/core';
 import { LoggerInterface } from '../features/LoggerInterface';
 import { PrefixedLogger } from './PrefixedLogger';
+import { FF } from '@triviality/core';
+import { ConsoleLogger } from '../features/ConsoleLogger';
 
-export class LogFeature implements Feature {
+export const createPrefixedLogger = (logger: LoggerInterface) => (prefix: string): LoggerInterface => {
+  return new PrefixedLogger(logger, prefix);
+};
 
-  public logger(): LoggerInterface {
-    return console;
-  }
-
-  public prefixedLogger(prefix: string): LoggerInterface {
-    return new PrefixedLogger(this.logger(), prefix);
-  }
-
+export interface LogFeatureInstance {
+  logger: LoggerInterface;
+  prefixedLogger: (name: string) => LoggerInterface;
 }
+
+export const LogFeature: FF<LogFeatureInstance> = ({ services }) => ({
+  logger: () => new ConsoleLogger(),
+  prefixedLogger: () => createPrefixedLogger(services('logger').logger()),
+});
 ```
         
 
@@ -158,19 +164,21 @@ Let's put the type checking to the test, we create a nice feature that dependenc
 
 
 ```typescript
+import { FF } from '@triviality/core';
+import { LoggerInterface } from '../features/LoggerInterface';
 import { HalloService } from './HalloService';
-import { Container, Feature } from '@triviality/core';
-import { LogFeature } from '../features/LogFeature';
 
-export class HalloFeature implements Feature {
-
-  constructor(private container: Container<LogFeature>) {
-  }
-
-  public halloService(name: string): HalloService {
-    return new HalloService(this.container.logger(), name);
-  }
+export interface HalloFeatureServices {
+  halloServiceFactory: (name: string) => HalloService;
 }
+
+export interface HalloFeatureDependencies {
+  logger: LoggerInterface;
+}
+
+export const HalloFeature: FF<HalloFeatureServices, HalloFeatureDependencies> = ({ logger }) => ({
+  halloServiceFactory: () => (name: string) => new HalloService(logger(), name),
+});
 ```
         
 
@@ -210,7 +218,7 @@ triviality()
   .add(HalloFeature)
   .build()
   .then((container) => {
-    const service = container.halloService('John');
+    const service = container.halloServiceFactory('John');
     service.speak();
   });
 ```
@@ -255,20 +263,16 @@ To define a registry inside a feature it needs to implement the 'registries' fun
 
 
 ```typescript
-import { Feature } from '@triviality/core';
+import { FF, RegistryList } from '@triviality/core';
 import { ConsoleCommand } from './ConsoleCommand';
 
-export class ConsoleFeature implements Feature {
-
-  public registries() {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [];
-      },
-    };
-  }
-
+export interface ConsoleFeatureServices {
+  consoleCommands: RegistryList<ConsoleCommand>;
 }
+
+export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ registerList }) => ({
+  consoleCommands: registerList(),
+});
 ```
         
 
@@ -278,51 +282,31 @@ It's possible to add a registry to multiple feature. In the next examples, both 
  
 
 ```typescript
-import { Feature, Registries } from '@triviality/core';
-import { ConsoleCommand } from '../ConsoleCommand';
+import { FF } from '@triviality/core';
+import { ConsoleFeatureServices } from '../ConsoleFeature';
 import { HalloConsoleCommand } from './HalloConsoleCommand';
-import { ConsoleFeature } from '../ConsoleFeature';
 
-export class HalloConsoleFeature implements Feature {
-
-  public registries(): Registries<ConsoleFeature> {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [this.halloConsoleCommand()];
-      },
-    };
-  }
-
-  private halloConsoleCommand() {
-    return new HalloConsoleCommand();
-  }
-
-}
+export const HalloConsoleFeature: FF<{}, ConsoleFeatureServices> = ({ registers: { consoleCommands }, construct }) => ({
+  ...consoleCommands(construct(HalloConsoleCommand)),
+});
 ```
         
 
 
 ```typescript
-import { Feature, OptionalRegistries } from '@triviality/core';
+import { FF } from '@triviality/core';
 import { ConsoleCommand } from '../ConsoleCommand';
 import { ByeConsoleCommand } from './ByeConsoleCommand';
-import { ConsoleFeature } from '../ConsoleFeature';
+import { ConsoleFeatureServices } from '../ConsoleFeature';
 
-export class ByeConsoleFeature implements Feature {
-
-  public registries(): OptionalRegistries<ConsoleFeature> {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [this.byeConsoleCommand()];
-      },
-    };
-  }
-
-  private byeConsoleCommand() {
-    return new ByeConsoleCommand();
-  }
-
+interface ByeConsoleServices {
+  byeConsoleCommand: ConsoleCommand;
 }
+
+export const ByeConsoleFeature: FF<ByeConsoleServices, ConsoleFeatureServices> = ({ registers: { consoleCommands }, construct, service }) => ({
+  ...consoleCommands(service('byeConsoleCommand')),
+  byeConsoleCommand: construct(ByeConsoleCommand),
+});
 ```
         
 
@@ -331,33 +315,22 @@ During the service container build phase, the registries will be combined, so al
 
 
 ```typescript
-import { Feature } from '@triviality/core';
-import { ConsoleCommand } from './ConsoleCommand';
 import { ConsoleService } from './ConsoleService';
+import { FF, RegistryList } from '@triviality/core';
+import { ConsoleCommand } from './ConsoleCommand';
 
-export class ConsoleFeature implements Feature {
-
-  /**
-   * The strict interface, all other feature needs to follow.
-   */
-  public registries() {
-    return {
-      consoleCommands: (): ConsoleCommand[] => {
-        return [];
-      },
-    };
-  }
-
-  /**
-   * Triviality will combine the result consoleCommands and return it as single array.
-   */
-  public consoleService() {
-    return new ConsoleService(
-      this.registries().consoleCommands(),
-    );
-  }
-
+export interface ConsoleFeatureServices {
+  consoleCommands: RegistryList<ConsoleCommand>;
+  consoleService: ConsoleService;
 }
+
+export const ConsoleFeature: FF<ConsoleFeatureServices> = ({ registerList }) => {
+  const consoleCommands = registerList<ConsoleCommand>();
+  return ({
+    consoleCommands,
+    consoleService: () => new ConsoleService(consoleCommands().toArray()),
+  });
+};
 ```
         
 
@@ -366,18 +339,16 @@ Now we can combine the different command feature and build the service container
 
 ```typescript
 import { triviality } from '@triviality/core';
-import { ConsoleFeature } from './ConsoleFeature';
-import { HalloConsoleFeature } from './Command/HalloConsoleFeature';
 import { ByeConsoleFeature } from './Command/ByeConsoleFeature';
+import { HalloConsoleFeature } from './Command/HalloConsoleFeature';
+import { ConsoleFeature } from './ConsoleFeature';
 
 triviality()
   .add(ConsoleFeature)
   .add(HalloConsoleFeature)
   .add(ByeConsoleFeature)
   .build()
-  .then((container) => {
-    return container.consoleService().handle();
-  });
+  .then((container) => container.consoleService.handle());
 ```
         
 
@@ -408,22 +379,21 @@ task. The feature can check if everything is configured properly or connect to e
 
 
 ```typescript
-import { Feature } from '@triviality/core';
+import { FF, SetupFeatureServices } from '@triviality/core';
 import { Database } from './Database';
 
-export class DatabaseFeature implements Feature {
+export interface DatabaseFeatureServices {
+  database: Database;
+}
 
-  public setup() {
-    if (!this.database().isConnected()) {
+export const DatabaseFeature: FF<DatabaseFeatureServices, SetupFeatureServices> = ({ registers: { setupCallbacks }, services, construct }) => ({
+  ...setupCallbacks(() => () => {
+    if (!services('database').database().isConnected()) {
       throw new Error('Database is not connected!');
     }
-  }
-
-  public database(): Database {
-    return new Database();
-  }
-
-}
+  }),
+  database: construct(Database),
+});
 ```
         
 
@@ -438,7 +408,7 @@ triviality()
   .add(DatabaseFeature)
   .build()
   .then((container) => {
-    container.database().someFancyQuery();
+    container.database.someFancyQuery();
   })
   .catch((error) => {
     process.stdout.write(`${error}
@@ -460,17 +430,17 @@ If you use an external feature, maybe you want to override some services. For ex
 
 
 ```typescript
-import { Feature } from '@triviality/core';
-import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 import { CasualGreetingService } from './services/CasualGreetingService';
+import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
+import { FF } from '@triviality/core';
 
-export class GreetingsFeature implements Feature {
-
-  public greetingService(): GreetingsServiceInterface {
-    return new CasualGreetingService();
-  }
-
+export interface GreetingsFeatureServices {
+  greetingService: GreetingsServiceInterface;
 }
+
+export const GreetingsFeature: FF<GreetingsFeatureServices> = () => ({
+  greetingService: () => new CasualGreetingService(),
+});
 ```
         
 
@@ -486,10 +456,11 @@ triviality()
   .add(LogFeature)
   .add(GreetingsFeature)
   .build()
-  .then((container) => {
-    const logger = container.logger();
-    const halloService = container.greetingService();
-    logger.info(halloService.greet('Triviality'));
+  .then(({
+           logger,
+           greetingService,
+         }) => {
+    logger.info(greetingService.greet('Triviality'));
   });
 ```
         
@@ -509,23 +480,21 @@ If we want to use a different way to greet we need to override the 'greetingServ
 
 
 ```typescript
-import { Feature, OptionalContainer } from '@triviality/core';
-import { GreetingsFeature } from './GreetingsFeature';
+import { FF } from '@triviality/core';
 import { FormalGreetingsService } from './services/FormalGreetingsService';
 import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
+import { GreetingsFeatureServices } from './GreetingsFeature';
 
-export class FormalGreetingsFeature implements Feature {
-  public serviceOverrides(): OptionalContainer<GreetingsFeature> {
-    return {
-      greetingService: () => this.formalGreetingsService(),
-    };
-  }
-
-  public formalGreetingsService(): GreetingsServiceInterface {
-    return new FormalGreetingsService();
-  }
-
+interface FormalGreetingsFeatureServices {
+  formalGreetingsService: GreetingsServiceInterface;
 }
+
+export const FormalGreetingsFeature: FF<FormalGreetingsFeatureServices, GreetingsFeatureServices> = ({ override: { greetingService }, service, construct }) => ({
+
+  ...greetingService(service('formalGreetingsService')),
+
+  formalGreetingsService: construct(FormalGreetingsService),
+});
 ```
         
 
@@ -540,10 +509,11 @@ triviality()
   .add(GreetingsFeature)
   .add(FormalGreetingsFeature)
   .build()
-  .then((container) => {
-    const logger = container.logger();
-    const halloService = container.greetingService();
-    logger.info(halloService.greet('Triviality'));
+  .then(({
+           logger,
+           greetingService,
+         }) => {
+    logger.info(greetingService.greet('Triviality'));
   });
 ```
         
@@ -582,18 +552,18 @@ export class ScreamGreetingsService implements GreetingsServiceInterface {
         
 
 ```typescript
-import { Container, Feature, OptionalContainer } from '@triviality/core';
+import { FF } from '@triviality/core';
+import { GreetingsServiceInterface } from './services/GreetingsServiceInterface';
 import { ScreamGreetingsService } from './services/ScreamGreetingsService';
-import { GreetingsFeature } from './GreetingsFeature';
+import { GreetingsFeatureServices } from './GreetingsFeature';
 
-export class ScreamGreetingsFeature implements Feature {
-  public serviceOverrides(container: Container<GreetingsFeature>): OptionalContainer<GreetingsFeature> {
-    return {
-      greetingService: () => new ScreamGreetingsService(container.greetingService()),
-    };
-  }
-
+function decorateWithScreams(greeter: GreetingsServiceInterface): GreetingsServiceInterface {
+  return new ScreamGreetingsService(greeter);
 }
+
+export const ScreamGreetingsFeature: FF<unknown, GreetingsFeatureServices> = ({ override: { greetingService } }) => ({
+  ...greetingService((original) => decorateWithScreams(original())),
+});
 ```
         
 
@@ -608,10 +578,8 @@ triviality()
   .add(GreetingsFeature)
   .add(ScreamGreetingsFeature)
   .build()
-  .then((container) => {
-    const logger = container.logger();
-    const halloService = container.greetingService();
-    logger.info(halloService.greet('Triviality'));
+  .then(({ logger, greetingService }) => {
+    logger.info(greetingService.greet('Triviality'));
   });
 ```
         
@@ -624,6 +592,8 @@ Now the original 'greetingService' service is overridden and we get:
 HALLO TRIVIALITY!!!!!!
 ```
         
+
+
 
 # Existing triviality features
 

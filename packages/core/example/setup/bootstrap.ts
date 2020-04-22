@@ -5,7 +5,7 @@ triviality()
   .add(DatabaseFeature)
   .build()
   .then((container) => {
-    container.database().someFancyQuery();
+    container.database.someFancyQuery();
   })
   .catch((error) => {
     process.stdout.write(`${error}
