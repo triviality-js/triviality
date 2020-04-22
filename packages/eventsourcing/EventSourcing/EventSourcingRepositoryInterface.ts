@@ -1,5 +1,6 @@
 import { EventSourcedAggregateRoot } from './EventSourcedAggregateRoot';
 import { Identity } from '../ValueObject/Identity';
+import { DomainEventStreamDecorator } from '../Domain/DomainEventStreamDecorator';
 
 export interface EventSourcingRepositoryInterface<T extends EventSourcedAggregateRoot<Id> = EventSourcedAggregateRoot<any>, Id extends Identity = Identity> {
 
@@ -7,6 +8,6 @@ export interface EventSourcingRepositoryInterface<T extends EventSourcedAggregat
 
   load(id: Id): Promise<T>;
 
-  save(aggregate: T): Promise<void>;
+  save(aggregate: T, decorator?: DomainEventStreamDecorator): Promise<void>;
 
 }
