@@ -1,7 +1,7 @@
 {
   "name": "@triviality/eventsourcing-redux",
   "private": false,
-  "version": "2.1.7",
+  "version": "2.1.8",
   "description": "Bridge between event sourcing and redux",
   "main": "index.js",
   "types": "index.d.ts",
@@ -40,7 +40,7 @@
   "homepage": "https://github.com/triviality-js/triviality#README",
   "dependencies": {
     "@triviality/core": "^1.2.3",
-    "@triviality/eventsourcing": "^2.1.7",
+    "@triviality/eventsourcing": "^2.1.8",
     "@triviality/redux": "^1.1.3",
     "@triviality/serializer": "^1.1.4",
     "@triviality/storage": "^1.1.4",
