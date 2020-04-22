@@ -3,11 +3,11 @@
  */
 import { ServiceFactory, ServiceTag, SF } from '../ServiceFactory';
 import { once } from '../lib';
-import { ServiceFunctionReferenceContainer } from '../Containerd/ServiceFunctionReferenceContainer';
+import { ServiceFunctionReferenceContainer } from '../Container/ServiceFunctionReferenceContainer';
 import { TaggedServiceFactoryReference } from '../Value/TaggedServiceFactoryReference';
 import { getCurrentContainer, getCurrentFeatureFactory, inCurrentContext } from './GlobalContext';
 import { InternalServiceFactoryReference } from '../Value/InternalServiceFactoryReference';
-import { ServiceFunctionReferenceContainerInterface } from '../Containerd/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
 import { MergedTaggedServiceFunctionReference } from '../Value/MergedTaggedServiceFunctionReference';
 
 export interface ReferenceContext {

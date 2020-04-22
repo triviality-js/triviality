@@ -2,7 +2,7 @@ import { serviceOfServiceFactories, SF } from '../../ServiceFactory';
 import { makeImmutableRegistrySet, RegistrySet } from './ImmutableRegistrySet';
 import { wrapReturnAsReference } from '../ReferenceContext';
 import { getServices, RegisterListArguments } from './RegistryListContext';
-import { ServiceFunctionReferenceContainerInterface } from '../../Containerd/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../../Container/ServiceFunctionReferenceContainerInterface';
 
 export interface RegistrySetContext<T> {
   registerSet<TType>(...items: RegisterListArguments<T, TType>): SF<RegistrySet<TType>>;

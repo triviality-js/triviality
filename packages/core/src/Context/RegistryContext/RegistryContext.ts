@@ -19,7 +19,7 @@ import { RegistryList } from './ImmutableRegistryList';
 import { createFeatureFactoryRegistrySetContext, RegistrySetContext } from './RegistrySetContext';
 import { Override } from '../../Value/Override';
 import { RegistrySet } from './ImmutableRegistrySet';
-import { ServiceFunctionReferenceContainerInterface } from '../../Containerd/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../../Container/ServiceFunctionReferenceContainerInterface';
 
 export type InferRegisters<T> = InferListArgumentRegisters<T> & InferMapArgumentsRegisters<T>;
 

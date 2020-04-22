@@ -9,7 +9,7 @@ import {
 import { makeImmutableRegistryList, REGISTER_LIST_ARGUMENTS, RegistryList } from './ImmutableRegistryList';
 import { cond, identity, map } from 'ramda';
 import { wrapReturnAsReference } from '../ReferenceContext';
-import { ServiceFunctionReferenceContainerInterface } from '../../Containerd/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../../Container/ServiceFunctionReferenceContainerInterface';
 
 export type RegisterListArgument<Services, TType> = ServiceKeysOfType<Services, TType> | SF<TType>;
 export type RegisterListArguments<Services, TType> = RegisterListArgument<Services, TType>[];

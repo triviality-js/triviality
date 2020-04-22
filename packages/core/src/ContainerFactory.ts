@@ -1,7 +1,7 @@
 import { FeatureFactory, FF } from './FeatureFactory';
 import { invokeFeatureFactories, invokeFeatureFactory } from './invokeFeatureFactory';
 import { callSetupServices, SetupFeature, SetupFeatureServices } from './Feature';
-import { ServiceFunctionReferenceContainer } from './Containerd';
+import { ServiceFunctionReferenceContainer } from './Container';
 import { KernelFeature, KernelServices } from './Feature/KernelFeature';
 
 /**

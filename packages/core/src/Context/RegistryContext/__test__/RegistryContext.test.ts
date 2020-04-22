@@ -5,7 +5,7 @@ import {
   RegistryList,
   RegistryMap,
 } from '../..';
-import { ServiceFunctionReferenceContainer } from '../../../Containerd';
+import { ServiceFunctionReferenceContainer } from '../../../Container';
 import { TaggedServiceFactoryReference } from '../../../Value/TaggedServiceFactoryReference';
 
 describe('createFeatureFactoryRegistryContext', () => {

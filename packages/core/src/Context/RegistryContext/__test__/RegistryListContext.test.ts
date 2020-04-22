@@ -1,7 +1,7 @@
 import { createFeatureFactoryRegistryContext } from '../RegistryContext';
 import { always } from 'ramda';
 import { SF } from '../../../ServiceFactory';
-import { ServiceFunctionReferenceContainer } from '../../../Containerd';
+import { ServiceFunctionReferenceContainer } from '../../../Container';
 import { TaggedServiceFactoryReference } from '../../../Value/TaggedServiceFactoryReference';
 
 describe('registerList', () => {

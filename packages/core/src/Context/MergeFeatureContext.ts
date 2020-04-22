@@ -1,8 +1,8 @@
 import { ServicesAsFactories as SAF, ServiceTag, SF } from '../ServiceFactory';
 import { FeatureFactory, FF } from '../FeatureFactory';
-import { ServiceFunctionReferenceContainerInterface } from '../Containerd/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
 import { services, servicesByTags } from './ServicesContext';
-import { MergeServiceFunctionReferenceContainer } from '../Containerd/MergeServiceFunctionReferenceContainer';
+import { MergeServiceFunctionReferenceContainer } from '../Container/MergeServiceFunctionReferenceContainer';
 import { InternalContextContext } from './InternalContextContext';
 import { fromPairs } from 'ramda';
 import { defaultServiceKeys, DefaultServices } from '../Feature/defaultServicesKeys';

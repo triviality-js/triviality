@@ -8,7 +8,7 @@ import {
 import { toPairs } from 'ramda';
 import { wrapReturnAsReference } from '../ReferenceContext';
 import { Override } from '../../Value/Override';
-import { ServiceFunctionReferenceContainerInterface } from '../../Containerd/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../../Container/ServiceFunctionReferenceContainerInterface';
 
 export type RegisterMapArgument<Services, TType, TKey> =
   [TKey, ServiceKeysOfType<Services, TType> | SF<TType>]

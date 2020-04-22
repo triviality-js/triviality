@@ -5,7 +5,7 @@ import {
   servicesByTags,
   ServicesContext,
 } from '../ServicesContext';
-import { ServiceFunctionReferenceContainer } from '../../Containerd';
+import { ServiceFunctionReferenceContainer } from '../../Container';
 import { TaggedServiceFactoryReference } from '../../Value/TaggedServiceFactoryReference';
 import { always } from 'ramda';
 

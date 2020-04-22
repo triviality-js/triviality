@@ -1,6 +1,6 @@
 import { curry, fromPairs } from 'ramda';
 import { ServiceTag, SF } from '../ServiceFactory';
-import { ServiceFunctionReferenceContainerInterface } from '../Containerd/ServiceFunctionReferenceContainerInterface';
+import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
 
 /**
  * Context for overriding services.
