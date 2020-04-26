@@ -7,11 +7,11 @@ import { DomainMessage } from './Domain/DomainMessage';
 export class ReplayService {
 
   constructor(private readonly eventStore: EventStore,
-              private readonly messageBus: EventBus) {
+              private readonly messageBus: EventBus & { untilIdle?: () => Promise<void>}) {
   }
 
   public async replay(): Promise<void> {
-    return new Promise<void>((accept, reject) => {
+    await new Promise<void>((accept, reject) => {
       const subject = new Subject<DomainMessage>();
       this.messageBus.publish(new SimpleDomainEventStream(subject));
       const stream = this.eventStore.loadAll();
@@ -20,6 +20,9 @@ export class ReplayService {
         accept();
       });
     });
+    if (this.messageBus.untilIdle) {
+      await this.messageBus.untilIdle();
+    }
   }
 
 }
