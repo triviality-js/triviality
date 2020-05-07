@@ -58,7 +58,6 @@ export class ServiceFunctionReferenceContainer<Services = any> implements Servic
         if (this.state === BuildingState.done) {
           return reference.getService();
         }
-
         this.assertBuildServices();
         const current = this.currentBuild();
         if (current) {
@@ -127,7 +126,7 @@ export class ServiceFunctionReferenceContainer<Services = any> implements Servic
         pending = [];
         await waitForPending;
         for (const dependency of references.toArray()) {
-          invokeProxy(dependency);
+          await invokeProxy(dependency);
         }
       } while (pending.length !== 0);
     }
