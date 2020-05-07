@@ -1,7 +1,7 @@
 {
   "name": "@triviality/storage",
   "private": false,
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Storage interfaces and adapters",
   "main": "index.js",
   "types": "index.d.ts",
@@ -44,7 +44,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@triviality/serializer": "^1.1.4",
+    "@triviality/serializer": "^1.1.5",
     "@types/sanitize-filename": "1",
     "fs-extra": "8",
     "sanitize-filename": "1"
