@@ -1,7 +1,7 @@
 {
   "name": "@triviality/core",
   "private": false,
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Purely typed service container",
   "main": "index.js",
   "types": "index.d.ts",
