@@ -5,7 +5,7 @@ import { MergedServiceFunctionReference } from '../Value/MergedServiceFunctionRe
 import { TaggedServiceFactoryReference } from '../Value/TaggedServiceFactoryReference';
 import { Override } from '../Value/Override';
 import { ImmutableServiceReferenceList } from '../Value/ImmutableServiceReferenceList';
-import { asMergeReference } from '../Context/ReferenceContext';
+import { asMergeReference } from '../Context';
 
 export class MergeServiceFunctionReferenceContainer<Services = any> implements ServiceFunctionReferenceContainerInterface<Services> {
 
