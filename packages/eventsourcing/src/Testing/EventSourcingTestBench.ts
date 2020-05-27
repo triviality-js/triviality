@@ -67,15 +67,15 @@ export class EventSourcingTestBench {
     return new this(currentTime);
   }
 
-  public readonly [Symbol.toStringTag]: 'Promise';
-  public readonly domainMessageFactory: DomainMessageTestFactory;
-  public readonly commandBus: CommandBus = new SimpleCommandBus();
-  public readonly queryBus: QueryBus = new SimpleQueryBus();
-  public readonly aggregates: AggregateTestContextCollection;
-  public readonly models = new ReadModelTestContextCollection();
-  public readonly eventBus: EventBus;
-  protected readonly asyncBus: AsynchronousEventBus;
-  protected readonly recordBus: RecordDomainEventBusDecorator;
+  public [Symbol.toStringTag]: 'Promise';
+  public domainMessageFactory: DomainMessageTestFactory;
+  public commandBus: CommandBus = new SimpleCommandBus();
+  public queryBus: QueryBus = new SimpleQueryBus();
+  public aggregates: AggregateTestContextCollection;
+  public models = new ReadModelTestContextCollection();
+  public eventBus: EventBus;
+  protected asyncBus: AsynchronousEventBus;
+  protected recordBus: RecordDomainEventBusDecorator;
   protected breakpoint: boolean = false;
   protected currentTime: Date;
   protected tasks: TestTask[] = [];
@@ -238,6 +238,59 @@ export class EventSourcingTestBench {
       const domainMessages = this.domainMessageFactory.createDomainMessages(id, events);
       const stream = SimpleDomainEventStream.of(domainMessages);
       return context.getEventStore().append(id, stream);
+    });
+  }
+
+  /**
+   * Give the current domain models inside domain repositories.
+   *
+   * @example
+   *  givenDomainModel(UserLogInStatistics, id, async (model, _testBench: EventSourcingTestBench) => {
+   *    model.name = 'test';
+   *  });
+   */
+  public givenDomainModel<T extends ReadModel>(
+    reference: ReadModelConstructor<T>,
+    id: Identity,
+    factoryOrModelProps?: ((model: T, testBench: this) => Promise<void> | void) | Partial<ReadModel>,
+  ): this {
+    return this.addTask(async () => {
+      await this.thenWaitUntilProcessed();
+      const repository = this.getReadModelTestContext(reference).getRepository();
+      const model = new (reference as any)(id);
+      if (typeof factoryOrModelProps === 'function') {
+        await factoryOrModelProps(model, this);
+      } else if (model) {
+        Object.assign(model, factoryOrModelProps);
+      }
+      await repository.save(model);
+    });
+  }
+
+  /**
+   * Give the current domain models inside domain repositories.
+   *
+   * @example
+   *  givenDomainModels(UserLogInStatistics, id, async (model, _testBench: EventSourcingTestBench) => {
+   *    expect(model.getCount()).toEqual(3);
+   *  });
+   */
+  public givenDomainModels<T extends ReadModel>(
+    reference: ReadModelConstructor<T>,
+    factoryOrModels: ((testBench: this) => Promise<T[]> | T[]) | T[],
+  ): this {
+    return this.addTask(async () => {
+      await this.thenWaitUntilProcessed();
+      const repository = this.getReadModelTestContext(reference).getRepository();
+      let models: T[] = [];
+      if (typeof factoryOrModels === 'function') {
+        models = await factoryOrModels(this);
+      } else {
+        models = factoryOrModels;
+      }
+      for (const model of models) {
+        await repository.save(model);
+      }
     });
   }
 
