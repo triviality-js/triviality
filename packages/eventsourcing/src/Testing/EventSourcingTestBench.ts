@@ -252,7 +252,7 @@ export class EventSourcingTestBench {
   public givenDomainModel<T extends ReadModel>(
     reference: ReadModelConstructor<T>,
     id: Identity,
-    factoryOrModelProps?: ((model: T, testBench: this) => Promise<void> | void) | Partial<ReadModel>,
+    factoryOrModelProps?: ((model: T, testBench: this) => Promise<void> | void) | Partial<T>,
   ): this {
     return this.addTask(async () => {
       await this.thenWaitUntilProcessed();
@@ -640,7 +640,6 @@ export class EventSourcingTestBench {
       } else {
         expect(models).toMatchSnapshot();
       }
-
     });
   }
 
@@ -682,17 +681,25 @@ export class EventSourcingTestBench {
    *  thenAssertModel(UserLogInStatistics, id, async (model, _testBench: EventSourcingTestBench) => {
    *    expect(model.getCount()).toEqual(3);
    *  });
+   *
+   *  thenAssertModel(UserLogInStatistics, id, {name: 'test'});
    */
   public thenAssertModel<T extends ReadModel>(
     reference: ReadModelConstructor<T> | string,
     id: Identity,
-    matcher: (model: T, testBench: this) => Promise<void> | void,
+    matcherOrModel: ((model: T, testBench: this) => Promise<void> | void) | Partial<T>,
   ): this {
     return this.addTask(async () => {
       await this.thenWaitUntilProcessed();
       const repository = this.getReadModelTestContext(reference).getRepository();
       const model = await repository.get(id);
-      await matcher(model, this);
+      if (typeof matcherOrModel === 'function') {
+        await matcherOrModel(model, this);
+      } else {
+        const expected = new (reference as any)(id);
+        Object.assign(expected, matcherOrModel);
+        expect(model).toEqual(expected);
+      }
     });
   }
 
