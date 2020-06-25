@@ -18,6 +18,8 @@ import { CommandConstructor, getHandlersDistinctCommands } from './CommandHandli
 import { EventSourcedEntityConstructor } from './EventSourcing/EventSourcedEntity';
 import { getEventSourcedEntityDistinctDomainEvents } from './EventSourcing/AggregateHandleEvent';
 import { DomainEventConstructor } from './Domain/DomainEvent';
+import { getEventListenerDistinctDomainEvents } from './EventHandling/HandleDomainEvent';
+import { uniq } from 'lodash';
 
 export interface EventSourcingFeatureServices {
   commandHandlers: RegistryList<CommandHandler>;
@@ -43,7 +45,7 @@ export interface EventSourcingFeatureServices {
   commands: CommandConstructor[];
 
   /**
-   * Automatically resolves from eventSourcedEntities.
+   * Automatically resolves from eventSourcedEntities and projects.
    */
   domainEvents: DomainEventConstructor[];
 
@@ -63,15 +65,19 @@ export const EventSourcingFeature: FF<EventSourcingFeatureServices, LoggerFeatur
    }) => {
     const eventSourcedEntities = registerSet<EventSourcedEntityConstructor>();
     const commandHandlers = registerList<CommandHandler>();
+    const eventListeners =  registerList<EventListener>();
     return {
       ...setupCallbacks('setupEventSourcing'),
 
       commands: () => getHandlersDistinctCommands(commandHandlers()),
-      domainEvents: () => getEventSourcedEntityDistinctDomainEvents(eventSourcedEntities()),
+      domainEvents: () => uniq([
+        ...getEventSourcedEntityDistinctDomainEvents(eventSourcedEntities()),
+        ...getEventListenerDistinctDomainEvents(eventListeners()),
+      ]),
       commandHandlers,
       eventSourcedEntities,
       queryHandlers: registerList(),
-      eventListeners: registerList(),
+      eventListeners,
       domainEventStreamDecorators: registerList(),
       commandBus(): CommandBus {
         return new SimpleCommandBus();

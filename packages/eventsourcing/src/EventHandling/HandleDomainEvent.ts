@@ -5,6 +5,7 @@ import { ClassUtil } from '../ClassUtil';
 import { Metadata } from '../Metadata';
 import { DomainEventConstructor } from '../Domain/DomainEvent';
 import { DomainMessage } from '../Domain/DomainMessage';
+import { uniq } from 'lodash';
 
 const EVENT_HANDLERS = Symbol.for('event_handlers');
 
@@ -17,6 +18,22 @@ export interface DomainEventHandlerMetadata {
 export function allHandleDomainEventMetadata(target: EventListener): DomainEventHandlerMetadata[] {
   const metadata = Metadata.getMetadata(EVENT_HANDLERS, target.constructor);
   return metadata ? metadata : [];
+}
+
+export function getEventListenerDistinctDomainEvents(entities: EventListener[]): DomainEventConstructor[] {
+  const events: DomainEventConstructor[] = [];
+  entities.forEach((target) => {
+    const metadata = allHandleDomainEventMetadata(target);
+    if (!metadata) {
+      return;
+    }
+    metadata.map(({ event: events }) => {
+      events.forEach((event) => {
+        events.push(event);
+      });
+    });
+  });
+  return uniq(events);
 }
 
 function HandleDomainEventByParamtypes(target: { constructor: EventListenerConstructor } | any, functionName: string): void {
