@@ -11,7 +11,7 @@ const EVENT_HANDLERS = Symbol.for('event_handlers');
 
 export interface DomainEventHandlerMetadata {
   functionName: string;
-  event: DomainEventConstructor[];
+  event: DomainEventConstructor;
   eventArgumentIndex: number;
 }
 
@@ -27,10 +27,8 @@ export function getEventListenerDistinctDomainEvents(entities: EventListener[]):
     if (!metadata) {
       return;
     }
-    metadata.map(({ event: events }) => {
-      events.forEach((event) => {
-        events.push(event);
-      });
+    metadata.map(({ event }) => {
+      events.push(event);
     });
   });
   return uniq(events);
