@@ -3,11 +3,12 @@ import { EventStore } from './EventStore/EventStore';
 import { EventBus } from './EventHandling/EventBus';
 import { SimpleDomainEventStream } from './Domain/SimpleDomainEventStream';
 import { DomainMessage } from './Domain/DomainMessage';
+import { IdleAwareEventBus } from './EventHandling/IdleAwareEventBus';
 
 export class ReplayService {
 
   constructor(private readonly eventStore: EventStore,
-              private readonly messageBus: EventBus & { untilIdle?: () => Promise<void>}) {
+              private readonly messageBus: EventBus | IdleAwareEventBus) {
   }
 
   public async replay(): Promise<void> {
@@ -20,8 +21,8 @@ export class ReplayService {
         accept();
       });
     });
-    if (this.messageBus.untilIdle) {
-      await this.messageBus.untilIdle();
+    if ((this.messageBus as IdleAwareEventBus).untilIdle) {
+      await (this.messageBus as IdleAwareEventBus).untilIdle();
     }
   }
 

@@ -2,10 +2,13 @@ import 'jest';
 import { PlayheadError } from '../../Domain/Error/PlayheadError';
 import { ScalarIdentity } from '../../ValueObject/ScalarIdentity';
 import { InMemoryEventStore } from '../InMemoryEventStore';
-import { EventStreamNotFoundException } from '../Error/EventStreamNotFoundException';
+import { EventStreamNotFoundError } from '../Error/EventStreamNotFoundError';
 import { SimpleDomainEventStream } from '../../Domain/SimpleDomainEventStream';
 import { DomainMessage } from '../../Domain/DomainMessage';
-import { toArray } from 'rxjs/operators';
+import { map, take, toArray } from 'rxjs/operators';
+import { Mutex } from 'async-mutex';
+import { timer } from 'rxjs';
+import v4 from 'uuid/v4';
 
 class DomainEvent {
 
@@ -18,7 +21,7 @@ describe('InMemoryEventStore', () => {
   it('Throws an exception loading an unknown event stream', async () => {
     const repository = new InMemoryEventStore();
     const id = new ScalarIdentity('38459347598437');
-    const eventStreamNotFoundException = new EventStreamNotFoundException(
+    const eventStreamNotFoundException = new EventStreamNotFoundError(
       'EventStream not found for aggregate with id 38459347598437');
     return expect(() => {
       repository.load(id);
@@ -73,8 +76,10 @@ describe('InMemoryEventStore', () => {
     await repository.append(aggregate2Id, aggregate2Stream);
 
     expect(repository).toMatchSnapshot('InMemoryEventStore');
-    expect(await repository.load(aggregate1Id).pipe(toArray()).toPromise()).toEqual([event1Aggregate1, event2Aggregate1]);
-    expect(await repository.load(aggregate2Id).pipe(toArray()).toPromise()).toEqual([event1Aggregate2, event2Aggregate2]);
+    expect(await repository.load(aggregate1Id).pipe(toArray()).toPromise()).toEqual(
+      [event1Aggregate1, event2Aggregate1]);
+    expect(await repository.load(aggregate2Id).pipe(toArray()).toPromise()).toEqual(
+      [event1Aggregate2, event2Aggregate2]);
   });
 
   it('Throws an exception when playhead is not correct', async () => {
@@ -96,7 +101,7 @@ describe('InMemoryEventStore', () => {
     await store.append(id1, eventStream1);
 
     const id2 = new ScalarIdentity('2');
-    const event2 = new DomainMessage(id1, 0, new DomainEvent(), date);
+    const event2 = new DomainMessage(id2, 0, new DomainEvent(), date);
     const eventStream2 = SimpleDomainEventStream.of([event2]);
     await store.append(id2, eventStream2);
 
@@ -138,6 +143,35 @@ describe('InMemoryEventStore', () => {
     const store = InMemoryEventStore.fromArray([event1, event2, event3, event4]);
 
     expect(await store.load(id).pipe(toArray()).toPromise()).toEqual([event1, event2, event3, event4]);
+  });
+
+  it('Should wait for mutex to be finished', async () => {
+    const now = new Date();
+    const store = new InMemoryEventStore(() => new Mutex());
+    const id = 'c2950d0e-71e6-4bf3-8389-8a98981fb67c';
+    const stream1 = timer(50).pipe(take(1), map(() => new DomainMessage(id, 0, { foo: 'foo' }, now, {})));
+    const stream2 = timer(100).pipe(take(1), map(() => new DomainMessage(id, 1, { bar: 'bar' }, now, {})));
+
+    const pendingStore = store.append(id, stream1);
+
+    // Should wait for this to complete, becuase we are in pending store.
+    const load = store.load(id).pipe(toArray()).toPromise();
+    const has = store.has(id);
+    const hasNot = store.has(v4());
+    const append = store.append(id, stream2);
+    await pendingStore;
+
+    expect(await load).toEqual([new DomainMessage(id, 0, { foo: 'foo' }, now, {})]);
+    expect(await has).toEqual(true);
+    expect(await hasNot).toEqual(false);
+
+    await append;
+
+    expect(await store.load(id).pipe(toArray()).toPromise()).toEqual([
+      new DomainMessage(id, 0, { foo: 'foo' }, now, {}),
+      new DomainMessage(id, 1, { bar: 'bar' }, now, {}),
+    ]);
+
   });
 
 });

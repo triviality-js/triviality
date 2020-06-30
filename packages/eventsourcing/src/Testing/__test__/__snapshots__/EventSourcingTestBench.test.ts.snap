@@ -62,7 +62,18 @@ TestRepository {
     "messages": Array [],
   },
   "eventStore": InMemoryEventStore {
-    "events": Object {},
+    "events": ValueMutex {
+      "lastSetValue": 0,
+      "mutex": Mutex {
+        "_semaphore": Semaphore {
+          "_queue": Array [],
+          "_value": 1,
+        },
+      },
+      "value": Array [],
+    },
+    "eventsMap": Map {},
+    "mutexFactory": [Function],
   },
   "streamDecorator": AggregateDomainEventStreamDecorator {
     "decorators": Array [

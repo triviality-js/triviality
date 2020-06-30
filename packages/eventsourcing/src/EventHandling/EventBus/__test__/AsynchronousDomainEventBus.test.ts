@@ -7,6 +7,8 @@ import { HandleDomainEvent } from '../../HandleDomainEvent';
 import { SimpleDomainEventStream } from '../../../Domain/SimpleDomainEventStream';
 import { EventListener } from '../../EventListener';
 import { DomainMessage } from '../../../Domain/DomainMessage';
+import { of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 it('Knows when it\'s not handling anything', async () => {
   const bus = new AsynchronousEventBus();
@@ -38,6 +40,7 @@ it('Throw error when there are no handler functions', async () => {
     }
 
     bus.subscribe(new WithoutHandlers());
+    bus.publish(of());
   }).toThrow();
 });
 
@@ -160,7 +163,7 @@ it('Be able to register to multiple event handlers for the same event ', async (
   expect(userLoggedIn2Spy).toBeCalledWith(userLoggedInMessage.payload, userLoggedInMessage);
 });
 
-it('Be able to register to multiple event (and handle with different argument indexes)', async () => {
+it('Be able to register to multiple event (and handle with different argument indexes) 2', async () => {
   class HasAddedNumber implements DomainEvent {
 
     constructor(public readonly value: number) {
@@ -208,6 +211,7 @@ it('Be able to register to multiple event (and handle with different argument in
 
   await bus.untilIdle();
 
+  expect(handler.total).toBe(55);
   expect(addNumberInSpy.mock.calls).toEqual(
     [
       [m1.payload, m1],
@@ -222,5 +226,57 @@ it('Be able to register to multiple event (and handle with different argument in
       [m10.payload, m10],
     ],
   );
+
+});
+
+it('Should be able to wait for some events', async () => {
+  class HasAddedNumber implements DomainEvent {
+
+    constructor(public readonly value: number) {
+
+    }
+
+  }
+
+  class HasAddedNumberHandler implements EventListener {
+    public total = 0;
+
+    @HandleDomainEvent
+    public addNumber(event: HasAddedNumber) {
+      this.total += event.value;
+    }
+  }
+
+  const handler = new HasAddedNumberHandler();
+
+  const bus = new AsynchronousEventBus();
+  bus.subscribe(handler);
+
+  function createMessage(value: number) {
+    return DomainMessage.recordNow(
+      UuidIdentity.create(),
+      0,
+      new HasAddedNumber(value),
+    );
+  }
+
+  const m1 = createMessage(1);
+  const m2 = createMessage(2);
+  const m3 = createMessage(3);
+  const m4 = createMessage(4);
+  const m5 = createMessage(5);
+  bus.publish(SimpleDomainEventStream.of([m1, m2, m3, m4, m5]).pipe(delay(100)));
+
+  const m6 = createMessage(6);
+  const m7 = createMessage(7);
+  const m8 = createMessage(8);
+  const m9 = createMessage(9);
+  const m10 = createMessage(10);
+  await bus.publishSync(SimpleDomainEventStream.of([m6, m7, m8, m9, m10]));
+
+  expect(handler.total).toBe(40);
+  await bus.untilIdle();
+
   expect(handler.total).toBe(55);
+
 });

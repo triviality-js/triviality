@@ -1,120 +1,168 @@
 /**
  * Simple synchronous publishing of events.
  */
-import { EventBus } from '../EventBus';
 import { EventListener } from '../EventListener';
-import { allHandleDomainEventMetadata, DomainEventHandlerMetadata } from '../HandleDomainEvent';
-import { ClassUtil } from '../../ClassUtil';
 import { DomainEventStream } from '../../Domain/DomainEventStream';
 import { DomainMessage } from '../../Domain/DomainMessage';
-import { Subscription, Subject, Observable, of, concat, EMPTY } from 'rxjs';
-import { concatMap, first } from 'rxjs/operators';
-import { fromPromise } from 'rxjs/internal-compatibility';
-import { IncorrectDomainEventHandlerError } from '../Error/IncorrectDomainEventHandlerError';
+import { Subject } from 'rxjs';
+import { IdleAwareEventBus } from '../IdleAwareEventBus';
+import { finalize, ignoreElements, tap } from 'rxjs/operators';
+import { EventListenerCollection } from '../EventListenerCollection';
+import { subscribeByOfEventListener } from '../index';
 
-/**
- * Always passes all events in sequence to the event corresponding handlers.
- *
- * TODO: extract handler binding from this class.
- * TODO: extract listener order from this class, can be async.
- */
-export class AsynchronousEventBus implements EventBus {
-  private queue: DomainEventStream[] = [];
-  private isProcessing: boolean = false;
-  private activeStreamSubscription: Subscription | null = null;
-  private eventHandlersMappedByEvent: { [eventName: string]: ((domainMessage: DomainMessage) => Promise<void>)[] } = {};
-  /* For keeping track if the bus is handling events or not. */
-  private isProcessingSubject = new Subject<boolean>();
+export class AsynchronousEventBus implements IdleAwareEventBus {
+  private queue: Subject<DomainMessage> | null = null;
+  /**
+   * Messages that are handled by the queue.
+   */
+  private handled: Subject<DomainMessage> | null = null;
+  /**
+   * Keep track of streams added to the queue.
+   */
+  private pendingStreams = 0;
+  /**
+   */
+  private pendingMessages = new Set<DomainMessage>();
+  /**
+   * The listeners combined inside a ASynchronousEventListener.
+   */
+  private listener: EventListenerCollection = new EventListenerCollection([]);
 
   constructor(private errorHandler?: (error: any) => void) {
 
   }
 
-  /**
-   * Subscribe an eventLister.
-   *
-   * @param {EventListener} eventListener
-   */
-  public subscribe(eventListener: EventListener): void {
-    const handlers = allHandleDomainEventMetadata(eventListener);
-    if (handlers.length === 0) {
-      throw IncorrectDomainEventHandlerError.noHandlers(eventListener);
+  public async untilIdle(): Promise<void> {
+    if (this.queue === null) {
+      return;
     }
-    handlers.forEach((metadata) => {
-      const eventName: string = ClassUtil.nameOff(metadata.event);
-      if (!this.eventHandlersMappedByEvent[eventName]) {
-        this.eventHandlersMappedByEvent[eventName] = [];
-      }
-      this.eventHandlersMappedByEvent[eventName].push(this.createCallbackFunction(eventListener, metadata));
+    return this.queue.pipe(ignoreElements()).toPromise();
+  }
+
+  /**
+   * @param domainMessages
+   */
+  public async publishSync(stream: DomainEventStream): Promise<void> {
+    return new Promise((accept, reject) => {
+      /**
+       * All messages we are waiting for.
+       */
+      const pending = new Set<DomainMessage>();
+      /**
+       * When this stream has completed.
+       */
+      let completed = false;
+      const { handled } = this.getOrCreateQueue();
+      const errorOrComplete = (error?: unknown) => {
+        if (error) {
+          reject(error);
+        }
+        if (completed && pending.size === 0) {
+          accept();
+          subscription.unsubscribe();
+        }
+        this.checkToCloseQueue();
+      };
+      // We are subscribing on the queue for the pending messages.
+      const subscription = handled.subscribe({
+        next: (message) => {
+          pending.delete(message);
+          errorOrComplete();
+        },
+        error: errorOrComplete,
+        complete: errorOrComplete,
+      });
+      this.publish(stream
+        .pipe(
+          // filterByDomainEventConstructor(eventListenersDomainEvents(this.listener)),
+          tap((message) => {
+            pending.add(message);
+          }),
+          finalize(() => {
+            completed = true;
+            errorOrComplete();
+          }),
+        ));
     });
   }
 
-  /**
-   * Knows when everything is handled.
-   */
-  public untilIdle(): Promise<void> {
-    return concat(of(this.isProcessing), this.isProcessingSubject)
-      .pipe(
-        first((processing) => !processing),
-      ).toPromise().then(() => undefined);
+  public subscribe(eventListener: EventListener): void {
+    this.listener = new EventListenerCollection([...this.listener.getListeners(), eventListener]);
   }
 
   public publish(stream: DomainEventStream): void {
-    if (this.isProcessing) {
-      this.queue.push(stream);
-      return;
-    }
-    this.isProcessing = true;
-    this.isProcessingSubject.next(true);
-    this.subscribeToNextStream(stream);
+    const { queue, handled } = this.getOrCreateQueue();
+    this.pendingStreams += 1;
+    stream.subscribe({
+      next: queue.next.bind(queue),
+      complete: () => {
+        this.pendingStreams -= 1;
+        this.checkToCloseQueue();
+      },
+      error: (e) => {
+        queue.error(e);
+        handled.error(e);
+        this.cleanup();
+      },
+    });
   }
 
-  /**
-   * Passes the event to the correct argument index of event listener.
-   */
-  private createCallbackFunction(handler: EventListener, metadata: DomainEventHandlerMetadata): (domainMessage: DomainMessage) => Promise<void> {
-    const callback = (handler as any)[metadata.functionName].bind(handler);
-    if (metadata.eventArgumentIndex === 0) {
-      return (domainMessage: DomainMessage) => {
-        return Promise.resolve(callback(domainMessage.payload, domainMessage)).catch(this.errorHandler);
-      };
+  private getOrCreateQueue(): { queue: Subject<DomainMessage>, handled: Subject<DomainMessage> } {
+    if (this.queue && this.handled) {
+      return { handled: this.handled, queue: this.queue };
     }
-    return (domainMessage: DomainMessage) => {
-      return Promise.resolve(callback(domainMessage, domainMessage.payload)).catch(this.errorHandler);
-    };
+
+    const queue = new Subject<DomainMessage>();
+    const handled = new Subject<DomainMessage>();
+    handled.subscribe({
+      next: (message) => {
+        this.pendingMessages.delete(message);
+        this.checkToCloseQueue();
+      },
+    });
+    queue.pipe(
+      tap((message) => this.pendingMessages.add(message)),
+      subscribeByOfEventListener(this.listener),
+      tap((event) => handled.next(event)),
+    ).subscribe({
+      error: (e) => {
+        queue.error(e);
+        handled.error(e);
+        this.cleanup();
+        if (this.errorHandler) {
+          this.errorHandler(e);
+        }
+      },
+    });
+    this.handled = handled;
+    this.queue = queue;
+    return { handled: this.handled, queue: this.queue };
   }
 
-  private onComplete = () => {
-    if (this.activeStreamSubscription) {
-      this.activeStreamSubscription.unsubscribe();
-    }
-    const stream = this.queue.pop();
-    if (!stream) {
-      // no stream to process, we are done!.
-      this.activeStreamSubscription = null;
-      this.isProcessing = false;
-      this.isProcessingSubject.next(false);
+  private checkToCloseQueue = () => {
+    const queue = this.queue;
+    const handled = this.handled;
+    if (queue === null || handled === null) {
       return;
     }
-    this.subscribeToNextStream(stream);
+    // Do we still streams to be send on the queue?
+    if (this.pendingStreams !== 0) {
+      return;
+    }
+    // Do we still pending messages on the queue?
+    if (this.pendingMessages.size) {
+      return;
+    }
+    this.cleanup();
+    handled.complete();
+    queue.complete();
   };
 
-  private subscribeToNextStream(stream: DomainEventStream) {
-    const handledStream: Observable<any> = stream.pipe(concatMap((message: DomainMessage) => {
-      const eventName: string = ClassUtil.nameOffInstance(message.payload);
-      const handlers = this.eventHandlersMappedByEvent[eventName];
-      if (!handlers) {
-        return EMPTY;
-      }
-      // TODO: This should not be default, at least it should be configurable.
-      async function handle(): Promise<void> {
-        for (const handler of handlers) {
-          await handler(message);
-        }
-      }
-      return fromPromise(handle());
-    }));
-    this.activeStreamSubscription = handledStream.subscribe(undefined, this.errorHandler, this.onComplete);
+  private cleanup() {
+    this.pendingMessages.clear();
+    this.pendingMessages.clear();
+    this.pendingStreams = 0;
+    this.queue = null;
+    this.handled = null;
   }
-
 }

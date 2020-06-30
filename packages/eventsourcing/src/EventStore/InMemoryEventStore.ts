@@ -1,74 +1,102 @@
+import { concatMap, filter, toArray } from 'rxjs/operators';
+import { MutexInterface } from 'async-mutex';
+import { from } from 'rxjs';
+import { ValueMutex } from '../ValueMutex';
+import { WrongAggregateIdError } from './Error/WrongAggregateIdError';
+import { Mutex } from 'async-mutex';
 import { EventStore } from './EventStore';
-import { Identity } from '../ValueObject/Identity';
-import { EventStreamNotFoundException } from './Error/EventStreamNotFoundException';
+import { EventStreamNotFoundError } from './Error/EventStreamNotFoundError';
 import { DomainEventStream } from '../Domain/DomainEventStream';
-import { SimpleDomainEventStream } from '../Domain/SimpleDomainEventStream';
-import { toArray } from 'rxjs/operators';
+import { Identity } from '../ValueObject/Identity';
 import { DomainMessage } from '../Domain/DomainMessage';
 import { PlayheadError } from '../Domain/Error/PlayheadError';
 
-export class InMemoryEventStore<Id extends Identity = Identity> implements EventStore<Id> {
-
-  public static fromArray(events: DomainMessage[]) {
-    const instance = new this();
+export class InMemoryEventStore<Id extends Identity = Identity>
+  implements EventStore<Id> {
+  public static fromArray<Id extends Identity = Identity>(events: DomainMessage[], mutexFactory: () => MutexInterface = () => new Mutex()) {
+    const instance = new this<Id>(mutexFactory);
+    instance.events = new ValueMutex([...events], mutexFactory());
+    const mapped = new Map<Id, DomainMessage[]>();
     for (const event of events) {
-      const idString = event.aggregateId.toString();
-      if (typeof instance.events[idString] === 'undefined') {
-        instance.events[idString] = [];
-      }
-      instance.events[idString].push(event);
+      const list = mapped.get(event.aggregateId as Id) || [];
+      list.push(event);
+      mapped.set(event.aggregateId as Id, list);
     }
+    mapped.forEach((value, key) => {
+      instance.eventsMap.set(key, new ValueMutex(value, mutexFactory()));
+    });
     return instance;
   }
 
-  protected readonly events: { [id: string]: DomainMessage[] } = {};
+  protected readonly eventsMap: Map<Id, ValueMutex<DomainMessage[]>> = new Map();
+  protected events = new ValueMutex<DomainMessage[]>([], this.mutexFactory());
+
+  constructor(private mutexFactory: () => MutexInterface = () => new Mutex()) {
+  }
 
   public async has(id: Id): Promise<boolean> {
-    const idString = id.toString();
-    const stream = this.events[idString];
-    return typeof stream !== 'undefined';
+    const map = this.eventsMap.get(id);
+    if (!map) {
+      return false;
+    }
+    return map.runExclusive((value) => {
+      return value.length !== 0;
+    });
   }
 
   public load(id: Id): DomainEventStream {
-    const idString = id.toString();
-    const stream = this.events[idString];
-    if (typeof stream !== 'undefined') {
-      return SimpleDomainEventStream.of(stream);
+    const map = this.eventsMap.get(id);
+    if (!map) {
+      throw EventStreamNotFoundError.streamNotFound(id);
     }
-    throw EventStreamNotFoundException.streamNotFound(id);
+    return from(map.runExclusive((events) => {
+      if (events.length !== 0) {
+        return events;
+      }
+      throw EventStreamNotFoundError.streamNotFound(id);
+    })).pipe(concatMap((events) => events));
   }
 
   public loadAll(): DomainEventStream {
-    let events: DomainMessage[] = [];
-    for (const id in this.events) {
-      /* istanbul ignore next line */
-      if (this.events.hasOwnProperty(id)) {
-        events = events.concat(this.events[id]);
-      }
-    }
-    return SimpleDomainEventStream.of(events);
+    return from(this.events.runExclusive((events) => events)).pipe(concatMap((events) => events));
   }
 
   public loadFromPlayhead(id: Id, playhead: number): DomainEventStream {
-    const stream: SimpleDomainEventStream = this.load(id) as any;
-    return stream.fromPlayhead(playhead);
+    return this.load(id).pipe(filter((message: DomainMessage) => playhead <= message.playhead));
   }
 
+  /**
+   * This save the hole stream or nothing at all.
+   */
   public async append(id: Id, eventStream: DomainEventStream): Promise<void> {
-    const idString = id.toString();
-    if (typeof this.events[idString] === 'undefined') {
-      this.events[idString] = [];
+    if (!this.eventsMap.has(id)) {
+      this.eventsMap.set(id, new ValueMutex<DomainMessage[]>([], this.mutexFactory()));
     }
-    const events = await eventStream.pipe(toArray()).toPromise();
-    const totalEvent = this.events[idString].length;
-    let lastPlayhead = totalEvent !== 0 ? this.events[idString][totalEvent - 1].playhead : -1;
-    for (const event of events) {
-      lastPlayhead += 1;
-      if (event.playhead !== (lastPlayhead)) {
-        throw PlayheadError.create(lastPlayhead, event.playhead);
-      }
-    }
-    this.events[idString] = this.events[idString].concat(events);
+    await this.eventsMap.get(id)!.runExclusive(async (target) => {
+      await this.events.runExclusive(async (all) => {
+        let lastPlayhead = this.lastPlayheadOf(target);
+        const events = await eventStream.pipe(
+          concatMap(async (event: DomainMessage) => {
+            lastPlayhead += 1;
+            if (event.aggregateId !== id) {
+              throw WrongAggregateIdError.create(event.aggregateId, id);
+            }
+            if (event.playhead !== lastPlayhead) {
+              throw PlayheadError.create(lastPlayhead, event.playhead);
+            }
+            return event;
+          }),
+          toArray(),
+        ).toPromise();
+        // Add if everything is ok.
+        target.push(...events);
+        all.push(...events);
+        return events;
+      });
+    });
   }
 
+  private lastPlayheadOf(events: DomainMessage[]): number {
+    return events.length !== 0 ? events[events.length - 1].playhead : -1;
+  }
 }
