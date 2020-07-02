@@ -7,7 +7,6 @@ import { HandleDomainEvent } from '../../HandleDomainEvent';
 import { SimpleDomainEventStream } from '../../../Domain/SimpleDomainEventStream';
 import { EventListener } from '../../EventListener';
 import { DomainMessage } from '../../../Domain/DomainMessage';
-import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 it('Knows when it\'s not handling anything', async () => {
@@ -30,18 +29,6 @@ it('Should ignore event with no handlers', async () => {
   );
   bus.publish(SimpleDomainEventStream.of([message]));
   await bus.untilIdle();
-});
-
-it('Throw error when there are no handler functions', async () => {
-  const bus = new AsynchronousEventBus();
-  expect(() => {
-    class WithoutHandlers {
-
-    }
-
-    bus.subscribe(new WithoutHandlers());
-    bus.publish(of());
-  }).toThrow();
 });
 
 it('Be able to register a single event handler', async () => {

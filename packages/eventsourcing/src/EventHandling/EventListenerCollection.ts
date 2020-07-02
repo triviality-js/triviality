@@ -1,6 +1,6 @@
 import { DomainEventStream } from '../Domain/DomainEventStream';
 import { EventListener } from './EventListener';
-import { concatMap, share, tap } from 'rxjs/operators';
+import { concatMap, tap } from 'rxjs/operators';
 import { merge, of } from 'rxjs';
 import { filterByDomainEventConstructor } from './reactive/operators/filterByDomainEventConstructor';
 import { flatten } from 'lodash';
@@ -62,7 +62,7 @@ export class EventListenerCollection implements EventListener {
       concatMap(([filtered, rest]) => {
         const shared = filtered.pipe(tap((message) => {
           this.logger.info(formatLogMessage('accepted', message));
-        }), share());
+        }));
         return merge(
           merge(
             ...operators.map((operator) => operator(shared))
