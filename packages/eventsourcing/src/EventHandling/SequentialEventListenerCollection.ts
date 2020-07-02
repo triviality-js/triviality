@@ -13,7 +13,7 @@ import { splitBy } from 'rxjs-etc/operators';
 /**
  * Combine event listeners and handle events in order for each listener
  */
-export class EventListenerCollection implements EventListener {
+export class SequentialEventListenerCollection implements EventListener {
 
   constructor(protected listeners: EventListener[], private logger: LoggerInterface = new NullLogger()) {
 
