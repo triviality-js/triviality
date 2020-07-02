@@ -1,7 +1,7 @@
 import { DomainEventStream } from '../Domain/DomainEventStream';
 import { EventListener } from './EventListener';
 import { concatMap, share, tap } from 'rxjs/operators';
-import { merge, of } from 'rxjs';
+import { concat, merge, of } from 'rxjs';
 import { filterByDomainEventConstructor } from './reactive/operators/filterByDomainEventConstructor';
 import { flatten } from 'lodash';
 import { DomainMessage } from '../Domain/DomainMessage';
@@ -11,7 +11,7 @@ import { ClassUtil } from '../ClassUtil';
 import { splitBy } from 'rxjs-etc/operators';
 
 /**
- * Combine event listeners.
+ * Combine event listeners and handle events in order for each listener
  */
 export class EventListenerCollection implements EventListener {
 
@@ -55,16 +55,14 @@ export class EventListenerCollection implements EventListener {
       tap((message) => {
         this.logger.info(formatLogMessage('start', message));
       }),
-      concatMap((message) => {
-        return of(message);
-      }),
+      concatMap((message) => of(message)),
       splitBy((message: DomainMessage) => listenTo.includes((message.payload as any).constructor)),
       concatMap(([filtered, rest]) => {
         const shared = filtered.pipe(tap((message) => {
           this.logger.info(formatLogMessage('accepted', message));
         }), share());
         return merge(
-          merge(
+          concat(
             ...operators.map((operator) => operator(shared))
           ),
           rest.pipe(tap((message) => {
