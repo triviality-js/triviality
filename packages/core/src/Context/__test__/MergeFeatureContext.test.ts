@@ -1,7 +1,6 @@
 import triviality, {
   createFeatureFactoryContext,
   FF,
-  RegistrySet,
   ServiceFunctionReferenceContainer,
   SetupFeatureServices,
 } from '../..';
@@ -213,11 +212,11 @@ it('Can directly fetch all new services', async () => {
   }
 
   interface UserServices {
-    users: RegistrySet<User>;
+    users: User[];
   }
 
-  const userFeature: FF<UserServices> = ({ registerSet }) => ({
-    users: registerSet(),
+  const userFeature: FF<UserServices> = () => ({
+    users: () => [],
   });
 
   const johnUserFeature: FF<{}, UserServices> = ({ registers: { users } }) => ({
@@ -230,7 +229,7 @@ it('Can directly fetch all new services', async () => {
 
   interface MyFeatureServices {
     names: string[];
-    users: RegistrySet<User>;
+    users: User[];
   }
 
   const myFeature: FF<MyFeatureServices, {}> = ({ merge }) => {

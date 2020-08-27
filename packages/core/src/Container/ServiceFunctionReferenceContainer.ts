@@ -16,11 +16,9 @@ export enum BuildingState {
  * Responsible for knowing about the wiring of the different services.
  *
  * The application only knows about references to a service, as function callback, ServiceReference,
- * for the end user this is named SF.
+ * for the end user this is named SF (Service Function).
  *
- * - Protects the application of using the references for the application is fully done with
- * wiring everything.
- * - Stores the usage tree of the SF, as a dependency tree.
+ * Stores the usage tree of the SF, as a dependency tree.
  */
 export class ServiceFunctionReferenceContainer<Services = any> implements ServiceFunctionReferenceContainerInterface<Services> {
 

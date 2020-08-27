@@ -13,5 +13,5 @@ exports[`With complex dependencies 1`] = `
 exports[`Without any services 1`] = `
 "              ______________________________________________________________
              /                           \\\\                                  \\\\
-  #1 kernelFeature.kernel  #3 setupFeature.setupCallbacks  #4 textDebugFeature.getDependencyTree"
+  #1 kernelFeature.kernel  #2 setupFeature.setupCallbacks  #3 textDebugFeature.getDependencyTree"
 `;

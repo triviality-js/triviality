@@ -1,13 +1,9 @@
-import { RegistryList } from '../Context';
 import { FF } from '../FeatureFactory';
 
 export type SetupCallback = () => Promise<void> | void;
 
-/**
- * TODO: rename to application hooks?
- */
 export interface SetupFeatureServices {
-  setupCallbacks: RegistryList<SetupCallback>;
+  setupCallbacks: SetupCallback[];
 }
 
 export const callSetupServices = async (setups: Iterable<SetupCallback>) => {
@@ -16,8 +12,8 @@ export const callSetupServices = async (setups: Iterable<SetupCallback>) => {
   }
 };
 
-export const SetupFeature: FF<SetupFeatureServices> = function setupFeature({ registerList }) {
+export const SetupFeature: FF<SetupFeatureServices> = function setupFeature() {
   return {
-    setupCallbacks: registerList<SetupCallback>(),
+    setupCallbacks: () => [],
   };
 };
