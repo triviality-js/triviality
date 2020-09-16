@@ -3,11 +3,11 @@
  */
 import { SubscribeAwareEventListener } from './EventListener';
 import { DomainEventStream } from '../Domain/DomainEventStream';
-import { eventListenersDomainEvents } from './index';
+import {eventListenersDomainEvents, subscribeByOfEventListener} from './index';
 import { concatMap } from 'rxjs/operators';
-import { handleByDecoratedHandlers } from './reactive/operators/handleByDecoratedHandlers';
 import { flatten } from 'lodash';
 import { EventListener } from './EventListener';
+import {of} from "rxjs";
 
 export class SequentialEventListenerCollection implements EventListener, SubscribeAwareEventListener {
 
@@ -27,7 +27,7 @@ export class SequentialEventListenerCollection implements EventListener, Subscri
     return events.pipe(
       concatMap(async (message) => {
         for (const listener of this.listeners) {
-          await handleByDecoratedHandlers(listener)(message);
+          await of(message).pipe(subscribeByOfEventListener(listener)).toPromise();
         }
         return message;
       })
