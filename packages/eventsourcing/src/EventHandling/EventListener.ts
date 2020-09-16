@@ -41,4 +41,8 @@ export interface SubscribeAwareEventListener extends EventListener {
   subscribeBy?: (events: DomainEventStream) => DomainEventStream;
 }
 
+export const isSubscribeAwareEventListener = (listener: EventListener): listener is SubscribeAwareEventListener => {
+  return !!(listener as any).listenTo;
+}
+
 export type EventListenerConstructor = new(...args: any[]) => EventListener;

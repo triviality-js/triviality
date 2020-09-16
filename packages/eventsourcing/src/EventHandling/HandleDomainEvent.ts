@@ -1,5 +1,10 @@
 import 'reflect-metadata';
-import { EventListener, EventListenerConstructor } from './EventListener';
+import {
+  EventListener,
+  EventListenerConstructor,
+  isSubscribeAwareEventListener,
+  SubscribeAwareEventListener
+} from './EventListener';
 import { IncorrectDomainEventHandlerError } from './Error/IncorrectDomainEventHandlerError';
 import { ClassUtil } from '../ClassUtil';
 import { Metadata } from '../Metadata';
@@ -20,9 +25,12 @@ export function allHandleDomainEventMetadata(target: EventListener): DomainEvent
   return metadata ? metadata : [];
 }
 
-export function getEventListenerDistinctDomainEvents(entities: EventListener[]): DomainEventConstructor[] {
-  const events: DomainEventConstructor[] = [];
-  entities.forEach((target) => {
+export function getEventListenerDistinctDomainEvents(eventListeners: (EventListener | SubscribeAwareEventListener)[]): DomainEventConstructor[] {
+  let events: DomainEventConstructor[] = [];
+  eventListeners.forEach((target) => {
+    if (isSubscribeAwareEventListener(target)) {
+      events = [...events, ...(target.listenTo?.() ?? [])];
+    }
     const metadata = allHandleDomainEventMetadata(target);
     if (!metadata) {
       return;
