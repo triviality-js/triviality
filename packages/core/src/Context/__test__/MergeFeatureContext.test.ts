@@ -176,13 +176,13 @@ it('Can override merged services', async () => {
     two: number;
   }
 
-  const f2: FF<F2, Orginal> = ({ one: o }) => ({ two: () => o() + 2 });
+  const f2: FF<F2, Orginal> = ({ instance }) => ({ two: () => instance('one') + 2 });
 
   interface F3 {
     three: number;
   }
 
-  const f3: FF<F3, Orginal> = ({ one: o }) => ({ three: () => o() + 3 });
+  const f3: FF<F3, Orginal> = ({ instance }) => ({ three: () => instance('one')  + 3 });
 
   interface MyFeature extends Orginal, F2, F3 {
   }

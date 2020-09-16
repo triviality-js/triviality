@@ -24,17 +24,12 @@ export type ServicesAsFactories<Services> = {
   [K in keyof Services]: SF<Services[K]>;
 };
 
-export type ServiceTag = string;
-export const assertServiceTag = (tag: ServiceTag | unknown): tag is (ServiceTag | never) => {
+export const assertServiceTag = (tag: unknown): tag is (string | never) => {
   if (typeof tag !== 'string' || tag === '') {
     throw new Error('Tag should be a one empty string');
   }
   return true;
 };
-export type TagServicePair<T = unknown> = [ServiceTag, SF<T>];
-export const isServiceTag = (target: unknown): target is ServiceTag => typeof target === 'string';
-
-export type ServiceFactoryByTag<T = unknown> = (tag: ServiceTag) => SF<T>;
 
 export type ServicesOfType<Services, TType> = {
   [K in keyof Services]: Services[K] extends TType ? Services[K] : never;

@@ -22,13 +22,13 @@ it('Can merge feature', async () => {
     testService4: string;
   }
 
-  const TestFeature2: FF<TestFeature2Services, TestFeature2Dependencies> = ({ testService1 }) => ({
+  const TestFeature2: FF<TestFeature2Services, TestFeature2Dependencies> = ({ instance }) => ({
     testService3() {
       return 'Test service 3';
     },
 
     testService4() {
-      return `test service 4 ${testService1()}`;
+      return `test service 4 ${instance('testService1')}`;
     },
   });
 

@@ -1,35 +1,28 @@
-import { InternalContextContext } from './InternalContextContext';
-import { ServicesAsFactories, ServiceTag } from '../ServiceFactory';
-import { createServiceFactoryReferenceContext } from './ReferenceContext';
+import { FeatureFactory } from '../FeatureFactory';
+import { createBaseFactoryContext } from './BaseFactoryContext';
 import { createFeatureFactoryOverrideContext } from './OverrideContext';
 import { createFeatureFactoryComposeContext } from './ComposeContext';
 import { createFeatureFactoryServicesContext } from './ServicesContext';
 import { createFeatureFactoryConstructContext } from './ConstructContext';
 import { createFeatureFactoryRegistryContext } from './RegistryContext';
 import { createFeatureMergeContext } from './MergeFeatureContext';
-import { ServiceFunctionReferenceContainer } from '../Container';
 import { FeatureFactoryContext } from './FeatureFactoryContext';
-import { keys, includes } from 'ramda';
+import { includes } from 'lodash/fp';
 import { createFeatureFactoryAsyncContext } from './AsyncContext';
 
-export const createFeatureFactoryContext = <OwnServices, Dependencies>(context: InternalContextContext):
-  FeatureFactoryContext<OwnServices & Dependencies> & ServicesAsFactories<Dependencies> => {
-  const { container } = context;
-  return ({
-    ...container.references().serviceFactoryObject(),
-    ...createServiceFactoryReferenceContext(),
-    ...createFeatureFactoryOverrideContext(container),
-    ...createFeatureFactoryComposeContext(container),
-    ...createFeatureFactoryServicesContext(container),
-    ...createFeatureFactoryConstructContext(container),
-    ...createFeatureFactoryRegistryContext(container),
-    ...createFeatureMergeContext(context),
-    ...createFeatureFactoryAsyncContext(context),
-  }) as any;
+export const createFeatureFactoryContext = <TServices, TDependencies>(ff: FeatureFactory<TServices, TDependencies>): {
+  context: FeatureFactoryContext<TServices, TDependencies>;
+  setInstances: (dependencies: TServices & TDependencies) => void;
+} => {
+  const { context, setInstances } = createBaseFactoryContext<TServices, TDependencies>(ff);
+  const context2 = Object.assign(context, createFeatureFactoryServicesContext<TServices>(context.instances));
+  const context3 = Object.assign(context2, createFeatureFactoryOverrideContext<TDependencies>(context2.dependencies));
+  const context4 = Object.assign(context3, createFeatureFactoryComposeContext<TServices>(context3.service));
+  const context5 = Object.assign(context4, createFeatureFactoryConstructContext<TServices>(context4.service));
+  const context6 = Object.assign(context5, createFeatureFactoryRegistryContext<TDependencies>(context5 as any));
+  const context7 = Object.assign(context6, createFeatureFactoryAsyncContext(context6));
+  const context8 = Object.assign(context7, createFeatureMergeContext(context7));
+  return { context: context8, setInstances };
 };
 
-const FACTORY_CONTEXT_TAGS: string[] = keys(
-  createFeatureFactoryContext(
-    { container: new ServiceFunctionReferenceContainer(), invoke: () => void 0 } as any)) as string[];
-
-export const hasContextTag = (tag: ServiceTag) => includes(tag, FACTORY_CONTEXT_TAGS);
+export const hasContextTag = (tag: string) => includes(tag, []);

@@ -1,11 +1,11 @@
-import { asReference } from '../ReferenceContext';
+import { asServiceFactoryReference } from '../../ServiceFactoryReference';
 import triviality from '../../index';
 
 it('Can create reference service function', async () => {
   const result = await
     triviality().add(
       () => {
-        const foo = asReference(() => 1);
+        const foo = asServiceFactoryReference(() => 1);
         return {
           foo,
           bar: () => foo(),
@@ -21,7 +21,7 @@ it('Can override reference service function', async () => {
     triviality()
       .add(
         () => {
-          const foo = asReference(() => 1);
+          const foo = asServiceFactoryReference(() => 1);
           return {
             foo,
             bar: () => foo(),

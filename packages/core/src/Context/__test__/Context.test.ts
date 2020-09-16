@@ -13,17 +13,17 @@ describe('FeatureFactoryContext', () => {
       }
 
       const SpecialNumberTwice = (i: number) => i * 2;
-      const MyFeature: FF<MyFeatureServices, MyFeatureDependencies> = ({ otherSpecialNumber }) => ({
-        specialNumber: () => SpecialNumberTwice(otherSpecialNumber()),
+      const MyFeature: FF<MyFeatureServices, MyFeatureDependencies> = ({ compose }) => ({
+        specialNumber: compose(SpecialNumberTwice, 'otherSpecialNumber'),
       });
 
       const result = await testFeatureFactory(MyFeature, { otherSpecialNumber: 1 });
       expect(result.specialNumber).toEqual(2);
     });
     it('Services should be memorized', async () => {
-      const MyFeature: FF<{ that: jest.Mock }, { dep: jest.Mock }> = ({ dep }) => {
+      const MyFeature: FF<{ that: jest.Mock }, { dep: jest.Mock }> = ({ service }) => {
         return {
-          that: () => dep(),
+          that: service('dep'),
         };
       };
       const mock = jest.fn(() => ({}));
@@ -50,8 +50,8 @@ describe('FeatureFactoryContext', () => {
     });
 
     it('Services should be memorized', async () => {
-      const MyFeature: FF<{ foo: number }, { bar: jest.Mock<number> }> = ({ services }) => {
-        const { bar } = services('bar');
+      const MyFeature: FF<{ foo: number }, { bar: jest.Mock<number> }> = ({ service }) => {
+        const bar  = service('bar');
         return {
           foo: () => bar()(),
         };

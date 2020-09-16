@@ -47,20 +47,20 @@ interface MyAsyncFeatureService {
   bb: string;
 }
 
-const MyAsyncFeature: FF<MyAsyncFeatureService> = ({ synchronize, instance }) => {
+const MyAsyncFeature: FF<MyAsyncFeatureService> = ({ synchronize, compose }) => {
   return {
     foo() {
-      return `foo-${this.bar()}-${instance('aa')}`;
+      return `foo-${this.bar()}-${this.aa()}`;
     },
     bar: synchronize(async () => {
       return 'bar';
     }),
-    aa: synchronize(async () => {
-      return `aa-${instance('bb')}`;
-    }),
-    bb: synchronize(async () => {
-      return `bb-${instance('bar')}`;
-    }),
+    aa: synchronize(compose(async (bb) => {
+      return `aa-${bb}`;
+    }, 'bb')),
+    bb: synchronize(compose(async (bar) => {
+      return `bb-${bar}`;
+    }, 'bar')),
   };
 };
 it('Can depend nested async services as if they where synchronise service', async () => {

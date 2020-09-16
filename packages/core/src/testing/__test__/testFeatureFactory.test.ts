@@ -7,9 +7,9 @@ it('Execute feature directory', async () => {
     three: number,
   }, {
     one: number,
-  }> = ({ one }) => {
+  }> = ({ dependencies }) => {
     return {
-      three: () => one() + 2,
+      three: () => dependencies().one + 2,
     };
   };
 

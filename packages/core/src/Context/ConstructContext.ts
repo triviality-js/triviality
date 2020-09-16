@@ -1,5 +1,5 @@
-import { ServiceFactory, ServiceTag, SF } from '../ServiceFactory';
-import { ServiceFunctionReferenceContainerInterface } from '../Container/ServiceFunctionReferenceContainerInterface';
+import { SF } from '../ServiceFactory';
+import { GetService } from './ServicesContext';
 
 /**
  * Context for constructing new services.
@@ -37,11 +37,11 @@ export interface ConstructContext<T> {
 
 }
 
-export const createFeatureFactoryConstructContext = ({ getService }: ServiceFunctionReferenceContainerInterface) => ({
+export const createFeatureFactoryConstructContext = <TServices>(getService: GetService<TServices>): ConstructContext<TServices> => ({
   construct: constructServiceByTags(getService),
 });
 
-export const constructServiceByTags = (getServiceFactory: (tag: ServiceTag) => ServiceFactory) => <Service>(
+export const constructServiceByTags = <TServices>(getService: GetService<TServices>) => <Service>(
   serviceFactory: new(...a: any) => Service,
   ...tags: string[]): SF<Service> =>
-  () => new serviceFactory(...tags.map(getServiceFactory).map((sf) => sf()));
+  () => new serviceFactory(...tags.map(getService as any).map((sf: any) => sf()));

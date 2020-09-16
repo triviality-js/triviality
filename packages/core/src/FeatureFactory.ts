@@ -1,9 +1,4 @@
-import { FeatureFactoryContext } from './Context/FeatureFactoryContext';
 import { ServicesAsFactories } from './ServiceFactory';
 
-export type FeatureFactory<OwnServices = {}, Dependencies = {}> =
-  ((services: FeatureFactoryContext<OwnServices & Dependencies> & ServicesAsFactories<Dependencies>) => ServicesAsFactories<OwnServices>);
-
-export type FeatureContext<OwnServices = {}, Dependencies = {}> = FeatureFactoryContext<OwnServices & Dependencies> & ServicesAsFactories<Dependencies>;
-
-export type FF<OwnServices = {}, Dependencies = {}> = FeatureFactory<OwnServices, Dependencies>;
+export type FeatureFactory<TServices = {}, TDependencies = {}> = ((services: TDependencies) => ServicesAsFactories<TServices>);
+export type FF<TServices = {}, TDependencies = {}> = FeatureFactory<TServices, TDependencies>;

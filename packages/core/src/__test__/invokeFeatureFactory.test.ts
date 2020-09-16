@@ -67,8 +67,8 @@ it('invokeFeatureFactories', async () => {
   const container = new ServiceFunctionReferenceContainer();
   const service1 = jest.fn().mockReturnValue(1);
 
-  const ff2: FF<{ service2: SF<number> }, { service1: SF<number> }> = ({ service1: service2 }) => ({
-    service2,
+  const ff2: FF<{ service2: SF<number> }, { service1: SF<number> }> = ({ service }) => ({
+    service2: service('service1'),
   });
 
   invokeFeatureFactories({ container })([

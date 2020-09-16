@@ -2,10 +2,8 @@
  * Context helper for using async services.
  */
 import { SF } from '../ServiceFactory';
-import { wrapReturnAsReference } from './ReferenceContext';
-import { InternalContextContext } from './InternalContextContext';
-import { AsyncServiceFunctionReference } from '../Value/AsyncServiceFunctionReference';
-import { getCurrentFeatureFactory } from './GlobalContext';
+import {wrapReturnAsServiceFactoryReference} from "../ServiceFactoryReference";
+import {RegistryContext} from "./RegistryContext";
 
 export interface AsyncContext {
   /**
@@ -14,8 +12,18 @@ export interface AsyncContext {
   synchronize<T>(sf: () => Promise<T>): SF<T>;
 }
 
-export const createFeatureFactoryAsyncContext = ({ container }: InternalContextContext): AsyncContext => ({
-  synchronize: wrapReturnAsReference(<T extends SF>(sf: () => Promise<T>): T => {
-    return container.add(new AsyncServiceFunctionReference(sf, getCurrentFeatureFactory())) as any;
-  }) as any,
-});
+export interface AsyncContextFeatureServices {
+  asyncFeatureFactories: Array<() => Promise<void>>;
+}
+
+export const createFeatureFactoryAsyncContext = ({ registers: {asyncFeatureFactories} }: RegistryContext<AsyncContextFeatureServices>): AsyncContext => {
+  return ({
+    synchronize: wrapReturnAsServiceFactoryReference(<T extends SF>(sf: () => Promise<T>): T => {
+
+
+
+
+
+    }),
+  });
+};
