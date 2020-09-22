@@ -6,6 +6,7 @@ export * from './FromLogLevelLogger';
 export * from './LoggerInterface';
 export * from './NullLogger';
 export * from './PrefixLogger';
+export * from './PostfixLogger';
 export * from './TsLogLogger';
 
 export * from './Feature/DefaultLoggerFeature';
