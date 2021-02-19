@@ -5,7 +5,6 @@ import { createFeatureFactoryComposeContext } from './ComposeContext';
 import { createFeatureFactoryServicesContext } from './ServicesContext';
 import { createFeatureFactoryConstructContext } from './ConstructContext';
 import { createFeatureFactoryRegistryContext } from './RegistryContext';
-import { createFeatureMergeContext } from './MergeFeatureContext';
 import { FeatureFactoryContext } from './FeatureFactoryContext';
 import { includes } from 'lodash/fp';
 import { createFeatureFactoryAsyncContext } from './AsyncContext';
@@ -21,7 +20,6 @@ export const createFeatureFactoryContext = <TServices, TDependencies>(ff: Featur
   const context5 = Object.assign(context4, createFeatureFactoryConstructContext<TServices>(context4.service));
   const context6 = Object.assign(context5, createFeatureFactoryRegistryContext<TDependencies>(context5 as any));
   const context7 = Object.assign(context6, createFeatureFactoryAsyncContext(context6));
-  const context8 = Object.assign(context7, createFeatureMergeContext(context7));
   return { context: context8, setInstances };
 };
 
