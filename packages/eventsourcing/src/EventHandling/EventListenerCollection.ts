@@ -9,13 +9,14 @@ import { eventListenersDomainEvents, subscribeByOfEventListener } from './index'
 import { LoggerInterface, PrefixLogger, NullLogger } from '@triviality/logger';
 import { ClassUtil } from '../ClassUtil';
 import { splitBy } from 'rxjs-etc/operators';
+import {HandlerMonitor} from "./HandlerMonitorEvent";
 
 /**
  * Combine event listeners.
  */
 export class EventListenerCollection implements EventListener {
 
-  constructor(protected listeners: EventListener[], private logger: LoggerInterface = new NullLogger()) {
+  constructor(protected listeners: EventListener[], protected monitor: HandlerMonitor, private logger: LoggerInterface = new NullLogger()) {
 
   }
 
@@ -44,7 +45,7 @@ export class EventListenerCollection implements EventListener {
         tap((event) => {
           ll.info(formatLogMessage('start', event));
         }),
-        subscribeByOfEventListener(listener),
+        subscribeByOfEventListener(listener, this.monitor),
         tap((event) => {
           ll.info(formatLogMessage('end', event));
         }),

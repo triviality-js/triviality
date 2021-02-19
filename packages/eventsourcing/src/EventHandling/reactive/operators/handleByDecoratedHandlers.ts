@@ -6,18 +6,23 @@ import { allHandleDomainEventMetadata, DomainEventHandlerMetadata } from '../../
 import { IncorrectDomainEventHandlerError } from '../../Error/IncorrectDomainEventHandlerError';
 import { DomainEventConstructor } from '../../../Domain/DomainEvent';
 import { EventListener } from '../../EventListener';
+import {HandlerMonitor, wrapMonitor} from "../../HandlerMonitorEvent";
+import {ClassUtil} from "../../../ClassUtil";
 
-export const handleByDecoratedHandlers = (eventListener: EventListener): (event: DomainMessage) => Promise<DomainMessage> => {
+export const handleByDecoratedHandlers = (eventListener: EventListener, monitor: HandlerMonitor): (event: DomainMessage) => Promise<DomainMessage> => {
   const createCallbackFunction = (metadata: DomainEventHandlerMetadata): (domainMessage: DomainMessage) => Promise<void> => {
     const callback = (eventListener as any)[metadata.functionName].bind(eventListener);
+
+    const wrapper = wrapMonitor(monitor, ClassUtil.nameOff(eventListener), metadata)
+
     if (metadata.eventArgumentIndex === 0) {
-      return (domainMessage: DomainMessage) => {
+      return wrapper((domainMessage: DomainMessage) => {
         return Promise.resolve(callback(domainMessage.payload, domainMessage));
-      };
+      });
     }
-    return (domainMessage: DomainMessage) => {
+    return wrapper((domainMessage: DomainMessage) => {
       return Promise.resolve(callback(domainMessage, domainMessage.payload));
-    };
+    });
   };
   const handlers = allHandleDomainEventMetadata(eventListener);
   if (handlers.length === 0) {
@@ -35,7 +40,9 @@ export const handleByDecoratedHandlers = (eventListener: EventListener): (event:
     if (!eventHandlers) {
       return event;
     }
-    await Promise.all(eventHandlers.map((handler) => handler(event)));
+    await Promise.all(eventHandlers.map(async (handler) => {
+      return handler(event);
+    }));
     return event;
   };
 };

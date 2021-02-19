@@ -7,7 +7,7 @@ import { HandleDomainEvent } from '../../HandleDomainEvent';
 import { SimpleDomainEventStream } from '../../../Domain/SimpleDomainEventStream';
 import { SubscribeAwareEventListener, EventListener } from '../../EventListener';
 import { DomainMessage } from '../../../Domain/DomainMessage';
-import { timer } from 'rxjs';
+import {noop, timer} from 'rxjs';
 import { hash } from 'immutable';
 import { Identity } from '../../../ValueObject/Identity';
 import { subscribeByBuckets } from '../../reactive/operators/subscribeByBuckets';
@@ -35,7 +35,7 @@ it('Should be able to handle value sync', async () => {
 
   const handler = new HasAddedNumberHandler();
 
-  const bus = new AsynchronousEventBus();
+  const bus = new AsynchronousEventBus(noop);
   bus.subscribe(handler);
 
   function createMessage(value: number) {
@@ -83,12 +83,12 @@ it('Should be able to handle value async', async () => {
 
     /**
      */
-    public subscribeBy = subscribeByBuckets(this, 8, (event) => hash(event.aggregateId));
+    public subscribeBy = subscribeByBuckets(this, noop, 8, (event) => hash(event.aggregateId));
   }
 
   const handler = new HasAddedNumberHandler();
 
-  const bus = new AsynchronousEventBus();
+  const bus = new AsynchronousEventBus(noop);
   bus.subscribe(handler);
 
   function createMessage(value: number, id?: Identity) {
@@ -136,12 +136,12 @@ it('Same aggregate id should still be in order', async () => {
       this.numbers.push(event.value);
     }
 
-    public subscribeBy = subscribeByBuckets(this, 8, (event) => hash(event.aggregateId));
+    public subscribeBy = subscribeByBuckets(this, noop, 8, (event) => hash(event.aggregateId));
   }
 
   const handler = new HasAddedNumberHandler();
 
-  const bus = new AsynchronousEventBus();
+  const bus = new AsynchronousEventBus(noop);
   bus.subscribe(handler);
 
   function createMessage(value: number, id?: Identity) {

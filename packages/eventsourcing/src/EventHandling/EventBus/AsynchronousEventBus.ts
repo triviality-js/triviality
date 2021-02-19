@@ -9,6 +9,7 @@ import { IdleAwareEventBus } from '../IdleAwareEventBus';
 import { finalize, ignoreElements, tap } from 'rxjs/operators';
 import { EventListenerCollection } from '../EventListenerCollection';
 import { subscribeByOfEventListener } from '../index';
+import {HandlerMonitor} from "../HandlerMonitorEvent";
 
 export class AsynchronousEventBus implements IdleAwareEventBus {
   private queue: Subject<DomainMessage> | null = null;
@@ -26,9 +27,9 @@ export class AsynchronousEventBus implements IdleAwareEventBus {
   /**
    * The listeners combined inside a ASynchronousEventListener.
    */
-  private listener: EventListenerCollection = new EventListenerCollection([]);
+  private listener: EventListenerCollection = new EventListenerCollection([], this.monitor);
 
-  constructor(private errorHandler?: (error: any) => void) {
+  constructor(private monitor: HandlerMonitor, private errorHandler?: (error: any) => void) {
 
   }
 
@@ -87,7 +88,7 @@ export class AsynchronousEventBus implements IdleAwareEventBus {
   }
 
   public subscribe(eventListener: EventListener): void {
-    this.listener = new EventListenerCollection([...this.listener.getListeners(), eventListener]);
+    this.listener = new EventListenerCollection([...this.listener.getListeners(), eventListener], this.monitor);
   }
 
   public publish(stream: DomainEventStream): void {
@@ -122,7 +123,7 @@ export class AsynchronousEventBus implements IdleAwareEventBus {
     });
     queue.pipe(
       tap((message) => this.pendingMessages.add(message)),
-      subscribeByOfEventListener(this.listener),
+      subscribeByOfEventListener(this.listener, this.monitor),
       tap((event) => handled.next(event)),
     ).subscribe({
       error: (e) => {

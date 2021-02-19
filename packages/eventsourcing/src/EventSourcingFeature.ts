@@ -20,13 +20,15 @@ import { getEventSourcedEntityDistinctDomainEvents } from './EventSourcing/Aggre
 import { DomainEventConstructor } from './Domain/DomainEvent';
 import { getEventListenerDistinctDomainEvents } from './EventHandling/HandleDomainEvent';
 import { uniq } from 'lodash';
+import {HandlerMonitor} from "./EventHandling/HandlerMonitorEvent";
+import {noop} from "rxjs";
 
 export interface EventSourcingFeatureServices {
   commandHandlers: RegistryList<CommandHandler>;
   queryHandlers: RegistryList<QueryHandler>;
   eventListeners: RegistryList<EventListener>;
   domainEventStreamDecorators: RegistryList<DomainEventStreamDecorator>;
-
+  eventHandlerMonitor: HandlerMonitor;
   commandBus: CommandBus;
 
   queryBus: QueryBus;
@@ -97,6 +99,9 @@ export const EventSourcingFeature: FF<EventSourcingFeatureServices, LoggerFeatur
           this.domainEventBus(),
         );
       },
+      eventHandlerMonitor(): HandlerMonitor {
+        return noop;
+      },
 
       eventStore(): EventStore {
         return new InMemoryEventStore();
@@ -104,7 +109,7 @@ export const EventSourcingFeature: FF<EventSourcingFeatureServices, LoggerFeatur
 
       domainEventBus(): AsynchronousEventBus {
         const errorLogger = new PrefixLogger(logger(), 'domainEventBus');
-        return new AsynchronousEventBus((e) => {
+        return new AsynchronousEventBus(this.eventHandlerMonitor(),(e) => {
           errorLogger.error(e);
         });
       },

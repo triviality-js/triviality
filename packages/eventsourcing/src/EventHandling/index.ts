@@ -4,6 +4,7 @@ import { DomainEventStream } from '../Domain/DomainEventStream';
 import { concatMap } from 'rxjs/operators';
 import { handleByDecoratedHandlers } from './reactive/operators/handleByDecoratedHandlers';
 import { SubscribeAwareEventListener } from './EventListener';
+import {HandlerMonitor} from "./HandlerMonitorEvent";
 
 export const eventListenersDomainEvents = (listener: SubscribeAwareEventListener): DomainEventConstructor[] => {
   if (!listener.listenTo) {
@@ -12,9 +13,9 @@ export const eventListenersDomainEvents = (listener: SubscribeAwareEventListener
   return listener.listenTo();
 };
 
-export const subscribeByOfEventListener = (listener: SubscribeAwareEventListener): (events: DomainEventStream) => DomainEventStream => {
+export const subscribeByOfEventListener = (listener: SubscribeAwareEventListener, monitor: HandlerMonitor): (events: DomainEventStream) => DomainEventStream => {
   if (!listener.subscribeBy) {
-    listener.subscribeBy = (input) => input.pipe(concatMap(handleByDecoratedHandlers(listener)));
+    listener.subscribeBy = (input) => input.pipe(concatMap(handleByDecoratedHandlers(listener, monitor)));
   }
   return listener.subscribeBy;
 };

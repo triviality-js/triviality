@@ -8,10 +8,11 @@ import { concatMap } from 'rxjs/operators';
 import { flatten } from 'lodash';
 import { EventListener } from './EventListener';
 import {of} from "rxjs";
+import {HandlerMonitor} from "./HandlerMonitorEvent";
 
 export class SequentialEventListenerCollection implements EventListener, SubscribeAwareEventListener {
 
-  constructor(protected listeners: EventListener[]) {
+  constructor(protected listeners: EventListener[], protected monitor: HandlerMonitor) {
 
   }
 
@@ -25,12 +26,12 @@ export class SequentialEventListenerCollection implements EventListener, Subscri
 
   public subscribeBy = (events: DomainEventStream): DomainEventStream => {
     return events.pipe(
-      concatMap(async (message) => {
-        for (const listener of this.listeners) {
-          await of(message).pipe(subscribeByOfEventListener(listener)).toPromise();
-        }
-        return message;
-      })
+        concatMap(async (message) => {
+          for (const listener of this.listeners) {
+            await of(message).pipe(subscribeByOfEventListener(listener, this.monitor)).toPromise();
+          }
+          return message;
+        })
     );
   };
 }

@@ -8,9 +8,10 @@ import { SimpleDomainEventStream } from '../../../Domain/SimpleDomainEventStream
 import { EventListener } from '../../EventListener';
 import { DomainMessage } from '../../../Domain/DomainMessage';
 import { delay } from 'rxjs/operators';
+import {noop} from "rxjs";
 
 it('Knows when it\'s not handling anything', async () => {
-  const bus = new AsynchronousEventBus();
+  const bus = new AsynchronousEventBus(noop);
   expect(await bus.untilIdle()).toBeFalsy();
 });
 
@@ -20,7 +21,7 @@ it('Should ignore event with no handlers', async () => {
 
   }
 
-  const bus = new AsynchronousEventBus();
+  const bus = new AsynchronousEventBus(noop);
   const message = new DomainMessage(
     UuidIdentity.create(),
     0,
@@ -48,7 +49,7 @@ it('Be able to register a single event handler', async () => {
   const handler = new TestEventHandler();
   const spyHasBoughtCar = jest.spyOn(handler, 'hasBoughtCar');
 
-  const bus = new AsynchronousEventBus();
+  const bus = new AsynchronousEventBus(noop);
   bus.subscribe(handler);
 
   const event = new UserHasBoughtACarEvent();
@@ -90,7 +91,7 @@ it('Be able to register to multiple event (and handle with different argument in
   const userLoggedInSpy = jest.spyOn(handler, 'hasLoggedIn');
   const userLoggedOutSpy = jest.spyOn(handler, 'hasLoggedOut');
 
-  const bus = new AsynchronousEventBus();
+  const bus = new AsynchronousEventBus(noop);
   bus.subscribe(handler);
 
   const userLoggedInMessage = DomainMessage.recordNow(
@@ -133,7 +134,7 @@ it('Be able to register to multiple event handlers for the same event ', async (
   const userLoggedInSpy = jest.spyOn(handler, 'hasLoggedIn');
   const userLoggedIn2Spy = jest.spyOn(handler, 'hasLoggedIn2');
 
-  const bus = new AsynchronousEventBus();
+  const bus = new AsynchronousEventBus(noop);
   bus.subscribe(handler);
 
   const userLoggedInMessage = DomainMessage.recordNow(
@@ -171,7 +172,7 @@ it('Be able to register to multiple event (and handle with different argument in
   const handler = new HasAddedNumberHandler();
   const addNumberInSpy = jest.spyOn(handler, 'addNumber');
 
-  const bus = new AsynchronousEventBus();
+  const bus = new AsynchronousEventBus(noop);
   bus.subscribe(handler);
 
   function createMessage(value: number) {
@@ -236,7 +237,7 @@ it('Should be able to wait for some events', async () => {
 
   const handler = new HasAddedNumberHandler();
 
-  const bus = new AsynchronousEventBus();
+  const bus = new AsynchronousEventBus(noop);
   bus.subscribe(handler);
 
   function createMessage(value: number) {
