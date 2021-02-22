@@ -8,7 +8,7 @@
   "devDependencies": {
     "@stryker-mutator/core": "^2",
     "@stryker-mutator/html-reporter": "^2",
-    "@stryker-mutator/jest-runner": "^2",
+    "@stryker-mutator/jest-runner": "^3",
     "@stryker-mutator/typescript": "^2",
     "@types/find": "^0",
     "@types/fs-extra": "^8",
