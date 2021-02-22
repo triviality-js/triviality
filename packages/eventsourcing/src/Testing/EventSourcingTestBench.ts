@@ -41,6 +41,8 @@ import { ClassUtil } from '../ClassUtil';
 import { LoggerInterface, NullLogger, PrefixLogger } from '@triviality/logger';
 import { ProcessLogger } from '@triviality/logger/ProcessLogger';
 import Constructable = jest.Constructable;
+import {noop} from "rxjs";
+import {HandlerMonitor} from "../EventHandling/HandlerMonitorEvent";
 
 export interface TestTask {
   callback: () => Promise<any>;
@@ -74,6 +76,7 @@ export class EventSourcingTestBench {
   public aggregates: AggregateTestContextCollection;
   public models = new ReadModelTestContextCollection();
   public eventBus: EventBus;
+  public monitor: HandlerMonitor = noop;
   protected asyncBus: AsynchronousEventBus;
   protected recordBus: RecordDomainEventBusDecorator;
   protected breakpoint: boolean = false;
@@ -85,7 +88,7 @@ export class EventSourcingTestBench {
 
   constructor(currentTime: Date | string = EventSourcingTestBench.defaultCurrentTime) {
     this.currentTime = this.parseDateTime(currentTime);
-    this.asyncBus = new AsynchronousEventBus((error) => {
+    this.asyncBus = new AsynchronousEventBus((e) => this.monitor(e),(error) => {
       this.errors.push(error);
     });
     this.recordBus = new RecordDomainEventBusDecorator(this.asyncBus);
