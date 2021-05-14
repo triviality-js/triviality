@@ -9,6 +9,6 @@ export * from './replaceAll';
 export * from './indent';
 export * from './generateInDirectory';
 export * from './generateInDocument';
-export * from './createBinaries';
+export * from './createCurryPositions';
 export * from './generateFunctionByBinary';
 export * from './generateFunctionFixed';

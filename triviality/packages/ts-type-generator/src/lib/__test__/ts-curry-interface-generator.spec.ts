@@ -7,7 +7,7 @@ it('generateCurryInterfaceInDocument', async () => {
   /**
    * @curryInterfaceGenerator({
    *    interfaceTemplate: "export interface Curry%<T, S, {{D%}}>",
-   *    argTemplate: '{{["d%: KSF<T, D%>", "d%: __"]}}',
+   *    argTemplate: '{{["d%: KSF<T, D%>", "d%: __", "d%?: __"]}}',
    *    resultTemplate: "SF<S>;",
    *    maxCurry: 16,
    *    curryResultTemplate: "Curry%<T, S, {{D%}}>;",
@@ -21,17 +21,18 @@ it('generateCurryInterfaceInDocument', async () => {
       /**
        * @curryInterfaceGenerator({
        *    interfaceTemplate: \\"export interface Curry%<T, S, {{D%}}>\\",
-       *    argTemplate: '{{[\\"d%: KSF<T, D%>\\", \\"d%: __\\"]}}',
+       *    argTemplate: '{{[\\"d%: KSF<T, D%>\\", \\"d%: __\\", \\"d%?: __\\"]}}',
        *    resultTemplate: \\"SF<S>;\\",
        *    maxCurry: 16,
        *    curryResultTemplate: \\"Curry%<T, S, {{D%}}>;\\",
        * })
        */
 
+
        export interface Curry1<T, S, D1> {
          (d1: KSF<T, D1>): SF<S>;
 
-         (d1: __): Curry1<T, S, D1>;
+         (d1?: __): Curry1<T, S, D1>;
 
 
        }
@@ -42,9 +43,9 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: __, d2: KSF<T, D2>): Curry1<T, S, D1>;
 
-         (d1: KSF<T, D1>, d2: __): Curry1<T, S, D2>;
+         (d1: KSF<T, D1>, d2?: __): Curry1<T, S, D2>;
 
-         (d1: __, d2: __): Curry2<T, S, D1, D2>;
+         (d1?: __, d2?: __): Curry2<T, S, D1, D2>;
 
 
        }
@@ -57,15 +58,15 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: KSF<T, D1>, d2: __, d3: KSF<T, D3>): Curry1<T, S, D2>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: __): Curry1<T, S, D3>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3?: __): Curry1<T, S, D3>;
 
          (d1: __, d2: __, d3: KSF<T, D3>): Curry2<T, S, D1, D2>;
 
-         (d1: __, d2: KSF<T, D2>, d3: __): Curry2<T, S, D1, D3>;
+         (d1: __, d2: KSF<T, D2>, d3?: __): Curry2<T, S, D1, D3>;
 
-         (d1: KSF<T, D1>, d2: __, d3: __): Curry2<T, S, D2, D3>;
+         (d1: KSF<T, D1>, d2?: __, d3?: __): Curry2<T, S, D2, D3>;
 
-         (d1: __, d2: __, d3: __): Curry3<T, S, D1, D2, D3>;
+         (d1?: __, d2?: __, d3?: __): Curry3<T, S, D1, D2, D3>;
 
 
        }
@@ -80,7 +81,7 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: __, d4: KSF<T, D4>): Curry1<T, S, D3>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: __): Curry1<T, S, D4>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4?: __): Curry1<T, S, D4>;
 
          (d1: __, d2: __, d3: KSF<T, D3>, d4: KSF<T, D4>): Curry2<T, S, D1, D2>;
 
@@ -88,21 +89,21 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: KSF<T, D1>, d2: __, d3: __, d4: KSF<T, D4>): Curry2<T, S, D2, D3>;
 
-         (d1: __, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: __): Curry2<T, S, D1, D4>;
+         (d1: __, d2: KSF<T, D2>, d3: KSF<T, D3>, d4?: __): Curry2<T, S, D1, D4>;
 
-         (d1: KSF<T, D1>, d2: __, d3: KSF<T, D3>, d4: __): Curry2<T, S, D2, D4>;
+         (d1: KSF<T, D1>, d2: __, d3: KSF<T, D3>, d4?: __): Curry2<T, S, D2, D4>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: __, d4: __): Curry2<T, S, D3, D4>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3?: __, d4?: __): Curry2<T, S, D3, D4>;
 
          (d1: __, d2: __, d3: __, d4: KSF<T, D4>): Curry3<T, S, D1, D2, D3>;
 
-         (d1: __, d2: __, d3: KSF<T, D3>, d4: __): Curry3<T, S, D1, D2, D4>;
+         (d1: __, d2: __, d3: KSF<T, D3>, d4?: __): Curry3<T, S, D1, D2, D4>;
 
-         (d1: __, d2: KSF<T, D2>, d3: __, d4: __): Curry3<T, S, D1, D3, D4>;
+         (d1: __, d2: KSF<T, D2>, d3?: __, d4?: __): Curry3<T, S, D1, D3, D4>;
 
-         (d1: KSF<T, D1>, d2: __, d3: __, d4: __): Curry3<T, S, D2, D3, D4>;
+         (d1: KSF<T, D1>, d2?: __, d3?: __, d4?: __): Curry3<T, S, D2, D3, D4>;
 
-         (d1: __, d2: __, d3: __, d4: __): Curry4<T, S, D1, D2, D3, D4>;
+         (d1?: __, d2?: __, d3?: __, d4?: __): Curry4<T, S, D1, D2, D3, D4>;
 
 
        }
@@ -119,7 +120,7 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: __, d5: KSF<T, D5>): Curry1<T, S, D4>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: __): Curry1<T, S, D5>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5?: __): Curry1<T, S, D5>;
 
          (d1: __, d2: __, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>): Curry2<T, S, D1, D2>;
 
@@ -133,13 +134,13 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: __, d4: __, d5: KSF<T, D5>): Curry2<T, S, D3, D4>;
 
-         (d1: __, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: __): Curry2<T, S, D1, D5>;
+         (d1: __, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5?: __): Curry2<T, S, D1, D5>;
 
-         (d1: KSF<T, D1>, d2: __, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: __): Curry2<T, S, D2, D5>;
+         (d1: KSF<T, D1>, d2: __, d3: KSF<T, D3>, d4: KSF<T, D4>, d5?: __): Curry2<T, S, D2, D5>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: __, d4: KSF<T, D4>, d5: __): Curry2<T, S, D3, D5>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: __, d4: KSF<T, D4>, d5?: __): Curry2<T, S, D3, D5>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: __, d5: __): Curry2<T, S, D4, D5>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4?: __, d5?: __): Curry2<T, S, D4, D5>;
 
 
        }
@@ -158,7 +159,7 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: __, d6: KSF<T, D6>): Curry1<T, S, D5>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: __): Curry1<T, S, D6>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6?: __): Curry1<T, S, D6>;
 
          (d1: __, d2: __, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>): Curry2<T, S, D1, D2>;
 
@@ -197,7 +198,7 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: __, d7: KSF<T, D7>): Curry1<T, S, D6>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: __): Curry1<T, S, D7>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7?: __): Curry1<T, S, D7>;
 
          (d1: __, d2: __, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>): Curry2<T, S, D1, D2>;
 
@@ -236,7 +237,7 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: __, d8: KSF<T, D8>): Curry1<T, S, D7>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8: __): Curry1<T, S, D8>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8?: __): Curry1<T, S, D8>;
 
          (d1: __, d2: __, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8: KSF<T, D8>): Curry2<T, S, D1, D2>;
 
@@ -275,7 +276,7 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8: __, d9: KSF<T, D9>): Curry1<T, S, D8>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8: KSF<T, D8>, d9: __): Curry1<T, S, D9>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8: KSF<T, D8>, d9?: __): Curry1<T, S, D9>;
 
          (d1: __, d2: __, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8: KSF<T, D8>, d9: KSF<T, D9>): Curry2<T, S, D1, D2>;
 
@@ -314,7 +315,7 @@ it('generateCurryInterfaceInDocument', async () => {
 
          (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8: KSF<T, D8>, d9: __, d10: KSF<T, D10>): Curry1<T, S, D9>;
 
-         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8: KSF<T, D8>, d9: KSF<T, D9>, d10: __): Curry1<T, S, D10>;
+         (d1: KSF<T, D1>, d2: KSF<T, D2>, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8: KSF<T, D8>, d9: KSF<T, D9>, d10?: __): Curry1<T, S, D10>;
 
          (d1: __, d2: __, d3: KSF<T, D3>, d4: KSF<T, D4>, d5: KSF<T, D5>, d6: KSF<T, D6>, d7: KSF<T, D7>, d8: KSF<T, D8>, d9: KSF<T, D9>, d10: KSF<T, D10>): Curry2<T, S, D1, D2>;
 

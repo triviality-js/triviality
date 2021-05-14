@@ -120,6 +120,39 @@ it('Compose argument can be curried directly', () => {
   expect(d(() => 'I AM')()).toEqual('I AM Groot (203)');
 });
 
+it('Compose argument can be curried indefinitely', () => {
+  const mock: CompileContext<unknown> = {
+    getServiceFactory: (key: string | USF) => {
+      if (typeof key === 'function') {
+        return key;
+      }
+      throw new Error(key + ' not exists');
+    },
+    serviceReferenceFactory: (s: unknown) => s,
+  } as unknown as CompileContext<unknown>;
+
+  const context = createComposeContext<unknown>(mock);
+  const d = context.compose(TestFunctionWithAge);
+
+
+  // Typing still work.
+
+  // @ts-expect-error
+  d(() => 1);
+
+  // @ts-expect-error
+  d(() => "", () => 1);
+
+
+  const yeeAaa = d()()()();
+
+  // @ts-expect-error
+  yeeAaa(() => 1);
+
+
+  expect(yeeAaa(() => 'I AM', () => 'Groot', () => 12)()).toEqual('I AM Groot (12)');
+});
+
 
 it('Should be able to compose with keys', () => {
   type T = {

@@ -18,12 +18,13 @@ import {
   populateGeneratorTagTemplate,
   generateTemplate,
   generateRecurringString,
-  generateInDirectory, createBinaries, generateFunctionByBinary
+  generateInDirectory, createCurryPositions, generateFunctionByBinary, generateFunctionFixed
 } from "./Functions";
 import os from "os";
 import {} from "./Functions/generateInDocument";
 import {curry, curryN, map} from "ramda";
 import {generateTypesInDocument} from "./ts-type-generator";
+import { range } from 'lodash';
 
 export interface CurryOptions extends BaseOptions{
   length: number;
@@ -44,8 +45,8 @@ export const CurryTemplateSchema = BaseSchema.append<CurryOptions>({
 });
 
 export function generateFunction(length: number, template: CurryOptions): string {
-  const binaryCombinations = createBinaries(length, template.maxCurry);
-  const functions = map(generateFunctionByBinary(length, template), binaryCombinations);
+  const binaryCombinations = createCurryPositions(length, template.maxCurry);
+  const functions: string[] = map(generateFunctionByBinary(length, template), binaryCombinations);
   return indent(functions.join(''));
 }
 
@@ -53,7 +54,9 @@ function generate(template: CurryOptions): string {
   return generateRecurringString(
     template.length,
     false,
-    (i) => generateFunction(i, template)
+    (i) => {
+      return generateFunction(i, template);
+    }
     ,
     EOL,
   );

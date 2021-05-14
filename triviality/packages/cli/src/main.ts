@@ -27,10 +27,10 @@ run(() => {
       console.info('Types changes:', result);
     })),
     generateCurryInterfaceInDirectory([directory]).pipe(tap((result) => {
-      console.info('Curry interfaces changes', result);
+      console.info('Curry interfaces changes:', result);
     })),
     generateCurryInDirectory([directory]).pipe(tap((result) => {
-      console.info('Curry changes', result);
+      console.info('Curry changes:', result);
     })),
   ).pipe(ignoreElements()).toPromise()
     .then(() => {

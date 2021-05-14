@@ -7,8 +7,9 @@ import {generateRecurringString} from "./generateRecurringString";
 import {GeneratorTag} from "../DTO";
 import {findGeneratorTags} from "./findGeneratorTags";
 import {populateGeneratorTagTemplate} from "./populateGeneratorTagTemplate";
+import {CurryPositions} from "../CurryPositions";
 
-export const generateTemplate = (template: string, length: number, binary: number | null = null): string => {
+export const generateTemplate = (template: string, length: number, binary: CurryPositions | null = null): string => {
   const g = generateRecurringString(length, false);
   const result = findGeneratorTags(template).reduce(
     (acc, {tag, separator, template: t}) => {

@@ -18,7 +18,7 @@ import {
   populateGeneratorTagTemplate,
   generateTemplate,
   generateRecurringString,
-  generateInDirectory, createBinaries
+  generateInDirectory, createCurryPositions
 } from "./Functions";
 import os from "os";
 import {curry, curryN, map} from "ramda";

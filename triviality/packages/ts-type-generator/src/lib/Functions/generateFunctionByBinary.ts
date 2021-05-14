@@ -2,13 +2,14 @@ import {curryN} from "ramda";
 import {generateTemplate} from "./generateTemplates";
 import {generateFunctionFixed} from "./generateFunctionFixed";
 import {curryIndexes} from "./countCurry";
+import {CurryPositions} from "../CurryPositions";
 
 export const generateFunctionByBinary = curryN(3, (length: number, template: {
   argTemplate: string;
   resultTemplate: string;
   curryResultTemplate: string;
   functionTemplate: string;
-}, binary: number) => {
+}, binary: CurryPositions) => {
   const args: string = generateTemplate(template.argTemplate, length, binary);
   const argsLeft: number[] = curryIndexes(length, binary);
   if (argsLeft.length === 0) {

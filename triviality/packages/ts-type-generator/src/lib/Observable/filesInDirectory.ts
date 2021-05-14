@@ -13,7 +13,7 @@ export const filesInDirectory: (directories: string[], discard?: string[]) => Ob
     .findSync()
   ).pipe(mergeMap(async (file): Promise<FileContent> => ({
       path: file,
-      content: await promisify(fs.readFile)(file).toString()
+      content: (await promisify(fs.readFile)(file)).toString()
     })
   ))
 ;
