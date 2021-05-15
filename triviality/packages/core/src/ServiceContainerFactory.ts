@@ -5,7 +5,8 @@ import {retryUntilNoAsyncErrors} from "./Error";
 import {GlobalInvokeStack} from "./GlobalInvokeStack";
 import {FeatureGroupFactoryInterface} from "./FeatureGroupFactoryInterface";
 import {FeatureGroupFactory} from "./FeatureGroupFactory";
-import {KernelFeatureServices} from "./Feature";
+import {KernelFeatureServices, KernelFeature} from "./Feature";
+import {serviceInstances} from "./Util";
 
 export interface BuildOptions {
   validate: boolean;
@@ -23,7 +24,7 @@ export class ServiceContainerFactory<S extends KernelFeatureServices> {
     );
   };
 
-  protected featureFactories: UFF[] = [];
+  protected featureFactories: UFF[] = [KernelFeature as UFF];
 
   public constructor(protected featureGroupFactory: FeatureGroupFactoryInterface,
                      protected options: BuildOptions = {validate: true, name: 'root'}) {
@@ -41,10 +42,6 @@ export class ServiceContainerFactory<S extends KernelFeatureServices> {
   public async build(): Promise<S> {
     const featureGroup = this.featureGroupFactory.build<S>(this.featureFactories, this.options.name);
     await featureGroup.compile();
-    const container: Record<string, unknown> = {};
-    for (const [name, sfr] of Object.entries(featureGroup.references)) {
-      Object.defineProperty(container, name, {get: sfr as () => unknown});
-    }
-    return container as unknown as S;
+    return serviceInstances<S>(featureGroup.references);
   }
 }

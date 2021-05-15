@@ -10,7 +10,11 @@ export {placeholder as __};
 export const composeCurryN = <T>(context: CompileContext<T>, arity: number, callback: (...services: unknown[]) => unknown) => {
   return curryN(arity, (...keys: (keyof T | USF)[]) => {
     const serviceFactories = getServiceFactories(context.getServiceFactory, keys);
-    return context.serviceReferenceFactory(() => callback(...getServiceInstances(serviceFactories)));
+    return context.serviceReferenceFactory(() => {
+      const serviceInstances = getServiceInstances(serviceFactories);
+      const output = callback(...serviceInstances);
+      return output;
+    });
   });
 };
 

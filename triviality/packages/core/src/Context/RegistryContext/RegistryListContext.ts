@@ -26,7 +26,7 @@ export const isRegisterListArguments = (args: unknown[]): args is RegisterListAr
 }
 
 export function isListLike<T>(register: unknown): register is ListLike<T> {
-  return isObjectLike(register) && isSetLike(register as ListLike<T>) || isArrayLike(register as ListLike<T>) || isRegisterLike(register as ListLike<T>);
+  return isObjectLike(register) && (isSetLike(register as ListLike<T>) || isArrayLike(register as ListLike<T>) || isRegisterLike(register as ListLike<T>));
 }
 
 export function isSetLike<T>(register: ListLike<T>): register is SetLike<T> {
@@ -49,7 +49,7 @@ export function registerToList<T, TService, TType>(context: CompileContext<T>, p
     return asServiceFactoryReference(item as USF) as SF<TType>;
   });
   let arrayLike = parent() as unknown as ListLike<TType>;
-  if (isListLike<TType>(arrayLike)) {
+  if (!isListLike<TType>(arrayLike)) {
     throw new ContainerError(`Expected ListLike object, not ${parent.name} (${typeof arrayLike})`);
   }
   for (const sf of serverFactories) {

@@ -42,11 +42,10 @@ it('Allow Currying', () => {
 
   const result  = context.construct(Test);
 
-  expect(result("hi")()).toEqual('hallo John');
+  const output = result("hi");
+  expect(output().output).toEqual('hallo John');
   expect(mock.getServiceFactory).toBeCalledWith('hi');
 
-  // @ts-expect-error
-  expect(() => context.compose(test)).toThrow('Function requires more arguments given "0" arguments requires "1" ()')
 });
 
 

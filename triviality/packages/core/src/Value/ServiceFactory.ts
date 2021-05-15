@@ -1,4 +1,5 @@
 import {PickByValue} from "utility-types";
+import {functionName} from "../Util";
 
 export type ServiceFactory<T> = () => T;
 
@@ -21,15 +22,14 @@ export type ServicesAsFactories<Services> = {
   [K in keyof Services]: ServiceFactory<Services[K]>;
 };
 
-export const assetServiceFactory = (sf: unknown): sf is USF | never => {
+export function assertServiceFactory(sf: unknown, name: string): asserts sf is USF {
   if (typeof sf !== 'function') {
-    throw new Error('ServiceFactory should be a function');
+    throw new Error(`ServiceFactory ${name} should be a function`);
   }
   if (sf.length > 0) {
-    throw new Error(`ServiceFactory '${sf.name}' cannot have any arguments`);
+    throw new Error(`ServiceFactory '${name}' cannot have arguments (${functionName(sf as any)})`);
   }
-  return true;
-};
+}
 
 export const isServiceFactory = (target: unknown): target is USF => {
   return typeof target === 'function' && target.length === 0;

@@ -288,9 +288,6 @@ export interface ComposeContext<T> {
 export const createComposeContext = <T>(context: CompileContext<T>): ComposeContext<T> => {
   return {
     compose(f: (...args: unknown[]) => unknown, ...keys: (keyof T | USF)[]): USF {
-      if (keys.length === 0) {
-        return composeCurryN(context, f.length, f);
-      }
       const curried: any = composeCurryN(context, f.length, f);
       return curried(...keys);
     }

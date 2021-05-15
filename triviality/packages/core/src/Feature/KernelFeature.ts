@@ -1,20 +1,18 @@
-import type {FF} from "../Value";
+import type {CompilerPass, FF} from "../Value";
 import type {CompileContext} from "../Context";
 import {RegisterLike} from "../Context/RegistryContext";
 import {GlobalInvokeStack} from "../GlobalInvokeStack";
 import {FeatureFactoryContext} from "../Context";
-import type {CompilerPass} from "../Value/CompilerPass";
+import {FeatureGroupBuildInfo} from "../Value";
+import {KernelFeatureServices} from "./KernelFeatureServices";
 
-export interface KernelFeatureServices {
-  compilerPass: RegisterLike<CompilerPass>;
-}
-
-export const KernelFeature: FF<KernelFeatureServices> = function setupFeature({synchronize, compose}) {
+export const KernelFeature: FF<KernelFeatureServices> = function kernelFeature({synchronize, compose}) {
   return {
     compilerPass: () => ({
       register: (pass: CompilerPass) => {
         GlobalInvokeStack.addCompilerPass(pass);
       }
     }),
+    compilerInfo: () => GlobalInvokeStack.getRoot()
   };
 };

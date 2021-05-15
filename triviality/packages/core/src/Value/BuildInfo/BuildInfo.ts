@@ -3,5 +3,4 @@ import type {CompilerPass} from "../CompilerPass";
 
 export class BuildInfo {
 
-
 }

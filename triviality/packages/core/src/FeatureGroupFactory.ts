@@ -4,7 +4,7 @@ import {
   ServiceFactoryReference,
   ServiceFactoryReferences,
   SF,
-  SFR, FF, USF, UFF, GetServiceFactory, UFC
+  SFR, FF, USF, UFF, GetServiceFactory, UFC, assertServiceFactory
 } from './Value';
 import {CompileContext, createFeatureFactoryContext} from "./Context";
 import {ContainerError, retryUntilNoAsyncErrors} from "./Error";
@@ -17,9 +17,6 @@ import {
 import {GlobalInvokeStack} from "./GlobalInvokeStack";
 import {FeatureGroupFactoryInterface} from "./FeatureGroupFactoryInterface";
 
-/**
- * Immutable container factory.
- */
 export class FeatureGroupFactory implements FeatureGroupFactoryInterface {
 
   public build<S>(featureFactories: UFF[], name: string): FeatureGroupBuildInfo<S> {
@@ -33,14 +30,18 @@ export class FeatureGroupFactory implements FeatureGroupFactoryInterface {
       info.addFeature(featureFactory);
       GlobalInvokeStack.run<S>({featureFactory, serviceContainer: info},  () => {
         /**
-         * We bind the feature so the internal reference correct
+         * We bind the feature so the internal reference are correct
          */
         const result = feature.bind(references)(featureContext as UFC) as Record<string, USF>;
         for (const [name, service] of toPairs(result)) {
           if (name in references) {
-            throw new ContainerError(`Service with ${name} already registered`);
+            if ((references as any)[name] === service) {
+              continue;
+            }
+            throw new ContainerError(`Service ${name} already registered`);
           }
-          const sfr = asServiceFactoryReference(service.bind(references));
+          assertServiceFactory(service, name);
+          const sfr = asServiceFactoryReference(service);
           Object.assign(references, {
             [name]: sfr
           });

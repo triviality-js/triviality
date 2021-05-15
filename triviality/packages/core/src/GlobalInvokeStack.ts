@@ -1,15 +1,18 @@
 import {
   InvokeWindow,
+  CompilerPass,
   isFeatureFactoryInvokeWindow,
   isServiceFactoryInvokeWindow,
 } from './Value';
-import {CompilerPass} from "./Value/CompilerPass";
+import {ContainerError} from "./Error";
 
 const invokeWindowStack: InvokeWindow[] = [];
 
 const addCompilerPass = (compilerPass: CompilerPass) => {
   return getCurrentInvokeWindow().serviceContainer.addCompilerPass(compilerPass);
 };
+
+
 
 const currentInvokeWindow = () => {
   return invokeWindowStack[invokeWindowStack.length - 1] ?? null;
@@ -21,6 +24,14 @@ const getCurrentInvokeWindow = () => {
     throw new Error('Can only be called withing GlobalInvokeStack');
   }
   return window;
+};
+
+const getRootInvokeWindow = () => {
+  const window = invokeWindowStack[0];
+  if (!window) {
+    throw new Error('Can only be called withing GlobalInvokeStack');
+  }
+  return window.serviceContainer.root;
 };
 
 async function asyncInvokeWindow<T>(this: unknown, window: InvokeWindow<T>, callback: (window: InvokeWindow<T>) => Promise<void>): Promise<void> {
@@ -60,6 +71,7 @@ export const GlobalInvokeStack = {
   runAsync: asyncInvokeWindow,
   printStack: printInvokeStack,
   getCurrent: getCurrentInvokeWindow,
+  getRoot: getRootInvokeWindow,
   current: currentInvokeWindow,
   addCompilerPass,
   getStack: () => [...invokeWindowStack]

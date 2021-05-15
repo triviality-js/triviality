@@ -1,15 +1,17 @@
-import {fromPairs, isObject} from 'lodash';
+import {fromPairs, isObject, pick} from 'lodash';
 import {
   FeatureFactory,
   ServicesAsFactories,
   ServicesAsFactories as SAF,
   SF,
-  FF, FeatureGroupBuildInfo, UFF,
+  FF, FeatureGroupBuildInfo, UFF, assertFeatureFactoryWindow,
 } from '../Value';
 import {CompileContext} from "./CompileContext";
 import {ContainerError} from "../Error";
 import {GlobalInvokeStack} from "../GlobalInvokeStack";
 import {MergeOptions, MergeWith} from "./MergeWith";
+import {serviceInstances} from "../Util";
+import type { KernelFeatureServices } from '../Feature';
 
 export interface MergeFeatureContext<Services> {
   /**
@@ -24,7 +26,7 @@ export interface MergeFeatureContext<Services> {
   merge<T>(featureFactory: FeatureFactory<T>): MergeWith<T>;
 
   /**
-   * @typeGenerator({ templates: ["merge<{{K% extends keyof Services }}>({{k%:K%}}): MergeWith<Pick<Services, {{K% - | }}>>;\n"] })
+   * @typeGenerator({ templates: ["merge<{{K% extends keyof Services }}>({{k%:K%}}): MergeWith<Pick<Services, {{K% - | }}> & KernelFeatureServices>;\n"] })
    */
 
   merge<K1 extends keyof Services>(k1:K1): MergeWith<Pick<Services, K1>>;
@@ -52,7 +54,7 @@ export interface MergeFeatureContext<Services> {
 
 export const createFeatureMergeContext = <T>(context: CompileContext<T>): MergeFeatureContext<T> => {
   return {
-    merge: ( ...args: [FeatureFactory<T>] | (keyof T )[]): MergeWith<T> => {
+    merge: <S>( ...args: [FeatureFactory<S>] | (keyof T )[]): MergeWith<T | S> => {
       if (typeof args[0] === 'function') {
         const feature = args[0] as UFF;
         return createMergeWith(context, [feature]);
@@ -67,26 +69,33 @@ export const createFeatureMergeContext = <T>(context: CompileContext<T>): MergeF
 };
 
 const createMergeWith = <T>(context: CompileContext<unknown>, features: UFF[]): MergeWith<T> => {
+  const create = (...args: any[]): ServicesAsFactories<unknown> => {
+    const keys: (keyof T)[] = args;
+    let options: MergeOptions | undefined;
+    const window = GlobalInvokeStack.getCurrent();
+    if (isObject(args[args.length - 1])) {
+      options = args.pop() as MergeOptions;
+    } else {
+      options = {
+        name: window.serviceContainer.createPrivateFeatureGroupName(),
+      };
+    }
+    assertFeatureFactoryWindow(window);
+    const info = context.featureGroupFactory.build(features, options.name);
+    window.featureFactory.addContainer(info);
+    if (args.length === 0) {
+      return info.references;
+    }
+    return pick(info.references, keys);
+  };
   return {
     with<ExtendWith>(featureFactory: FeatureFactory<ExtendWith, T>): MergeWith<T & ExtendWith> {
       return createMergeWith<T & ExtendWith>(context, [...features, featureFactory as UFF]);
     },
-    create(...args: any[]): ServicesAsFactories<unknown> {
-      const keys: (keyof T)[] = args;
-      let options: MergeOptions | undefined;
-      if (isObject(args[args.length - 1])) {
-        options = args.pop();
-      }
-      const window = GlobalInvokeStack.getCurrent();
-      if (!('featureFactory' in window)) {
-        throw new ContainerError('Can only merge inside a feature factory');
-      }
-      let info = context.featureGroupFactory.build(features, options?.groupName ?? window.serviceContainer.createPrivateFeatureGroupName());
-      window.featureFactory.addContainer(info);
-      if (args.length === 0) {
-        return info.references;
-      }
-      return keys.map((key) => (info.references as Record<string, unknown>)[key as string]);
+    createInstance: (options?: MergeOptions) => {
+      const services = options ? create(options) : create();
+      return () => serviceInstances(services);
     },
+    create,
   } as MergeWith<T>;
 }

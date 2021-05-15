@@ -10,7 +10,7 @@ import {
   isFeatureFactoryInvokeWindow,
   isServiceFactoryInvokeWindow,
   ServiceFactoryInvokeWindow,
-  FeatureGroupBuildInfo
+  FeatureGroupBuildInfo, assertFeatureFactoryWindow
 } from "./Value";
 import {GlobalInvokeStack} from "./GlobalInvokeStack";
 import {ContainerError} from "./Error";
@@ -31,12 +31,13 @@ export const asServiceFactoryReference = <T>(sf: SF<T>): ServiceFactoryReference
   }
 
   const window = GlobalInvokeStack.getCurrent();
-  if (!isFeatureFactoryInvokeWindow(window)) {
-    throw new ContainerError('Can only create reference inside a feature factory');
-  }
+  assertFeatureFactoryWindow(window);
 
   const name = functionName(sf) ?? window.serviceContainer.createPrivateServiceFactoryName();
-  let mainServicePointer: SF<T> = sf;
+  /**
+   * Bind original service to references so 'this' can be used.
+   */
+  let mainServicePointer: SF<T> = sf.bind(window.serviceContainer.references);
 
   /**
    * Every time service is called from inside a other service factory

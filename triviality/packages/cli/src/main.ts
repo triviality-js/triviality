@@ -20,7 +20,7 @@ const run = (main: () => void) => {
 
 
 run(() => {
-  const directory = '/Users/ericpinxteren/sites/triviality/triviality/packages'; // `${process.cwd()}/packages`;
+  const directory = `${process.cwd()}/packages`;
   console.info("Finding changes in directory:", directory);
   concat(
     generateTypesInDirectory([directory]).pipe(tap((result) => {

@@ -1,10 +1,10 @@
-import {FeatureFactory, ServicesAsFactories as SAF} from "@triviality/core";
+import {FeatureFactory, ServicesAsFactories as SAF, SF} from "../Value";
 
 export interface MergeOptions {
   /**
    * Name of the group.
    */
-  groupName: string;
+  name: string;
 }
 
 /**
@@ -20,6 +20,11 @@ export interface MergeWith<T> {
    * Return all new services.
    */
   create(options?: MergeOptions): SAF<T>;
+
+  /**
+   * Convenience function to return all services of the merged features as a function.
+   */
+  createInstance(options?: MergeOptions): SF<T>;
 
   /**
    * @typeGenerator({ templates: ["create<{{K% extends keyof T}}>({{t%: K%}}, options?: MergeOptions): SAF<Pick<T, {{K% - | }}>>;\n"] })

@@ -28,9 +28,11 @@ export class FeatureGroupBuildInfo<S = unknown> extends BuildInfo implements Com
   protected nameFeatureGroupIndex = 0;
   public readonly serviceReferenceFactory = asServiceFactoryReference;
   public readonly featureContext: FeatureFactoryContext<S> = createFeatureFactoryContext<S>(this);
+  public readonly root: FeatureGroupBuildInfo;
 
   constructor(public readonly name: string, public readonly featureGroupFactory: FeatureGroupFactoryInterface) {
     super();
+    this.root = GlobalInvokeStack.current() ? GlobalInvokeStack.getRoot() : this as FeatureGroupBuildInfo;
   }
 
   public getServices() {
@@ -78,6 +80,9 @@ export class FeatureGroupBuildInfo<S = unknown> extends BuildInfo implements Com
     this.compilerPasses.push(cp);
   }
 
+  /**
+   * TODO: Split; this class does way to much.
+   */
   public async compile() {
     const promises: (Promise<void> | null)[] = [];
     // Execute compiler passes

@@ -1,5 +1,5 @@
 import {CompileContext} from "./CompileContext";
-import {KSF, SF} from "../Value";
+import {assertFeatureFactoryWindow, KSF, SF} from "../Value";
 import {GlobalInvokeStack} from "../GlobalInvokeStack";
 import {ContainerError} from "../Error";
 import {PickByValue} from "utility-types";
@@ -15,18 +15,18 @@ export interface OverrideContext<T> {
   override<Key extends keyof T>(name: Key, override: ServiceFactoryOverrideArg<T, T[Key]>): {};
 }
 
-export const createOverrideContext = <T>({getServiceFactory}: CompileContext<T>): OverrideContext<T> => {
+export const createOverrideContext = <T>(context: CompileContext<T>): OverrideContext<T> => {
+  debugger
+
   return {
     override<Key extends keyof T>(name: Key, override: ServiceFactoryOverrideArg<T, T[Key]>): {} {
-      const service = getServiceFactory(name);
+      const service = context.getServiceFactory(name);
       const window = GlobalInvokeStack.getCurrent();
-      if (!('featureFactory' in window)) {
-        throw new ContainerError('Can only override inside a feature factory');
-      }
+      assertFeatureFactoryWindow(window);
       let overrideBy: ServiceFactoryOverrideArg<T, T[Key]> = override;
       if (!isFunction(overrideBy)) {
-        const sf = getServiceFactory(override as unknown as keyof T);
-        overrideBy = (() => sf()) as unknown as ServiceFactoryOverrideArg<T, T[Key]>;
+        const sf = context.getServiceFactory(override as unknown as keyof T);
+        overrideBy = (() => sf) as unknown as ServiceFactoryOverrideArg<T, T[Key]>;
       }
       service.info.addOverride({
         featureFactory: window.featureFactory,
